@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boletas estudiante</title>
+    <link rel="stylesheet" href="css/styleAlumno.css">
+
+</head>
+<body>
+<div id="franjaSuperior"></div>
+
+<div id="menu">
+    <h2>Menú</h2>
+    <ul>
+        <li>
+            <button style="background-image: url('img/boletas.png');" onclick="window.location.href='BOLETAS_EST.html'"></button>
+        </li>
+        <li>
+            <button style="background-image: url('img/horario2.png');" onclick="window.location.href='HORARIO_EST.html'"></button>
+        </li>
+    </ul>
+</div>
+
+<!-- Selector -->
+<select id="selector" onchange="updateTable()">
+    <option value="opcion1">Opción 1</option>
+    <option value="opcion2">Opción 2</option>
+    <option value="opcion2">Opción 3</option>
+    <option value="opcion2">Opción 4</option>
+    <option value="opcion2">Opción 5</option>
+    <option value="opcion2">Opción 6</option>
+    <option value="opcion2">Opción 7</option>
+    <!-- Agrega más opciones si es necesario -->
+</select>
+
+<!-- Campo para seleccionar semestre -->
+<label for="semestre">Seleccione un semestre:</label>
+<select id="semestre" onchange="updateTable()">
+    <option value="1">Semestre 1</option>
+    <option value="2">Semestre 2</option>
+    <option value="3">Semestre 3</option>
+    <option value="4">Semestre 4</option>
+    <option value="5">Semestre 5</option>
+    <option value="6">Semestre 6</option>
+</select>
+
+<!-- Tabla -->
+<table id="tabla">
+    <thead>
+        <tr>
+            <th>Encabezado 1</th>
+            <th>Encabezado 2</th>
+            <th>Encabezado 3</th>
+            <th>Encabezado 4</th>
+        </tr>
+    </thead>
+    <tbody id="cuerpoTabla">
+        <!-- Aquí se actualizarán las filas según la selección -->
+    </tbody>
+</table>
+
+<script>
+    function updateTable() {
+        var selector = document.getElementById("selector");
+        var selectedOption = selector.options[selector.selectedIndex].value;
+        var semestre = document.getElementById("semestre").value;2
+        var cuerpoTabla = document.getElementById("cuerpoTabla");
+
+        // Limpia las filas existentes
+        cuerpoTabla.innerHTML = "";
+
+        // Agrega filas según la opción seleccionada
+        if (selectedOption === "opcion1") {
+            // Ejemplo: Agregar 4 filas con datos de ejemplo
+            for (var i = 0; i < 4; i++) {
+                var newRow = document.createElement("tr");
+                newRow.innerHTML = `
+                    <td>Dato ${i + 1} - Semestre ${semestre}</td>
+                    <td>Dato ${i + 2} - Semestre ${semestre}</td>
+                    <td>Dato ${i + 3} - Semestre ${semestre}</td>
+                    <td>Dato ${i + 4} - Semestre ${semestre}</td>
+                `;
+                cuerpoTabla.appendChild(newRow);
+            }
+        } else if (selectedOption === "opcion2") {
+            // Ejemplo: Agregar 3 filas con otros datos de ejemplo
+            for (var i = 0; i < 3; i++) {
+                var newRow = document.createElement("tr");
+                newRow.innerHTML = `
+                    <td>Otro dato ${i + 1} - Semestre ${semestre}</td>
+                    <td>Otro dato ${i + 2} - Semestre ${semestre}</td>
+                    <td>Otro dato ${i + 3} - Semestre ${semestre}</td>
+                    <td>Otro dato ${i + 4} - Semestre ${semestre}</td>
+                `;
+                cuerpoTabla.appendChild(newRow);
+            }
+        }
+    }
+
+    // Llama a updateTable al cargar la página para mostrar los datos por defecto
+    window.onload = updateTable;
+</script>
+
+</body>
+</html>

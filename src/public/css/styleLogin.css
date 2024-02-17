@@ -1,0 +1,87 @@
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Candara, Arial, sans-serif; 
+}
+.header {
+  background-color: #ACC5EE;
+  padding: 0 0px 0px 0px; 
+  color: #FFF;
+  text-align: center;
+  margin-top: 0; 
+}
+.header h1 {
+  font-family: Courier New, serif; 
+  margin: 0; 
+  float: center; 
+}
+.logo {
+  max-width: 100%;
+  height: auto;
+}
+.ima {
+  float: right;
+  margin-top: 0px;
+  margin-right: 0px;
+}
+.welcome-text {
+  text-align: left; 
+  font-size: 58px;
+  margin-bottom: 0px;
+  color: #45659B;
+  width: 150px; 
+  height: 20px; 
+  position: absolute; 
+  top: 30px; 
+  left: 173px; 
+}
+.login-container {
+  margin: 80px;
+  margin-top: 130px;
+  margin-left: 130px; 
+  width: 300px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  text-align: center;
+  float: left; 
+}
+input[type="text"], input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  box-sizing: border-box;
+}
+input[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 20px;
+  background-color: #45659B;
+  color: #FFF;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.icon-button-container {
+  margin-bottom: 10px; 
+}
+.icon-button {
+  display: inline-block;
+  width: 50px; 
+  height: 50px; 
+  margin: 0 5px; 
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: transparent;
+}
+.icon-button img {
+  width: 100%; 
+}
+
+/* Añade estilos para el botón iluminado */
+#miBoton.iluminado {
+background-color: yellow;
+}
+
