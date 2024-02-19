@@ -1,14 +1,15 @@
 const express = require('express');
 const path=require('path');
 const morgan= require('morgan');
-
 const app=express();
-
 const db = require('./db');
-const auth = require('./auth');
+const bodyParser = require('body-parser');  
+const loginQuery = require('./queries/loginQuery');  // Asegúrate de que la ruta sea correcta
+
 //importing routes
-const customerRoutes=require('./routes/customer');
-const loginController=require('../src/controllers/loginController')
+//const customerRoutes=require('./routes/customer');
+//const loginController=require('../src/controllers/loginController')
+
 app.use(express.json());
 
 //settings
@@ -25,6 +26,61 @@ app.use(morgan('dev'));
 //routes
 app.get('/', (req, res) => {
   res.render(path.join(__dirname, 'views/login.ejs'));
+});
+
+
+
+//Static files
+app.use(express.static(path.join(__dirname,'public')));
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+
+app.listen(app.get('port'), () => {
+console.log('server on port 3000');
+});
+
+
+//POST DE /, PARA LOGIN
+app.post('/login', (req, res) => {
+  const matricula = req.body.matricula; // Esto depende de cómo se llame el campo en tu formulario HTML
+  const contrasena = req.body.contrasena;
+  const tipo = req.body.tipo;
+
+  console.log('Matricula:', matricula);
+  console.log('Contraseña:', contrasena);
+  console.log('Tipo:', tipo);
+  
+  loginQuery(matricula, contrasena,tipo, (error, result) => {
+    if (error) {
+      console.error('Error en la consulta:', error);
+      res.status(500).send('Error en la consulta');
+    } else {
+      if (result.length > 0) {
+        const tipo = result[0].tipo;
+        const baseUrl = req.protocol + ':/' + req.get('host'); // Obtener la URL base
+        switch (tipo) {
+          case 'Alumno':
+            res.redirect('/alumno');
+            break;
+          case 'Profesor':
+            res.redirect('/docente');
+            break;
+          case 'Personal':
+            res.redirect('/personal');
+            break;
+          case 'SuperAdmin':
+            res.redirect('/administrador');
+            break;
+          default:
+            res.send('Tipo de usuario no válido');
+        }
+      } else {
+        res.send('Credenciales incorrectas');
+      }
+    }
+  });
 });
 
 app.get('/administrador', (req, res) => {
@@ -49,48 +105,4 @@ app.get('/alumno/boleta', (req, res) => {
 
 app.get('/docente/boleta', (req, res) => {
   res.render(path.join(__dirname, 'views/docente/boletas.ejs'));
-});
-
-
-//Static files
-app.use(express.static(path.join(__dirname,'public')));
-
-
-app.listen(app.get('port'), () => {
-console.log('server on port 3000');
-});
-
-// Ruta para manejar la solicitud POST de autenticación
-app.post('/login', async (req, res) => {
-  try {
-    const { usuario, contrasena, tipoUsuario } = req.body;
-    console.log('Datos recibidos en el servidor:', { usuario, contrasena, tipoUsuario });
-
-    // Llama a la función de autenticación del módulo 'auth'
-    const autenticado = await auth.autenticarUsuario(usuario, contrasena, tipoUsuario);
-    if (autenticado) {
-      console.log('Autenticación exitosa para', tipoUsuario);
-      // Si la autenticación es exitosa, redirige a la pantalla correspondiente
-      switch (tipoUsuario) {
-        case 'Alumno':
-          res.json({ autenticado: true, urlRedireccion: '/pantalla_estudiante' });
-          break;
-        case 'Profesor':
-          res.json({ autenticado: true, urlRedireccion: '/pantalla_docente' });
-          break;
-        case 'Personal':
-          res.json({ autenticado: true, urlRedireccion: 'views/personal/inicioPersonal.ejs' });
-          break;
-        default:
-          console.error('Tipo de usuario no reconocido:', tipoUsuario);
-          res.json({ autenticado: false });
-      }
-    } else {
-      console.log('Autenticación fallida para', tipoUsuario);
-      res.json({ autenticado: false });
-    }
-  } catch (error) {
-    console.error('Error en la autenticación:', error);
-    res.json({ autenticado: false });
-  }
 });

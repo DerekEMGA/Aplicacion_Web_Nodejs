@@ -1,12 +1,11 @@
 
 <%- include('partials/headerLogin') %>
-<form id="loginForm" onsubmit="return validarLogin();" method="POST" action="/login">
+
   <!-- Agrega el atributo 'action' con la ruta correcta -->
-  <label for="usuario">Numero de usuario:</label>
-  <input type="text" id="usuario" name="usuario" required maxlength="6">
+  <label for="matricula">Numero de usuario:</label>
+  <input type="text" id="matricula" name="matricula" required maxlength="6">
   <label for="contrasena">Contraseña:</label>
   <input type="password" id="contrasena" name="contrasena" required maxlength="15">
-  <input type="hidden" id="tipoUsuario" name="tipoUsuario" value="">
   <input type="submit" value="Iniciar Sesión">
 </form>
 </div>
