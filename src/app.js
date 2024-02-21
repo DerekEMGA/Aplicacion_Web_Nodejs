@@ -64,14 +64,18 @@ app.post('/login', (req, res) => {
     if (results.length > 0) {
       const tipoQuery = results[0].tipo;
 
-      console.log('Tipo de usuario:', tipo);
+      console.log('Tipo:', tipo);
       console.log('Tipo Query:', tipoQuery);
-
-      if (tipoQuery === 'SuperAdmin') {
+        if(tipo==='Personal')
+        {
+      if (tipoQuery === 'SuperAdmin') 
+      {
         res.redirect('/administrador');
-      } else {
+      }
+    }
+     else {
         // Si no es "SuperAdmin", verifica con loginQuery
-        loginQuery(matricula, contrasena, (error, result) => {
+        loginQuery(matricula, contrasena, tipo,(error, result) => {
           if (error) {
             console.error('Error en la consulta:', error);
             res.status(500).send('Error en la consulta');
@@ -79,12 +83,9 @@ app.post('/login', (req, res) => {
           }
 
           if (result.length > 0) {
-            const tipoUsuario = result[0].tipo;
-
-            console.log('Tipo de usuario:', tipoUsuario);
 
             // Lógica para otros tipos de usuario
-            switch (tipoUsuario) {
+            switch (tipo) {
               case 'Alumno':
                 res.redirect('/alumno');
                 break;

@@ -14,6 +14,7 @@ function loginQueryAdministrador(usuario, contrasena, callback) {
     });
   }
   
+  
     
   
   
