@@ -4,7 +4,7 @@ const db = require('../db');
 
 
 function loginQueryAdministrador(usuario, contrasena, callback) {
-    const query = 'SELECT tipo FROM usuarios WHERE matricula = ? AND contrasena = ?';
+    const query = 'SELECT tipo FROM usuario WHERE matricula_clave = ? AND contrasena = ?';
     db.query(query, [usuario, contrasena], (error, results) => {
       if (error) {
         callback(error, null);
@@ -14,11 +14,4 @@ function loginQueryAdministrador(usuario, contrasena, callback) {
     });
   }
   
-  
-    
-  
-  
-
-
-
 module.exports = loginQueryAdministrador;

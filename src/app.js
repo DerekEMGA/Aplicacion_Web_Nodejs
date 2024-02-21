@@ -43,7 +43,7 @@ console.log('server on port 3000');
 });
 
 
-//POST DE /, PARA LOGIN
+//POST DE /, PARA LOGIN PARA LA COMPROBACION DE CREDENCIALES
 app.post('/login', (req, res) => {
   const matricula = req.body.matricula;
   const contrasena = req.body.contrasena;
@@ -71,7 +71,33 @@ app.post('/login', (req, res) => {
       if (tipoQuery === 'SuperAdmin') 
       {
         res.redirect('/administrador');
-      }
+      }else{ loginQuery(matricula, contrasena, tipo,(error, result) => {
+        if (error) {
+          console.error('Error en la consulta:', error);
+          res.status(500).send('Error en la consulta');
+          return;
+        }
+
+        if (result.length > 0) {
+
+          // Lógica para otros tipos de usuario
+          switch (tipo) {
+            case 'Alumno':
+              res.redirect('/alumno');
+              break;
+            case 'Profesor':
+              res.redirect('/docente');
+              break;
+            case 'Personal':
+              res.redirect('/personal');
+              break;
+            default:
+              res.send('Tipo de usuario no válido');
+          }
+        } else {
+          res.send('Credenciales incorrectas');
+        }
+      });}
     }
      else {
         // Si no es "SuperAdmin", verifica con loginQuery
