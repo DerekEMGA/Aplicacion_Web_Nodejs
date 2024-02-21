@@ -5,6 +5,7 @@ const app=express();
 const db = require('./db');
 const bodyParser = require('body-parser');  
 const loginQuery = require('./queries/loginQuery');  // Asegúrate de que la ruta sea correcta
+const loginQueryAdministrador=require('./queries/loginQueryAdministrador')
 
 //importing routes
 //const customerRoutes=require('./routes/customer');
@@ -44,44 +45,70 @@ console.log('server on port 3000');
 
 //POST DE /, PARA LOGIN
 app.post('/login', (req, res) => {
-  const matricula = req.body.matricula; // Esto depende de cómo se llame el campo en tu formulario HTML
+  const matricula = req.body.matricula;
   const contrasena = req.body.contrasena;
   const tipo = req.body.tipo;
 
   console.log('Matricula:', matricula);
   console.log('Contraseña:', contrasena);
   console.log('Tipo:', tipo);
-  
-  loginQuery(matricula, contrasena,tipo, (error, result) => {
+
+  // Verifica si es un "Administrador"
+  loginQueryAdministrador(matricula, contrasena, (error, results) => {
     if (error) {
-      console.error('Error en la consulta:', error);
+      console.error('Error en la consulta de Administrador:', error);
       res.status(500).send('Error en la consulta');
-    } else {
-      if (result.length > 0) {
-        const tipo = result[0].tipo;
-        const baseUrl = req.protocol + ':/' + req.get('host'); // Obtener la URL base
-        switch (tipo) {
-          case 'Alumno':
-            res.redirect('/alumno');
-            break;
-          case 'Profesor':
-            res.redirect('/docente');
-            break;
-          case 'Personal':
-            res.redirect('/personal');
-            break;
-          case 'SuperAdmin':
-            res.redirect('/administrador');
-            break;
-          default:
-            res.send('Tipo de usuario no válido');
-        }
+      return;
+    }
+
+    if (results.length > 0) {
+      const tipoQuery = results[0].tipo;
+
+      console.log('Tipo de usuario:', tipo);
+      console.log('Tipo Query:', tipoQuery);
+
+      if (tipoQuery === 'SuperAdmin') {
+        res.redirect('/administrador');
       } else {
-        res.send('Credenciales incorrectas');
+        // Si no es "SuperAdmin", verifica con loginQuery
+        loginQuery(matricula, contrasena, (error, result) => {
+          if (error) {
+            console.error('Error en la consulta:', error);
+            res.status(500).send('Error en la consulta');
+            return;
+          }
+
+          if (result.length > 0) {
+            const tipoUsuario = result[0].tipo;
+
+            console.log('Tipo de usuario:', tipoUsuario);
+
+            // Lógica para otros tipos de usuario
+            switch (tipoUsuario) {
+              case 'Alumno':
+                res.redirect('/alumno');
+                break;
+              case 'Profesor':
+                res.redirect('/docente');
+                break;
+              case 'Personal':
+                res.redirect('/personal');
+                break;
+              default:
+                res.send('Tipo de usuario no válido');
+            }
+          } else {
+            res.send('Credenciales incorrectas');
+          }
+        });
       }
+    } else {
+      console.error('Error en la consulta de Administrador:', error);
+      res.status(500).send('Error en la consulta');
     }
   });
 });
+
 
 app.get('/administrador', (req, res) => {
   res.render(path.join(__dirname, 'views/superAdministrador/inicioSuperAdministrador.ejs'));

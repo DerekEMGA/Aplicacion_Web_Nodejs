@@ -1,9 +1,20 @@
 const mssql = require('mssql');
 const db = require('../db');
 
-function loginQuery(usuario, contrasena, tipo, callback) {
-    const query = 'SELECT matricula, contrasena, tipo FROM usuarios WHERE matricula = ? AND contrasena = ? AND tipo = ?';
-    db.query(query, [usuario, contrasena, tipo], (error, results) => {
+function loginQuery(usuario, contrasena,callback) {
+    const query = 'SELECT matricula, contrasena, tipo FROM usuarios WHERE matricula = ? AND contrasena = ? ';
+    db.query(query, [usuario, contrasena], (error, results) => {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    });
+  }
+
+  function loginQueryAdministrador(usuario, contrasena, callback) {
+    const query = 'SELECT tipo, tipoQuery FROM usuarios WHERE matricula = ? AND contrasena = ?';
+    db.query(query, [usuario, contrasena], (error, results) => {
       if (error) {
         callback(error, null);
       } else {
@@ -12,6 +23,10 @@ function loginQuery(usuario, contrasena, tipo, callback) {
     });
   }
   
+    
+  
+  
+
 
 
 module.exports = loginQuery;
