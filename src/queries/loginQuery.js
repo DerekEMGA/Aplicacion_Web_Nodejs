@@ -1,4 +1,3 @@
-const mssql = require('mssql');
 const db = require('../db');
 
 function loginQuery(usuario, contrasena,tipo,callback) {

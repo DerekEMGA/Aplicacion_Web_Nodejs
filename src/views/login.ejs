@@ -1,12 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
 
-<%- include('partials/headerLogin') %>
+<head>
 
-  <!-- Agrega el atributo 'action' con la ruta correcta -->
-  <label for="matricula">Numero de usuario:</label>
-  <input type="text" id="matricula" name="matricula" required maxlength="6">
-  <label for="contrasena">Contraseña:</label>
-  <input type="password" id="contrasena" name="contrasena" required maxlength="15">
-  <input type="submit" value="Iniciar Sesión">
-</form>
-</div>
-   <%- include('partials/footerLogin') %>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="css/styleLogin.css">
+</head>
+
+<body>
+
+  <header>
+    <h1><img src="image/cbta.png" alt="CBTa #59" class="logo" width="70" height="70"></h1>
+  </header>
+  
+  <div class="welcome-text">
+    <p>Bienvenido</p>
+  </div>
+
+  <img src="image/INS.jpg" alt="INSTITUTO" class="ima" width="730" height="530">
+  
+  <main class="login-container">
+    <div class="icon-button-container">
+      <form id="login" action="/" onsubmit="return validateForm()" method="POST">
+        
+        <fieldset> 
+          <legend>Tipo de Usuario</legend>
+
+          <input type="radio" id="alumno" name="tipo" value="Alumno" onclick="setBotonSeleccionado('Alumno')">
+          <label for="alumno" class="icon-button">
+            <img src="image/ICONO_ESTUDIANTE.png" alt="Icono Estudiante" width="10" height="50">
+          </label>
+
+          <input type="radio" id="profesor" name="tipo" value="Profesor" onclick="setBotonSeleccionado('Profesor')">
+          <label for="profesor" class="icon-button">
+            <img src="image/ICONO_DOCENTE.png" alt="Icono profesor" width="10" height="50">
+          </label>
+
+          <input type="radio" id="personal" name="tipo" value="Personal" onclick="setBotonSeleccionado('Personal')">
+          <label for="personal" class="icon-button">
+            <img src="image/ICONO_ADMIN.png" alt="Icono Personal" width="10" height="50">
+          </label>
+        </fieldset>
+
+        <label for="matricula">Número de usuario:</label>
+        <input type="text" id="matricula" name="matricula" required maxlength="6">
+
+        <label for="contrasena">Contraseña:</label>
+        <input type="password" id="contrasena" name="contrasena" required maxlength="15">
+
+        <input type="submit" value="Iniciar Sesión">
+
+      </form>
+    </div>
+  </main>
+  <script src="script/scriptLogin.js"></script>
+</body>
+
+</html>
