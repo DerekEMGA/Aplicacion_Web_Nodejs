@@ -87,8 +87,8 @@ const login= (req, res) => {
         }
       } else {
         console.error('Error en la consulta de Administrador GENERAL:', error);
-        res.status(500).json({ error:''});
-
+        res.status(500).json({ error:'Error en la consulta'});
+        
       }
     })
   }
