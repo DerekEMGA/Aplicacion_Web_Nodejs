@@ -1,10 +1,10 @@
 {
   "name": "aplicacion_web_nodejs",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/app.js"
+    "dev": "nodemon src/app.js",
+    "start": "node src/app.js"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +24,7 @@
     "mysql2": "^3.9.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.3"
-  }
+    "nodemon": "^3.1.0"
+  },
+  "description": ""
 }
