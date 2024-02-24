@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrador</title>
+    <link rel="stylesheet" href="/css/styleAgregarAdministrador.css">
+
+</head>
+<body>
+<div id="franjaSuperior"></div>
+
+<div id="menu">
+    <h2>Menú</h2> 
+    
+    <ul>
+        <li>
+            <button style="background-image: url('/image/Personal.png');" onclick="window.location.href = '/administrador/agregarPersonal';"></button>
+        </li>
+       
+    </ul>
+</div>
+<div id="BARRA"></div>
+
+
+<div id="contenido">
+    <div id="campos-izquierda">
+        <div class="campo">
+            <label for="campo1">Nombre(s)</label>
+            <input type="text" placeholder="Ingrese datos">
+        </div>
+        <div class="campo">
+            <label for="campo2">Apellido Paterno</label>
+            <input type="text" placeholder="Ingrese datos">
+        </div>
+        <div class="campo">
+            <label for="campo3">Apellido Materno</label>
+            <input type="text" placeholder="Ingrese datos">
+        </div>
+        <div class="campo">
+            <label for="campo8">Ocupación</label>
+            <input type="text" placeholder="Personal" disabled>
+        </div>
+    </div>
+    <div id="campos-derecha">
+        <div class="campo">
+            <label for="campo4">Antigüedad</label>
+            <input type="text" placeholder="Ingrese datos">
+        </div>
+        <div class="campo">
+            <label for="campo5">Número de empleado</label>
+            <input type="text" placeholder="Ingrese datos">
+        </div>
+       
+        <div class="campo">
+            <label for="campo7">Contraseña</label>
+            <input type="text" placeholder="Ingrese datos">
+        </div>
+    </div>
+
+   <table id="tabla" border="1">
+    <tr>
+        <th>Nombre(s)</th>
+        <th>Apellido Paterno</th>
+        <th>Apellido Materno</th>
+        <th>Ocupación</th>
+        <th>Antigüedad</th>
+        <th>Número de empleado</th>
+        <th>Contraseña</th>
+    </tr>
+    <tr>
+        <td>Gladys Rubi</td>
+        <td>Solis</td>
+        <td>Castillo</td>
+        <td>Administrador</td>
+        <td>6</td>
+        <td>12344</td>
+        <td>JSDHpd5</td>
+    </tr>
+    <tr>
+        <td>Jair Abiel</td>
+        <td>Balderas</td>
+        <td>Espinoza</td>
+        <td>Desarrollador</td>
+        <td>3</td>
+        <td>12345</td>
+        <td>65jSO</td>
+    </tr>
+    <tr>
+        <td>María Fernanda</td>
+        <td>Rodríguez</td>
+        <td>Hernández</td>
+        <td>Gerente</td>
+        <td>8</td>
+        <td>12346</td>
+        <td>jsj58OP</td>
+    </tr>
+    <tr>
+        <td>Laura</td>
+        <td>Gómez</td>
+        <td>Martínez</td>
+        <td>Analista de datos</td>
+        <td>2</td>
+        <td>12347</td>
+        <td>KJCJ850k</td>
+    </tr>
+    <tr>
+        <td>Pedro</td>
+        <td>Díaz</td>
+        <td>Pérez</td>
+        <td>Contador</td>
+        <td>5</td>
+        <td>12348</td>
+        <td>ksh44S</td>
+    </tr>
+    <tr>
+        <td>Ana</td>
+        <td>Castro</td>
+        <td>López</td>
+        <td>Analista</td>
+        <td>1</td>
+        <td>12349</td>
+        <td>BAU8s5w</td>
+    </tr>
+</table>
+    </table>
+
+    <div id="botones">
+        <img src="/image/crear.png" alt="Modificar" style="width: 120px; height: 40px;" onclick="window.location.href='MODIFICAR.html'"><br>
+        <img src="/image/guardar.png" alt="Guardar" style="width: 120px; height: 40px;" onclick="window.location.href='GUARDAR.html'"><br>
+        <img src="/image/eliminar.png" alt="Eliminar" style="width: 120px; height: 40px;"  onclick="window.location.href='ELIMINAR.html'"><br>
+        <img src="/image/cancelar.png" alt="Cancelar" style="width: 120px; height: 40px;" onclick="window.location.href='CANCELAR.html'"><br>
+    </div>
+</div>
+
+</body>
+</html>

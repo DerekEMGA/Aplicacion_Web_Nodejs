@@ -30,6 +30,7 @@ app.use(morgan('dev'));
 app.use("/", loginRoutes)
 app.use("/personal", personalRoutes)
 app.use("/administrador", administradorRoutes)
+app.use("administrador/agregarPersonal",administradorRoutes)
 app.use("/docente", docenteRoutes)
 app.use("/alumno", alumnoRoutes)
 

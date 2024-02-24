@@ -1,3 +1,4 @@
+const { default: swal } = require('sweetalert');
 const loginQuery = require('../queries/loginQuery');  
 const loginQueryAdministrador=require('../queries/loginQueryAdministrador')
 
@@ -28,7 +29,7 @@ const login= (req, res) => {
           res.redirect('/administrador');
         }else{ loginQuery(matricula, contrasena, tipo,(error, result) => {
           if (error) {
-            console.error('Error en la consulta:', error);
+            console.error('Error en la consulta LOGIN QUERY:', error);
             res.status(500).send('Error en la consulta');
             return;
           }
@@ -58,7 +59,7 @@ const login= (req, res) => {
           // Si no es "SuperAdmin", verifica con loginQuery
           loginQuery(matricula, contrasena, tipo,(error, result) => {
             if (error) {
-              console.error('Error en la consulta:', error);
+              console.error('Error en la consulta LOGINQUERY 2:', error);
               res.status(500).send('Error en la consulta');
               return;
             }
@@ -85,13 +86,15 @@ const login= (req, res) => {
           });
         }
       } else {
-        console.error('Error en la consulta de Administrador:', error);
-        res.status(500).send('Error en la consulta');
+        console.error('Error en la consulta de Administrador GENERAL:', error);
+        res.status(500).json({ error:''});
+
       }
-    });
+    })
   }
 
 module.exports={
     mostrarLogin,
     login
 }
+
