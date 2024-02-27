@@ -6,12 +6,6 @@ function setBotonSeleccionado(boton) {
 }
 
 
-function closeAlert() {
-  document.getElementById("overlay").style.display = "none";
-  document.getElementById("customAlert").style.display = "none";
-}
-
-
 
 
 document.getElementById('login').addEventListener('submit', async function(event) {
