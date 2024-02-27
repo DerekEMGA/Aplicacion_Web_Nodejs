@@ -6,7 +6,7 @@ const config = {
   host:'127.0.0.1',
     user:'root',
     password:'',
-    port:3000,
+    port:3306,
     database:'dbacademico',
 };
 const connection = mysql.createConnection(config);

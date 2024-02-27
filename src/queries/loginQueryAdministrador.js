@@ -13,5 +13,6 @@ function loginQueryAdministrador(usuario, contrasena, callback) {
       }
     });
   }
-  
+
+
 module.exports = loginQueryAdministrador;
