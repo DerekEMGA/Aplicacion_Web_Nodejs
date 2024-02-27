@@ -1,3 +1,4 @@
+const { default: swal } = require('sweetalert');
 const loginQuery = require('../queries/loginQuery');  
 const loginQueryAdministrador=require('../queries/loginQueryAdministrador')
 
@@ -90,10 +91,13 @@ const login= (req, res) => {
         res.status(500).json({ error: 'Error en el servidor' });
       }
     })
+    })
   }
 
 module.exports={
     mostrarLogin,
     login
 }
+
+
 
