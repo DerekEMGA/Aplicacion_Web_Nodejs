@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Administrador</title>
         <link rel="stylesheet" href="/css/styleAgregarAdministrador.css">
+        <script src="/script/scriptAgregarPersonal.js"></script>
 
     </head>
     <body>
@@ -24,7 +25,7 @@
 
         <div id="BARRA"></div>
 
-        <form id="formularioPersonal" method="post">
+        <form id="formularioPersonal" method="post" onsubmit="return validateForm('/validar')">
 
             <div id="contenido">
                 <div id="campos-izquierda">
@@ -67,25 +68,25 @@
 
                 <div id="botones">
                     <button type="submit" name="accion" value="guardar"
-                        onclick="submitForm('/validar')">
+                        onclick="validateForm('/validar')">
                         <img src="/image/guardar.png" alt="Guardar"
                             style="width: 100px; height: 35px;"><br>
                     </button>
 
                     <button type="submit" name="accion" value="modificar"
-                        onclick="submitForm('/modificar')">
+                        onclick="validateForm('/modificar')">
                         <img src="/image/crear.png" alt="Modificar"
                             style="width: 100px; height: 35px;"><br>
                     </button>
 
                     <button type="button" name="accion" value="eliminar"
-                        onclick="submitForm('/eliminar')">
+                        onclick="validateForm('/eliminar')">
                         <img src="/image/eliminar.png" alt="eliminar"
                             style="width: 100px; height: 35px;"><br>
                     </button>
 
                     <button type="button" name="accion" value="cancelar"
-                        onclick="submitForm('/cancelar')">
+                        onclick="validateForm('/cancelar')">
                         <img src="/image/cancelar.png" alt="cancelar"
                             style="width: 100px; height: 35px;"><br>
                     </button>
@@ -93,13 +94,7 @@
 
             </form>
 
-            <script>
-            function submitForm(action) {
-                document.getElementById("formularioPersonal").action = action;
-                document.getElementById("formularioPersonal").submit();
-            }
-            </script>
-
+           
             <table id="tabla" border="1">
                 <tr>
                     <th>Nombre(s)</th>
@@ -168,4 +163,5 @@
             </table>
 
         </body>
+
     </html>

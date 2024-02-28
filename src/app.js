@@ -32,7 +32,6 @@ app.use("/", loginRoutes)
 app.use("/personal", personalRoutes)
 app.use("/administrador", administradorRoutes)
 app.use("administrador/agregarPersonal",administradorRoutes)
-app.use("administrador/agregarPersonal",administradorRoutes)
 app.use("/docente", docenteRoutes)
 app.use("/alumno", alumnoRoutes)
 
@@ -75,8 +74,15 @@ app.post("/validar", function(req,res){
         if(error){
             throw error;
         }else{
-            console.log("Datos alamcenados correctamente");
-            res.send('Registro insertado correctamente');
+            connection.query(registrar, function(error){
+                if(error){
+                    throw error;
+                } else {
+                    console.log("Datos almacenados correctamente");
+                    // Redirigir con un mensaje de éxito
+                    res.redirect('/administrador/agregarPersonal?mensaje=Datos%20almacenados%20correctamente');
+                }
+            });
         }
         
     });
