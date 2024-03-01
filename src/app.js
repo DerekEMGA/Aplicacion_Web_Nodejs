@@ -35,6 +35,10 @@ app.use("administrador/agregarPersonal",administradorRoutes)
 app.use("/docente", docenteRoutes)
 app.use("/alumno", alumnoRoutes)
 
+//CRUD routes
+app.get("/administrador/modificarPersonal", function(req, res){res.redirect('/administrador/agregarPersonal');});
+app.get("/administrador/eliminarPersonal", function(req, res){res.redirect('/administrador/agregarPersonal');});
+
 //Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -43,8 +47,8 @@ app.listen(app.get('port'), () => {
 });
 
 
-//aqui se insertan los registros en la tabla personal 
-app.post("/validar", function(req,res){
+//aquí se insertan los registros en la tabla personal y usuario
+app.post("/insertar", function(req, res){
     const datosPersonal = req.body;
 
     let nombre = datosPersonal.nombre;
@@ -52,44 +56,142 @@ app.post("/validar", function(req,res){
     let apellidoMaterno = datosPersonal.apellidoMaterno;
     let antiguedad = datosPersonal.antiguedad;
     let clave = datosPersonal.clave;
+    let contrasena = datosPersonal.contrasena;
 
-/* por si no s epueden repetir claves xD
-    let buscar = "SELECT * FROM personal WHERE clave = "+ clave +" ";
+    // Comenzar una transacción
+    connection.beginTransaction(function(err) {
+        if (err) { throw err; }
 
-    connection.query(buscar, function(error, row){
-        if(error){
-            throw error;
-        }else{
-            if(row.length>0){
-                console.log("No se puede registrar un personal con la misma clave");
-            }else{
+        // Insertar en la tabla personal
+        connection.query("INSERT INTO personal(nombre, apellido_paterno, apellido_materno, ocupacion, antiguedad, clave) VALUES (?, ?, ?, ?, ?, ?)",
+            [nombre, apellidoPaterno, apellidoMaterno, 'personal', antiguedad, clave],
+            function(error, results, fields) {
+                if (error) {
+                    return connection.rollback(function() {
+                        throw error;
+                    });
+                }
 
-            }
-        }
-    });*/
+                // Insertar en la tabla usuario
+                connection.query("INSERT INTO usuario(matricula_clave, contrasena, tipo) VALUES (?, ?, 'personal')",
+                    [clave, contrasena],
+                    function(error, results, fields) {
+                        if (error) {
+                            return connection.rollback(function() {
+                                throw error;
+                            });
+                        }
 
-    let registrar = "INSERT INTO personal(nombre, apellido_paterno, apellido_materno, ocupacion, antiguedad, clave) VALUES ('"+ nombre +"', '"+ apellidoPaterno +"', '"+ apellidoMaterno +"', 'personal', '"+ antiguedad +"', '"+ clave +"')";
-
-    connection.query(registrar, function(error){
-        if(error){
-            throw error;
-        }else{
-            console.log("Datos alamcenados correctamente");
-            res.send('Registro insertado correctamente');
-        }
-        
+                        // Commit si todo está bien
+                        connection.commit(function(err) {
+                            if (err) {
+                                return connection.rollback(function() {
+                                    throw err;
+                                });
+                            }
+                            console.log('Datos almacenados correctamente');
+                            res.redirect('/administrador/agregarPersonal?mensaje=Datos%20almacenados%20correctamente');
+                        });
+                    });
+            });
     });
 });
 
-// Consulta para reiniciar el autoincremento
-const resetAutoIncrementQuery = "ALTER TABLE personal AUTO_INCREMENT = 1";
+/*AUN NO FUNCIONA BIEN
+// Aqui se modifica un registro de personal y usuario
+app.post("/modificar", function(req, res){
+    const datosPersonal = req.body;
 
-// Ejecutar la consulta
-connection.query(resetAutoIncrementQuery, (error, results, fields) => {
-  if (error) {
-    console.error('Error al reiniciar el autoincremento:', error);
-  } else {
-    console.log('Autoincremento reiniciado correctamente');
-  }
-});
+    let idPersonal = datosPersonal.idPersonal;
+    let nombre = datosPersonal.nombre;
+    let apellidoPaterno = datosPersonal.apellidoPaterno;
+    let apellidoMaterno = datosPersonal.apellidoMaterno;
+    let antiguedad = datosPersonal.antiguedad;
+    let clave = datosPersonal.clave;
+    let contrasena = datosPersonal.contrasena;
+
+    // Comenzar una transacción
+    connection.beginTransaction(function(err) {
+        if (err) { throw err; }
+
+        // Modificar el registro en la tabla personal
+        connection.query("UPDATE personal SET nombre = ?, apellido_paterno = ?, apellido_materno = ?, antiguedad = ?, clave = ? WHERE id = ?",
+            [nombre, apellidoPaterno, apellidoMaterno, antiguedad, clave, idPersonal],
+            function(error, results, fields) {
+                if (error) {
+                    return connection.rollback(function() {
+                        throw error;
+                    });
+                }
+
+                // Modificar el registro en la tabla usuario
+                connection.query("UPDATE usuario SET matricula_clave = ?, contrasena = ? WHERE matricula_clave = ?",
+                    [clave, contrasena, clave],
+                    function(error, results, fields) {
+                        if (error) {
+                            return connection.rollback(function() {
+                                throw error;
+                            });
+                        }
+
+                        // Commit si todo está bien
+                        connection.commit(function(err) {
+                            if (err) {
+                                return connection.rollback(function() {
+                                    throw err;
+                                });
+                            }
+                            console.log('Registro de personal modificado correctamente');
+                            res.redirect('/administrador/modificarPersonal?mensaje=Registro%20modificado%20correctamente');
+                        });
+                    });
+            });
+    });
+});*/
+
+
+    // Aqui se elimina un registro de personal y usuario
+    app.post("/eliminar", function(req, res){
+        const clave = req.body.clave;
+    
+        // Comenzar una transacción
+        connection.beginTransaction(function(err) {
+            if (err) { throw err; }
+    
+            // Eliminar el registro de la tabla usuario (si existe)
+            connection.query("DELETE FROM usuario WHERE matricula_clave = ?",
+                [clave],
+                function(error, results, fields) {
+                    if (error) {
+                        return connection.rollback(function() {
+                            throw error;
+                        });
+                    }
+    
+                    // Eliminar el registro de la tabla personal
+                    connection.query("DELETE FROM personal WHERE clave = ?",
+                        [clave],
+                        function(error, results, fields) {
+                            if (error) {
+                                return connection.rollback(function() {
+                                    throw error;
+                                });
+                            }
+    
+                            // Commit si todo está bien
+                            connection.commit(function(err) {
+                                if (err) {
+                                    return connection.rollback(function() {
+                                        throw err;
+                                    });
+                                }
+                                console.log('Registro de personal eliminado correctamente');
+                                res.redirect('/administrador/eliminarPersonal?mensaje=Registro%20eliminado%20correctamente');
+                            });
+                        });
+                });
+        });
+    });
+
+
 
