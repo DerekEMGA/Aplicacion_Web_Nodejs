@@ -28,7 +28,7 @@ const login= (req, res) => {
         if (tipoQuery === 'SuperAdmin') 
         {
           res.status(200).send('/administrador'); // Enviar solo la ruta
-
+          console.log('AQUI ENTRO')
         }
         else
         { 
