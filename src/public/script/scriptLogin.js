@@ -77,4 +77,3 @@ function closeAlert() {
   document.getElementById("customAlert").style.display = "none";
 }
 
-  

@@ -6,7 +6,6 @@
         <title>Administrador</title>
         <link rel="stylesheet" href="/css/styleAgregarAdministrador.css">
         <script src="/script/scriptAgregarPersonal.js"></script>
-
     </head>
     <body>
         <div id="franjaSuperior"></div>
@@ -25,9 +24,11 @@
 
         <div id="BARRA"></div>
 
-        <form id="formularioPersonal" method="post" onsubmit="return validateForm('/validar')">
+        <form id="formularioPersonal" method="post"
+            onsubmit="return validateForm('/insertar')">
 
             <div id="contenido">
+
                 <div id="campos-izquierda">
                     <div class="campo">
                         <label for="nombre">Nombre(s):</label>
@@ -57,44 +58,52 @@
                             placeholder="Ingrese datos">
                     </div>
                     <div class="campo">
-                        <label for="clave">Clave:</label>
-                        <input type="password" name="clave" id="clave"
+                        <label for="clave">Numero de Empleado:</label>
+                        <input type="text" name="clave" id="clave"
                             placeholder="Ingrese datos">
                     </div>
+                    <div class="campo">
+                        <label for="contrasena">Contraseña:</label>
+                        <input type="password" name="contrasena" id="contrasena"
+                            placeholder="********">
+                    </div>
                 </div>
-                <br><br>
-                <br><br>
-                <br>
+                <br><br><br><br><br><br>
 
                 <div id="botones">
-                    <button type="submit" name="accion" value="guardar"
-                        onclick="validateForm('/validar')">
-                        <img src="/image/guardar.png" alt="Guardar"
-                            style="width: 100px; height: 35px;"><br>
-                    </button>
+
+                    <br><div id="search-container">
+                        <input type="text" placeholder="Buscar..." maxlength="7" pattern="[0-9]*">
+                        
+                    </div><br>
 
                     <button type="submit" name="accion" value="modificar"
                         onclick="validateForm('/modificar')">
                         <img src="/image/crear.png" alt="Modificar"
-                            style="width: 100px; height: 35px;"><br>
+                            style="width: 90px; height: 30px;"><br>
+                    </button>
+
+                    <button type="submit" name="accion" value="guardar"
+                        onclick="validateForm('/insertar')">
+                        <img src="/image/guardar.png" alt="Guardar"
+                            style="width: 90px; height: 30px;"><br>
                     </button>
 
                     <button type="button" name="accion" value="eliminar"
                         onclick="validateForm('/eliminar')">
                         <img src="/image/eliminar.png" alt="eliminar"
-                            style="width: 100px; height: 35px;"><br>
+                            style="width: 90px; height: 30px;"><br>
                     </button>
 
                     <button type="button" name="accion" value="cancelar"
                         onclick="validateForm('/cancelar')">
                         <img src="/image/cancelar.png" alt="cancelar"
-                            style="width: 100px; height: 35px;"><br>
+                            style="width: 90px; height: 30px;"><br>
                     </button>
                 </div>
 
             </form>
 
-           
             <table id="tabla" border="1">
                 <tr>
                     <th>Nombre(s)</th>
@@ -159,9 +168,6 @@
                     <td>12349</td>
                     <td>BAU8s5w</td>
                 </tr>
-
             </table>
-
         </body>
-
     </html>

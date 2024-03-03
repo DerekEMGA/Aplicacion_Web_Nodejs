@@ -5,9 +5,10 @@ function validateForm(action) {
     var apellidoMaterno = document.getElementById("apellidoMaterno").value;
     var antiguedad = document.getElementById("antiguedad").value;
     var clave = document.getElementById("clave").value;
+    var contrasena = document.getElementById("clave").contrasena;
     
     // Check if any of the required fields is empty
-    if (nombre === "" || apellidoPaterno === "" || apellidoMaterno === "" || antiguedad === "" || clave === "") {
+    if (nombre === "" || apellidoPaterno === "" || apellidoMaterno === "" || antiguedad === "" || clave === "" || contrasena === "") {
         alert("Por favor, complete todos los campos antes de enviar el formulario.");
         return false; // Don't submit the form if validation fails
     }
@@ -33,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-fetch('/validar')
+fetch('/insertar')
   .then(response => {
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);

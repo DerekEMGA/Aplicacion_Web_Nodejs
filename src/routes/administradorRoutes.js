@@ -6,4 +6,5 @@ router.get('/',administradorControllers.mostrarAdminstrador)
 router.get('/agregarPersonal',administradorControllers.mostrarAgregarPersonal)
 router.get('/prueba',administradorControllers.mostrarprueba)
 
+
 module.exports=router
