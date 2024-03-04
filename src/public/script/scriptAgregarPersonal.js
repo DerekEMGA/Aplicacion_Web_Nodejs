@@ -45,7 +45,7 @@ function validateForm(action) {
     case "/buscar":
       // Validar que la clave no esté vacía
       if (clave === "") {
-        alert("Ingrese una clave antes de buscar.");
+        alert("Ingresa un numero de empleado antes de continuar.");
         document.preventDefault();
       } else {
         clearLocalStorage();
@@ -186,7 +186,7 @@ function validateNumeroEmpleado(event) {
 }
 
 function validateContrasena(event) {
-  const maxChars = 13;
+  const maxChars = 12;
   const inputValue = event.target.value;
 
   if (/\s/.test(inputValue)) {

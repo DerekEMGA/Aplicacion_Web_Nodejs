@@ -295,7 +295,7 @@ function buildTableHtml(results) {
 
 app.get('/administrador/agregarPersonal/tabla', function(req, res) {
     // Realiza la consulta para obtener los últimos 5 registros
-    connection.query('SELECT nombre,apellido_paterno,apellido_materno,ocupacion,antiguedad,clave FROM personal ORDER BY id ASC LIMIT 5', function(error, results, fields) {
+    connection.query('SELECT nombre,apellido_paterno,apellido_materno,ocupacion,antiguedad,clave FROM personal ORDER BY id DESC LIMIT 5', function(error, results, fields) {
         if (error) {
             console.error('Error en la consulta a la base de datos:', error);
             return res.status(500).send('Error en la consulta a la base de datos');

@@ -177,22 +177,18 @@ h1 {
 }
 
 #tabla {
-    margin-top: 200px;
-    margin-bottom: 40px;
-    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    height: 100px; 
+    background-color: lightblue; 
 }
 
-#tabla th {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    background-color: #162030;
-    color: #FFFFFF;
-}
 
-#tabla tr {
-    background-color: #E9F0FB;
-}
+
+
 
 #botones {
     position: absolute;
