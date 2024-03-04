@@ -25,8 +25,7 @@
 
         <div id="BARRA"></div>
 
-        <form id="formularioPersonal" method="post"
-            onsubmit="return validateForm('/insertar')">
+        <form id="formularioPersonal" method="post" onsubmit="return validateForm('/insertar')" onsubmit="return validateForm2('/eliminar')" onsubmit="return validateForm3('/modificar')" >
 
             <div id="contenido">
 
@@ -74,24 +73,24 @@
                 <div id="botones">
 
                     <br><div id="search-container">
-                        <input type="text" placeholder="Buscar..." maxlength="7" pattern="[0-9]*">
+                        <input type="number" placeholder="Buscar..." maxlength="7" pattern="[0-9]*" name="search" value="search">
                         
                     </div><br>
 
                     <button type="submit" name="accion" value="modificar"
-                        onclick="validateForm('/modificar')">
-                        <img src="/image/crear.png" alt="Modificar"
+                        onclick="validateForm3('/modificar')">
+                        <img src="/image/crear.png" alt="modificar"
                             style="width: 90px; height: 30px;"><br>
                     </button>
 
                     <button type="submit" name="accion" value="guardar"
                         onclick="validateForm('/insertar')">
-                        <img src="/image/guardar.png" alt="Guardar"
+                        <img src="/image/guardar.png" alt="guardar"
                             style="width: 90px; height: 30px;"><br>
                     </button>
 
                     <button type="button" name="accion" value="eliminar"
-                        onclick="validateForm('/eliminar')">
+                        onclick="validateForm2('/eliminar')">
                         <img src="/image/eliminar.png" alt="eliminar"
                             style="width: 90px; height: 30px;"><br>
                     </button>
@@ -104,6 +103,7 @@
                 </div>
 
             </form>
+
 
             <table id="tabla" border="1">
                 <tr>

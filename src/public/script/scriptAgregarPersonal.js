@@ -5,7 +5,7 @@ function validateForm(action) {
     var apellidoMaterno = document.getElementById("apellidoMaterno").value;
     var antiguedad = document.getElementById("antiguedad").value;
     var clave = document.getElementById("clave").value;
-    var contrasena = document.getElementById("clave").contrasena;
+    var contrasena = document.getElementById("contrasena").contrasena;
     
     // Check if any of the required fields is empty
     if (nombre === "" || apellidoPaterno === "" || apellidoMaterno === "" || antiguedad === "" || clave === "" || contrasena === "") {
@@ -16,6 +16,34 @@ function validateForm(action) {
     document.getElementById("formularioPersonal").action = action;
     document.getElementById("formularioPersonal").submit();
     return true;
+}
+
+function validateForm2(action) {
+    var clave = document.getElementById("clave").value;
+  
+  // Check if any of the required fields is empty
+  if (clave === "") {
+      alert("Por favor, ingrese una clave disponible para eliminarla.");
+      return false; // Don't submit the form if validation fails
+  }
+  // If validation passes, set the form action and submit
+  document.getElementById("formularioPersonal").action = action;
+  document.getElementById("formularioPersonal").submit();
+  return true;
+}
+
+function validateForm3(action) {
+  var clave = document.getElementById("clave").value;
+  
+  // Check if any of the required fields is empty
+  if (clave === "") {
+      alert("Por favor, ingrese una clave disponible para modificarla.");
+      return false; // Don't submit the form if validation fails
+  }
+  // If validation passes, set the form action and submit
+  document.getElementById("formularioPersonal").action = action;
+  document.getElementById("formularioPersonal").submit();
+  return true;
 }
 
 
