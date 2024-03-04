@@ -46,9 +46,8 @@ app.listen(app.get('port'), () => {
     console.log('server on port 3000');
 });
 
-
-//aquí se insertan los registros en la tabla personal y usuario
-app.post("/insertar", function(req, res){
+// Aquí se insertan los registros en la tabla personal y usuario
+app.post("/insertar", function(req, res) {
     const datosPersonal = req.body;
 
     let nombre = datosPersonal.nombre;
@@ -58,23 +57,26 @@ app.post("/insertar", function(req, res){
     let clave = datosPersonal.clave;
     let contrasena = datosPersonal.contrasena;
 
-    // Comenzar una transacción
-    connection.beginTransaction(function(err) {
-        if (err) { throw err; }
+    // Verificar si el usuario ya existe
+    connection.query("SELECT * FROM usuario WHERE matricula_clave = ?", [clave], function(error, results, fields) {
+        if (error) {
+            throw error;
+        }
 
-        // Insertar en la tabla personal
-        connection.query("INSERT INTO personal(nombre, apellido_paterno, apellido_materno, ocupacion, antiguedad, clave) VALUES (?, ?, ?, ?, ?, ?)",
-            [nombre, apellidoPaterno, apellidoMaterno, 'personal', antiguedad, clave],
-            function(error, results, fields) {
-                if (error) {
-                    return connection.rollback(function() {
-                        throw error;
-                    });
+        // Si hay resultados, significa que el usuario ya existe
+        if (results.length > 0) {
+            console.log('Usuario ya existe');
+            res.redirect('/administrador/agregarPersonal?mensaje=El%20Personal%20ya%20existe');
+        } else {
+            // Comenzar una transacción
+            connection.beginTransaction(function(err) {
+                if (err) {
+                    throw err;
                 }
 
-                // Insertar en la tabla usuario
-                connection.query("INSERT INTO usuario(matricula_clave, contrasena, tipo) VALUES (?, ?, 'personal')",
-                    [clave, contrasena],
+                // Insertar en la tabla personal
+                connection.query("INSERT INTO personal(nombre, apellido_paterno, apellido_materno, ocupacion, antiguedad, clave) VALUES (?, ?, ?, ?, ?, ?)",
+                    [nombre, apellidoPaterno, apellidoMaterno, 'personal', antiguedad, clave],
                     function(error, results, fields) {
                         if (error) {
                             return connection.rollback(function() {
@@ -82,18 +84,30 @@ app.post("/insertar", function(req, res){
                             });
                         }
 
-                        // Commit si todo está bien
-                        connection.commit(function(err) {
-                            if (err) {
-                                return connection.rollback(function() {
-                                    throw err;
+                        // Insertar en la tabla usuario
+                        connection.query("INSERT INTO usuario(matricula_clave, contrasena, tipo) VALUES (?, ?, 'personal')",
+                            [clave, contrasena],
+                            function(error, results, fields) {
+                                if (error) {
+                                    return connection.rollback(function() {
+                                        throw error;
+                                    });
+                                }
+
+                                // Commit si todo está bien
+                                connection.commit(function(err) {
+                                    if (err) {
+                                        return connection.rollback(function() {
+                                            throw err;
+                                        });
+                                    }
+                                    console.log('Datos almacenados correctamente');
+                                    res.redirect('/administrador/agregarPersonal?mensaje=Datos%20almacenados%20correctamente');
                                 });
-                            }
-                            console.log('Datos almacenados correctamente');
-                            res.redirect('/administrador/agregarPersonal?mensaje=Datos%20almacenados%20correctamente');
-                        });
+                            });
                     });
             });
+        }
     });
 });
 
@@ -150,48 +164,54 @@ app.post("/modificar", function(req, res){
 });*/
 
 
-    // Aqui se elimina un registro de personal y usuario
-    app.post("/eliminar", function(req, res){
-        const clave = req.body.clave;
-    
-        // Comenzar una transacción
-        connection.beginTransaction(function(err) {
-            if (err) { throw err; }
-    
-            // Eliminar el registro de la tabla usuario (si existe)
-            connection.query("DELETE FROM usuario WHERE matricula_clave = ?",
-                [clave],
-                function(error, results, fields) {
-                    if (error) {
-                        return connection.rollback(function() {
-                            throw error;
-                        });
-                    }
-    
-                    // Eliminar el registro de la tabla personal
-                    connection.query("DELETE FROM personal WHERE clave = ?",
-                        [clave],
-                        function(error, results, fields) {
-                            if (error) {
+    // Aquí se elimina un registro de personal y usuario
+app.post("/eliminar", function(req, res){
+    const clave = req.body.clave;
+    console.log(`Recibiendo solicitud para eliminar el usuario con clave: ${clave}`);
+
+    // Comenzar una transacción
+    connection.beginTransaction(function(err) {
+        if (err) { throw err; }
+
+        // Eliminar el registro de la tabla usuario (si existe)
+        connection.query("DELETE FROM usuario WHERE matricula_clave = ?",
+            [clave],
+            function(error, results, fields) {
+                if (error) {
+                    return connection.rollback(function() {
+                        throw error;
+                    });
+                }
+
+                if (results.affectedRows === 0) {
+                    // El usuario no existe, enviar una alerta
+                    res.redirect('/administrador/agregarPersonal?mensaje=Usuario%20no%20encontrado');
+                    return;
+                }
+
+                // Eliminar el registro de la tabla personal
+                connection.query("DELETE FROM personal WHERE clave = ?",
+                    [clave],
+                    function(error, results, fields) {
+                        if (error) {
+                            return connection.rollback(function() {
+                                throw error;
+                            });
+                        }
+
+                        // Commit si todo está bien
+                        connection.commit(function(err) {
+                            if (err) {
                                 return connection.rollback(function() {
-                                    throw error;
+                                    throw err;
                                 });
                             }
-    
-                            // Commit si todo está bien
-                            connection.commit(function(err) {
-                                if (err) {
-                                    return connection.rollback(function() {
-                                        throw err;
-                                    });
-                                }
-                                console.log('Registro de personal eliminado correctamente');
-                                res.redirect('/administrador/eliminarPersonal?mensaje=Registro%20eliminado%20correctamente');
-                            });
+                            console.log('Registro de personal eliminado correctamente');
+                            res.redirect('/administrador/agregarPersonal?mensaje=Usuario%20eliminado%20correctamente');
                         });
-                });
-        });
+                    });
+            });
     });
-
+});
 
 

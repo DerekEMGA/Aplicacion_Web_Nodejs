@@ -25,25 +25,25 @@
         <div id="BARRA"></div>
 
         <form id="formularioPersonal" method="post"
-            onsubmit="return validateForm('/insertar')">
+            onsubmit="return validateForm(action)">
 
             <div id="contenido">
 
                 <div id="campos-izquierda">
                     <div class="campo">
                         <label for="nombre">Nombre(s):</label>
-                        <input type="text" name="nombre" id="nombre"
-                            placeholder="Ingrese datos">
+                        <input type="text" name="nombre" id="nombre" maxlength="30"
+                            placeholder="Ingrese datos"  onkeydown="validateInput(event)" required>
                     </div>
                     <div class="campo">
                         <label for="apellidoPaterno">Apellido Paterno:</label>
-                        <input type="text" name="apellidoPaterno"
-                            id="apellidoPaterno" placeholder="Ingrese datos">
+                        <input type="text" name="apellidoPaterno" maxlength="30"
+                            id="apellidoPaterno" placeholder="Ingrese datos" onkeydown="validateInput(event)" required>
                     </div>
                     <div class="campo">
                         <label for="apellidoMaterno">Apellido Materno:</label>
-                        <input type="text" name="apellidoMaterno"
-                            id="apellidoMaterno" placeholder="Ingrese datos">
+                        <input type="text" name="apellidoMaterno" maxlength="30"
+                            id="apellidoMaterno" placeholder="Ingrese dato " onkeydown="validateInput(event)" required>
                     </div>
                     <div class="campo">
                         <label for="ocupacion">Ocupación:</label>
@@ -54,17 +54,17 @@
                 <div id="campos-derecha">
                     <div class="campo">
                         <label for="antiguedad">Antigüedad:</label>
-                        <input type="number" name="antiguedad" id="antiguedad"
+                        <input type="number" name="antiguedad" id="antiguedad" oninput="validateAntiguedad(event)" required
                             placeholder="Ingrese datos">
                     </div>
                     <div class="campo">
                         <label for="clave">Numero de Empleado:</label>
-                        <input type="text" name="clave" id="clave"
+                        <input type="text" name="clave" id="clave" oninput="validateNumeroEmpleado(event)" required
                             placeholder="Ingrese datos">
                     </div>
                     <div class="campo">
                         <label for="contrasena">Contraseña:</label>
-                        <input type="password" name="contrasena" id="contrasena"
+                        <input type="password" name="contrasena" id="contrasena" oninput="validateContrasena(event)" required
                             placeholder="********">
                     </div>
                 </div>
@@ -72,20 +72,17 @@
 
                 <div id="botones">
 
-                    <br><div id="search-container">
-                        <input type="text" placeholder="Buscar..." maxlength="7" pattern="[0-9]*">
-                        
-                    </div><br>
+                    <br><br>
 
                     <button type="submit" name="accion" value="modificar"
                         onclick="validateForm('/modificar')">
-                        <img src="/image/crear.png" alt="Modificar"
+                        <img src="/image/guardar.png" alt="Modificar"
                             style="width: 90px; height: 30px;"><br>
                     </button>
 
                     <button type="submit" name="accion" value="guardar"
                         onclick="validateForm('/insertar')">
-                        <img src="/image/guardar.png" alt="Guardar"
+                        <img src="/image/crear.png" alt="Guardar"
                             style="width: 90px; height: 30px;"><br>
                     </button>
 
@@ -96,7 +93,7 @@
                     </button>
 
                     <button type="button" name="accion" value="cancelar"
-                        onclick="validateForm('/cancelar')">
+                    onclick="cancelarFormulario()">
                         <img src="/image/cancelar.png" alt="cancelar"
                             style="width: 90px; height: 30px;"><br>
                     </button>
