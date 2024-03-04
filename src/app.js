@@ -127,7 +127,7 @@ app.post("/modificar", function(req, res) {
 
     // Check if any field is empty
     if (!nombre || !apellidoPaterno || !apellidoMaterno || !antiguedad || !clave  || !contrasena) {
-        return res.redirect('/administrador/agregarPersonal?mensaje=Todos%20los%20campos%20son%20obligatorios');
+        return res.redirect('/administrador/agregarPersonal?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario.');
     }
 
     // Check if the user with the given clave already exists
@@ -174,7 +174,7 @@ app.post("/modificar", function(req, res) {
                                     });
                                 }
                                 console.log('Registro de personal modificado correctamente');
-                                res.redirect('/administrador/agregarPersonal?mensaje=Registro%20modificado%20correctamente');
+                                res.redirect('/administrador/agregarPersonal?mensaje=Personal%20modificado%20correctamente');
                             });
                         });
                 });
@@ -265,5 +265,46 @@ app.post("/buscar", function(req, res){
 
         // Redirigir al usuario con los datos en la URL
         res.redirect(redirectURL);
+    });
+});
+
+
+function buildTableHtml(results) {
+    // Construye la tabla HTML aquí
+    let tableHtml = '<table class="tabla" border="1">';
+    
+    // Construye la fila de encabezados utilizando los nombres de los campos
+    tableHtml += '<tr>';
+    for (const field in results[0]) {
+        tableHtml += `<th>${field}</th>`;
+    }
+    tableHtml += '</tr>';
+
+    // Construye las filas de datos
+    for (const result of results) {
+        tableHtml += '<tr>';
+        for (const field in result) {
+            tableHtml += `<td>${result[field]}</td>`;
+        }
+        tableHtml += '</tr>';
+    }
+
+    tableHtml += '</table>';
+    return tableHtml;
+}
+
+app.get('/administrador/agregarPersonal/tabla', function(req, res) {
+    // Realiza la consulta para obtener los últimos 5 registros
+    connection.query('SELECT nombre,apellido_paterno,apellido_materno,ocupacion,antiguedad,clave FROM personal ORDER BY id ASC LIMIT 5', function(error, results, fields) {
+        if (error) {
+            console.error('Error en la consulta a la base de datos:', error);
+            return res.status(500).send('Error en la consulta a la base de datos');
+        }
+
+        // Construye la tabla HTML
+        const tableHtml = buildTableHtml(results);
+
+        // Envía la tabla HTML como respuesta al cliente
+        res.status(200).send(tableHtml);
     });
 });

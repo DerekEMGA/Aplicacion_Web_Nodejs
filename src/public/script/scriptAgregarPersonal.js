@@ -91,7 +91,6 @@ function clearLocalStorage() {
 
 
 
-
 document.addEventListener('DOMContentLoaded', function() {
   console.log('Script ejecutado en la carga de la página.'); // Registro para verificar la ejecución
   const serverMessage = obtenerParametroConsulta('mensaje');
@@ -101,6 +100,23 @@ document.addEventListener('DOMContentLoaded', function() {
     alert(serverMessage);
     sessionStorage.setItem('messageShown', 'true');
   }
+
+  fetch('/administrador/agregarPersonal/tabla')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Error al obtener la tabla');
+    }
+    return response.text();
+  })
+  .then(html => {
+    // Inserta la tabla HTML en el contenedor
+    document.getElementById('tabla').innerHTML = html;
+  })
+  .catch(error => {
+    console.error('Error al obtener la tabla:', error);
+    // Puedes mostrar un mensaje al usuario indicando el error
+  });
+
 });
 
 function obtenerParametroConsulta(nombre) {
