@@ -111,8 +111,9 @@ app.post("/insertar", function(req, res) {
     });
 });
 
-// Aqui se modifica un registro de personal y usuario
-app.post("/modificar", function(req, res){
+
+
+app.post("/modificar", function(req, res) {
     console.log(req.body);
     const datosPersonal = req.body;
 
@@ -120,47 +121,68 @@ app.post("/modificar", function(req, res){
     let apellidoPaterno = datosPersonal.apellidoPaterno;
     let apellidoMaterno = datosPersonal.apellidoMaterno;
     let antiguedad = datosPersonal.antiguedad;
-    let clave = datosPersonal.clave; // Usamos la clave como referencia
+    const clave = datosPersonal.clave; // Usamos la clave como referencia
+    let nuevaClave = datosPersonal.clave; // Nueva clave a modificar (puede ser igual a clave)
     let contrasena = datosPersonal.contrasena;
 
-    // Comenzar una transacción
-    connection.beginTransaction(function(err) {
-        if (err) { throw err; }
+    // Check if any field is empty
+    if (!nombre || !apellidoPaterno || !apellidoMaterno || !antiguedad || !clave  || !contrasena) {
+        return res.redirect('/administrador/agregarPersonal?mensaje=Todos%20los%20campos%20son%20obligatorios');
+    }
 
-        // Modificar el registro en la tabla personal
-        connection.query("UPDATE personal SET nombre = ?, apellido_paterno = ?, apellido_materno = ?, antiguedad = ? WHERE clave = ?",
-            [nombre, apellidoPaterno, apellidoMaterno, antiguedad, clave],
-            function(error, results, fields) {
-                if (error) {
-                    return connection.rollback(function() {
-                        throw error;
-                    });
-                }
+    // Check if the user with the given clave already exists
+    connection.query("SELECT * FROM personal WHERE clave = ?", [clave], function(error, results, fields) {
+        if (error) {
+            console.error('Error en la consulta a la base de datos:', error);
+            return res.redirect('/administrador/agregarPersonal?mensaje=Error%20en%20la%20consulta%20a%20la%20base%20de%20datos');
+        }
 
-                // Modificar el registro en la tabla usuario
-                connection.query("UPDATE usuario SET contrasena = ? WHERE matricula_clave = ?",
-                    [contrasena, clave], // Utilizamos la clave como referencia
-                    function(error, results, fields) {
-                        if (error) {
-                            return connection.rollback(function() {
-                                throw error;
-                            });
-                        }
+        // Check for a collision (two records having the same employee number)
+        if (results.length > 1) {
+            return res.redirect('/administrador/agregarPersonal?mensaje=Colisión:%20El%20número%20de%20empleado%20ya%20existe%20para%20otro%20registro');
+        }
 
-                        // Commit si todo está bien
-                        connection.commit(function(err) {
-                            if (err) {
+        // Continue with the update code
+        connection.beginTransaction(function(err) {
+            if (err) { throw err; }
+
+            // Modificar el registro en la tabla personal
+            connection.query("UPDATE personal SET nombre = ?, apellido_paterno = ?, apellido_materno = ?, antiguedad = ? WHERE clave = ?",
+                [nombre, apellidoPaterno, apellidoMaterno, antiguedad, clave],
+                function(error, results, fields) {
+                    if (error) {
+                        return connection.rollback(function() {
+                            throw error;
+                        });
+                    }
+
+                    // Modificar el registro en la tabla usuario
+                    connection.query("UPDATE usuario SET contrasena = ? WHERE matricula_clave = ?",
+                        [ contrasena, clave], // Utilizamos la clave como referencia
+                        function(error, results, fields) {
+                            if (error) {
                                 return connection.rollback(function() {
-                                    throw err;
+                                    throw error;
                                 });
                             }
-                            console.log('Registro de personal modificado correctamente');
-                            res.redirect('/administrador/modificarPersonal?mensaje=Registro%20modificado%20correctamente');
+
+                            // Commit si todo está bien
+                            connection.commit(function(err) {
+                                if (err) {
+                                    return connection.rollback(function() {
+                                        throw err;
+                                    });
+                                }
+                                console.log('Registro de personal modificado correctamente');
+                                res.redirect('/administrador/agregarPersonal?mensaje=Registro%20modificado%20correctamente');
+                            });
                         });
-                    });
-            });
+                });
+        });
     });
 });
+
+
 
 
     // Aquí se elimina un registro de personal y usuario
@@ -213,4 +235,35 @@ app.post("/eliminar", function(req, res){
     });
 });
 
+app.post("/buscar", function(req, res){
+    const clave = req.body.clave;
+    console.log('Recibiendo solicitud para buscar el usuario con clave:');
+    console.log(clave);
 
+    // Realizar la consulta para obtener los datos del usuario
+    connection.query(`
+        SELECT personal.*, usuario.contrasena
+        FROM personal
+        LEFT JOIN usuario ON personal.clave = usuario.matricula_clave
+        WHERE personal.clave = ?
+    `,
+    [clave],
+    function(error, results, fields) {
+        if (error) {
+            console.error('Error en la consulta a la base de datos:', error);
+            return res.redirect('/administrador/agregarPersonal?mensaje=Error%20en%20la%20consulta%20a%20la%20base%20de%20datos');
+        }
+
+        // Comprobar si se encontraron resultados
+        if (results.length === 0) {
+            return res.redirect('/administrador/agregarPersonal?mensaje=Usuario%20no%20encontrado');
+        }
+
+        // Obtener datos del usuario y construir la URL de redireccionamiento
+        const usuario = results[0];
+        const redirectURL = `/administrador/agregarPersonal?nombre=${usuario.nombre}&apellidoPaterno=${usuario.apellido_paterno}&apellidoMaterno=${usuario.apellido_materno}&antiguedad=${usuario.antiguedad}&contrasena=${usuario.contrasena}&clave=${usuario.clave}`;
+
+        // Redirigir al usuario con los datos en la URL
+        res.redirect(redirectURL);
+    });
+});

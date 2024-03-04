@@ -70,9 +70,20 @@
                 </div>
                 <br><br><br><br><br><br>
 
+               
+                
                 <div id="botones">
 
                     <br><br>
+                   
+        
+                    <button type="submit" name="accion" value="buscar" class="boton-modificar"
+                    onclick="validateForm('/buscar')">
+                    <img src="/image/search.png" alt="Buscar"
+                        style="width: 15px; height: 30px;"><br>
+                </button>
+                    
+                <br>
 
                     <button type="submit" name="accion" value="modificar"
                         onclick="validateForm('/modificar')">
@@ -87,7 +98,7 @@
                     </button>
 
                     <button type="button" name="accion" value="eliminar"
-                        onclick="validateForm2('/eliminar')">
+                        onclick="validateForm('/eliminar')">
                         <img src="/image/eliminar.png" alt="eliminar"
                             style="width: 90px; height: 30px;"><br>
                     </button>
@@ -100,6 +111,8 @@
                 </div>
 
             </form>
+
+<br><br><br>
 
 
             <table id="tabla" border="1">

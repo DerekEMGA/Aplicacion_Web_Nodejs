@@ -36,9 +36,61 @@ function validateForm(action) {
 
             return true; // Evitar envío automático del formulario
   
-  
+              case '/modificar':
+                document.getElementById("formularioPersonal").action = action;
+                       document.getElementById("formularioPersonal").submit();
+                break;
+
+                case '/buscar':
+                  // Validar que la clave no esté vacía
+                  if (clave === "") {
+                      alert("Ingrese una clave antes de buscar.");
+                      document.preventDefault();
+                      } else {
+                        clearLocalStorage()
+                        document.getElementById("formularioPersonal").action = action;
+                        document.getElementById("formularioPersonal").submit();
+                
+                }
+                  break;
+              
+
+               
   }
 }
+
+window.addEventListener('load', function () {
+  const urlParams = new URLSearchParams(window.location.search);
+
+  const nombre = urlParams.get('nombre') || '';
+  const apellidoPaterno = urlParams.get('apellidoPaterno') || '';
+  const apellidoMaterno = urlParams.get('apellidoMaterno') || '';
+  const antiguedad = urlParams.get('antiguedad') || '';
+  const contrasena = urlParams.get('contrasena') || '';
+    const clave = urlParams.get('clave') || '';
+
+  document.getElementById('nombre').value = nombre;
+  document.getElementById('apellidoPaterno').value = apellidoPaterno;
+  document.getElementById('apellidoMaterno').value = apellidoMaterno;
+  document.getElementById('antiguedad').value = antiguedad;
+  document.getElementById('contrasena').value = contrasena;
+    document.getElementById('clave').value=clave;
+
+    window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+
+});
+
+     // Function to clear local storage
+function clearLocalStorage() {
+  localStorage.removeItem('nombre');
+  localStorage.removeItem('apellidoPaterno');
+  localStorage.removeItem('apellidoMaterno');
+  localStorage.removeItem('antiguedad');
+  localStorage.removeItem('contrasena');
+}
+
+
+
 
 document.addEventListener('DOMContentLoaded', function() {
   console.log('Script ejecutado en la carga de la página.'); // Registro para verificar la ejecución

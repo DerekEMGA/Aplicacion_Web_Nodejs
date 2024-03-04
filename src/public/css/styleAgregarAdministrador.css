@@ -142,3 +142,13 @@ h1 {
     color: #fff;
 }
 
+.boton-modificar {
+    position: absolute;
+    top: 8px; /* Ajusta según sea necesario */
+    right: 10px; /* Ajusta según sea necesario */
+    border: none;
+    background: none;
+    cursor: pointer;
+    outline: none;
+    padding: 15; /* Agrega padding para asegurarte de que el botón sea clickeable */
+  }
