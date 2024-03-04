@@ -111,17 +111,16 @@ app.post("/insertar", function(req, res) {
     });
 });
 
-/*AUN NO FUNCIONA BIEN
 // Aqui se modifica un registro de personal y usuario
 app.post("/modificar", function(req, res){
+    console.log(req.body);
     const datosPersonal = req.body;
 
-    let idPersonal = datosPersonal.idPersonal;
     let nombre = datosPersonal.nombre;
     let apellidoPaterno = datosPersonal.apellidoPaterno;
     let apellidoMaterno = datosPersonal.apellidoMaterno;
     let antiguedad = datosPersonal.antiguedad;
-    let clave = datosPersonal.clave;
+    let clave = datosPersonal.clave; // Usamos la clave como referencia
     let contrasena = datosPersonal.contrasena;
 
     // Comenzar una transacción
@@ -129,8 +128,8 @@ app.post("/modificar", function(req, res){
         if (err) { throw err; }
 
         // Modificar el registro en la tabla personal
-        connection.query("UPDATE personal SET nombre = ?, apellido_paterno = ?, apellido_materno = ?, antiguedad = ?, clave = ? WHERE id = ?",
-            [nombre, apellidoPaterno, apellidoMaterno, antiguedad, clave, idPersonal],
+        connection.query("UPDATE personal SET nombre = ?, apellido_paterno = ?, apellido_materno = ?, antiguedad = ? WHERE clave = ?",
+            [nombre, apellidoPaterno, apellidoMaterno, antiguedad, clave],
             function(error, results, fields) {
                 if (error) {
                     return connection.rollback(function() {
@@ -139,8 +138,8 @@ app.post("/modificar", function(req, res){
                 }
 
                 // Modificar el registro en la tabla usuario
-                connection.query("UPDATE usuario SET matricula_clave = ?, contrasena = ? WHERE matricula_clave = ?",
-                    [clave, contrasena, clave],
+                connection.query("UPDATE usuario SET contrasena = ? WHERE matricula_clave = ?",
+                    [contrasena, clave], // Utilizamos la clave como referencia
                     function(error, results, fields) {
                         if (error) {
                             return connection.rollback(function() {
@@ -161,7 +160,7 @@ app.post("/modificar", function(req, res){
                     });
             });
     });
-});*/
+});
 
 
     // Aquí se elimina un registro de personal y usuario
