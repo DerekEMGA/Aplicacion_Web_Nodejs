@@ -1,4 +1,5 @@
 body {
+    width: 100%;
     margin: 0;
     padding: 0;
     font-family: Candara, Arial, sans-serif;
@@ -6,6 +7,7 @@ body {
     background-size: cover;
     background-repeat: no-repeat;
 }
+
 #franjaSuperior {
     position: fixed;
     top: 0;
@@ -15,9 +17,11 @@ body {
     background-color: #ACC5EE;
     z-index: 9999;
 }
+
 h1 {
     text-align: center;
 }
+
 #menu {
     position: fixed;
     margin-top: 35px;
@@ -32,22 +36,26 @@ h1 {
     background-size: cover;
     opacity: 100;
 }
+
 #menu h2 {
     margin-top: 10px;
     margin-left: 50px;
     font-size: 35px;
 }
+
 #menu ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
+
 #menu ul li {
     margin-bottom: 20px;
     display: grid;
     grid-template-columns: auto;
     align-items: center;
 }
+
 #menu ul li button {
     padding: 20px;
     margin: 10px 0;
@@ -61,9 +69,11 @@ h1 {
     background-repeat: no-repeat;
     background-position: center;
 }
+
 #menu ul li button:hover {
     background-color: #3D8BD2;
 }
+
 #contenido {
     position: relative;
     margin-left: 260px;
@@ -73,54 +83,76 @@ h1 {
     text-align: center;
     text-align: justify;
 }
+
 #campos-izquierda,
 #campos-derecha {
     float: left;
     width: calc(50% - 10px);
 }
+
 #campos-izquierda input,
 #campos-derecha input {
     display: block;
     margin-bottom: 10px;
 }
+
 .campo {
     margin-bottom: 10px;
 
 }
+
 .campo input {
     display: block;
     margin-bottom: 5px;
     background-color: #E9F0FB;
     border: 1px solid #ccc;
     font-size: 18px;
-    padding:  3px;
+    padding: 3px;
 
 }
+
 .campo label {
     display: block;
     color: #172C51;
 }
+
 #tabla {
-    margin-top: 200px;
-    margin-bottom: 40px;
+    position: absolute;
+    top: 350px;
+    left: 300px;
+    margin: 0 auto;
     width: 100%;
+    border-collapse: collapse;
 }
+
+#tabla th,
+#tabla td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #0e003c;
+}
+
 #tabla th {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     background-color: #162030;
     color: #FFFFFF;
+    font-weight: bold;
 }
-#tabla tr {
-    background-color: #E9F0FB;
+
+#tabla tr:nth-child(even) {
+    background-color: #f9f9f9;
 }
+
+#tabla tr:hover {
+    background-color: #3D8BD2;
+}
+
 #botones {
     position: absolute;
     top: -10px;
-    right: 0px;
+    right: 60px;
     text-align: right;
 }
+
 #botones button {
     display: block;
     margin-bottom: 15px;
@@ -134,10 +166,25 @@ h1 {
     border: 1px solid #3D8BD2;
     border-radius: 5px;
     padding: 5px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 #botones img:hover {
     background-color: #3D8BD2;
     color: #fff;
 }
+
+.boton-modificar {
+    position: absolute;
+    top: 8px;
+    /* Ajusta según sea necesario */
+    right: 10px;
+    /* Ajusta según sea necesario */
+    border: none;
+    background: none;
+    cursor: pointer;
+    outline: none;
+    padding: 15;
+    /* Agrega padding para asegurarte de que el botón sea clickeable */
+}
+
