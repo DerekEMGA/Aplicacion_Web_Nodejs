@@ -32,18 +32,22 @@
                 <div id="campos-izquierda">
                     <div class="campo">
                         <label for="nombre">Nombre(s):</label>
-                        <input type="text" name="nombre" id="nombre" maxlength="30"
-                            placeholder="Ingrese datos"  onkeydown="validateInput(event)" required>
+                        <input type="text" name="nombre" id="nombre"
+                            maxlength="30"
+                            placeholder="Ingrese datos"
+                            onkeydown="validateInput(event)" required>
                     </div>
                     <div class="campo">
                         <label for="apellidoPaterno">Apellido Paterno:</label>
                         <input type="text" name="apellidoPaterno" maxlength="30"
-                            id="apellidoPaterno" placeholder="Ingrese datos" onkeydown="validateInput(event)" required>
+                            id="apellidoPaterno" placeholder="Ingrese datos"
+                            onkeydown="validateInput(event)" required>
                     </div>
                     <div class="campo">
                         <label for="apellidoMaterno">Apellido Materno:</label>
                         <input type="text" name="apellidoMaterno" maxlength="30"
-                            id="apellidoMaterno" placeholder="Ingrese dato " onkeydown="validateInput(event)" required>
+                            id="apellidoMaterno" placeholder="Ingrese dato "
+                            onkeydown="validateInput(event)" required>
                     </div>
                     <div class="campo">
                         <label for="ocupacion">Ocupación:</label>
@@ -54,17 +58,20 @@
                 <div id="campos-derecha">
                     <div class="campo">
                         <label for="antiguedad">Antigüedad:</label>
-                        <input type="number" name="antiguedad" id="antiguedad" oninput="validateAntiguedad(event)" required
+                        <input type="number" name="antiguedad" id="antiguedad"
+                            oninput="validateAntiguedad(event)" required
                             placeholder="Ingrese datos">
                     </div>
                     <div class="campo">
                         <label for="clave">Numero de Empleado:</label>
-                        <input type="text" name="clave" id="clave" oninput="validateNumeroEmpleado(event)" required
+                        <input type="text" name="clave" id="clave"
+                            oninput="validateNumeroEmpleado(event)" required
                             placeholder="Ingrese datos">
                     </div>
                     <div class="campo">
                         <label for="contrasena">Contraseña:</label>
-                        <input type="password" name="contrasena" id="contrasena" oninput="validateContrasena(event)" required
+                        <input type="password" name="contrasena" id="contrasena"
+                            oninput="validateContrasena(event)" required
                             placeholder="********">
                     </div>
                 </div>
@@ -73,49 +80,46 @@
                
                 
                 <div id="botones">
-
                     <br><br>
-                   
-        
-                    <button type="submit" name="accion" value="buscar" class="boton-modificar"
-                    onclick="validateForm('/buscar')">
-                    <img src="/image/search.png" alt="Buscar"
-                        style="width: 15px; height: 30px;"><br>
-                </button>
-                    
-                <br>
 
-                    <button type="submit" name="accion" value="modificar"
-                        onclick="validateForm('/modificar')">
-                        <img src="/image/guardar.png" alt="Modificar"
-                            style="width: 90px; height: 30px;"><br>
+                    <button type="submit" name="accion" value="buscar"
+                        class="boton-modificar"
+                        onclick="validateForm('/buscar')">
+                        <img src="/image/search.png" alt="Buscar"
+                            style="width: 30px; height: 30px;"><br>
                     </button>
+                    <br><br>
 
-                    <button type="submit" name="accion" value="guardar"
-                        onclick="validateForm('/insertar')">
-                        <img src="/image/crear.png" alt="Guardar"
-                            style="width: 90px; height: 30px;"><br>
-                    </button>
 
-                    <button type="button" name="accion" value="eliminar"
-                        onclick="validateForm('/eliminar')">
-                        <img src="/image/eliminar.png" alt="eliminar"
-                            style="width: 90px; height: 30px;"><br>
-                    </button>
+                        <button type="submit" name="accion" value="modificar"
+                            onclick="validateForm('/modificar')">
+                            <img src="/image/guardar.png" alt="Modificar"
+                                style="width: 90px; height: 30px;"><br>
+                        </button>
 
-                    <button type="button" name="accion" value="cancelar"
-                    onclick="cancelarFormulario()">
-                        <img src="/image/cancelar.png" alt="cancelar"
-                            style="width: 90px; height: 30px;"><br>
-                    </button>
+                        <button type="submit" name="accion" value="guardar"
+                            onclick="validateForm('/insertar')">
+                            <img src="/image/crear.png" alt="Guardar"
+                                style="width: 90px; height: 30px;"><br>
+                        </button>
+
+
+                        <button type="button" name="accion" value="eliminar"
+                            onclick="validateForm('/eliminar')">
+                            <img src="/image/eliminar.png" alt="eliminar"
+                                style="width: 90px; height: 30px;"><br>
+                        </button>
+
+                        <button type="button" name="accion" value="cancelar"
+                            onclick="cancelarFormulario()">
+                            <img src="/image/cancelar.png" alt="cancelar"
+                                style="width: 90px; height: 30px;"><br>
+                        </button>
+
                 </div>
-
             </form>
 
-
-
-
-<div id="tabla"></div>
+            <div id="tabla"></div>
 
         </body>
     </html>
