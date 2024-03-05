@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Administrador</title>
+        <link rel="stylesheet" href="/css/styleAgregarAdministrador.css">
+        <script src="/script/scriptAgregarPersonal.js"></script>
+    </head>
+    <body>
+        <div id="franjaSuperior"></div>
+
+        <div id="menu">
+            <h2>Menú</h2>
+
+            <ul>
+                <li>
+                    <button
+                        style="background-image: url('/image/Personal.png');"
+                        onclick="window.location.href = '/administrador/agregarPersonal';"></button>
+                </li>
+            </ul>
+        </div>
+
+        <div id="BARRA"></div>
+
+        <form id="formularioPersonal" method="post"
+            onsubmit="return validateForm(action)">
+
+            <div id="contenido">
+
+                <div id="campos-izquierda">
+                    <div class="campo">
+                        <label for="nombre">Nombre(s):</label>
+                        <input type="text" name="nombre" id="nombre"
+                            maxlength="30"
+                            placeholder="Ingrese datos"
+                            onkeydown="validateInput(event)" required>
+                    </div>
+                    <div class="campo">
+                        <label for="apellidoPaterno">Apellido Paterno:</label>
+                        <input type="text" name="apellidoPaterno" maxlength="30"
+                            id="apellidoPaterno" placeholder="Ingrese datos"
+                            onkeydown="validateInput(event)" required>
+                    </div>
+                    <div class="campo">
+                        <label for="apellidoMaterno">Apellido Materno:</label>
+                        <input type="text" name="apellidoMaterno" maxlength="30"
+                            id="apellidoMaterno" placeholder="Ingrese dato "
+                            onkeydown="validateInput(event)" required>
+                    </div>
+                    <div class="campo">
+                        <label for="ocupacion">Ocupación:</label>
+                        <input type="text" name="ocupacion" id="ocupacion"
+                            value="personal" placeholder="personal" disabled>
+                    </div>
+                </div>
+                <div id="campos-derecha">
+                    <div class="campo">
+                        <label for="antiguedad">Antigüedad:</label>
+                        <input type="number" name="antiguedad" id="antiguedad"
+                            oninput="validateAntiguedad(event)" required
+                            placeholder="Ingrese datos">
+                    </div>
+                    <div class="campo">
+                        <label for="clave">Numero de Empleado:</label>
+                        <input type="text" name="clave" id="clave"
+                            oninput="validateNumeroEmpleado(event)" required
+                            placeholder="Ingrese datos">
+                    </div>
+                    <div class="campo">
+                        <label for="contrasena">Contraseña:</label>
+                        <input type="password" name="contrasena" id="contrasena"
+                            oninput="validateContrasena(event)" required
+                            placeholder="********">
+                    </div>
+                    <div>
+                        <br>
+                        <button  type="submit" name="accion" value="buscar"  class="ov-btn-slide-right" style=" 
+                        color: white; 
+                        padding: 10px 25px; 
+                         cursor: pointer; 
+                        min-width: 150px; 
+    "
+                         onclick="validateForm('/buscar')">
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+
+
+                <div id="botones">
+                    <br><br>
+                        <button type="submit" name="accion" value="modificar" class="ov-btn-slide-right"
+                            onclick="validateForm('/modificar')">
+                            Guardar
+                        </button>
+
+                        <button type="submit" name="accion" value="guardar" class="ov-btn-slide-right"
+                            onclick="validateForm('/insertar')">
+                           Crear
+                        </button>
+
+
+                        <button type="button" name="accion" value="eliminar" class="ov-btn-slide-right"
+                            onclick="validateForm('/eliminar')">
+                          Eliminar
+                        </button>
+
+                        <button type="button" name="accion" value="cancelar" class="ov-btn-slide-right"
+                            onclick="cancelarFormulario()">
+                         Cancelar
+                        </button>
+
+                </div>
+            </form>
+
+            <div id="tabla" >
+                
+            </div>
+
+        </body>
+    </html>
