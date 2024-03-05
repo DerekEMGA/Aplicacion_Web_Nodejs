@@ -271,7 +271,7 @@ app.post("/buscar", function(req, res){
 
 function buildTableHtml(results) {
     // Construye la tabla HTML aquí
-    let tableHtml = '<table name="tabla" style=" color:#162030;  max-height: 300px; overflow-y: auto; position: fixed; bottom: 0%; left: 60%; transform: translateX(-50%); width: 80%; height: 60px;" border="1">';
+    let tableHtml = '<table name="tabla" style="max-height: 300px; overflow-y: auto; position: fixed; bottom: 0%; left: 60%; transform: translateX(-50%); width: 80%; height: 60px; border: 1px solid #395B95; border-collapse: collapse;" cellpadding="8">';
     
     // Construye la fila de encabezados utilizando los nombres de los campos
     tableHtml += '<tr>';
