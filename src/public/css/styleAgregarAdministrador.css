@@ -147,14 +147,26 @@ h1 {
 #botones {
     position: absolute;
     top: -10px;
-    right: 60px;
-    text-align: right;
+    right: 10px;
+    text-align: center;
+    border-radius: 5px;
+    border:#162030; 
+
 }
 
 #botones button {
     display: block;
     margin-bottom: 15px;
+    color: white; 
+    padding: 10px 25px; 
+    cursor: pointer; 
+    min-width: 150px; /* Establece el ancho mínimo deseado */
+
 }
+
+
+.primary {background-color: white; border: 2px solid #007bff;} 
+.primary:hover {background: #0b7dda; color: white;}
 
 #botones img {
     width: 120px;
@@ -186,3 +198,40 @@ h1 {
     /* Agrega padding para asegurarte de que el botón sea clickeable */
 }
 
+/*** ESTILOS BOTÓN SLIDE RIGHT ***/
+.ov-btn-slide-right {
+    background:#395B95; /* color de fondo */
+    color: #4741d7; /* color de fuente */
+    border: 2px solid #4741d7; /* tamaño y color de borde */
+    padding: 16px 20px;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    display: inline-block;
+  }
+  .ov-btn-slide-right:hover {
+    color: #fff; /* color de fuente hover */
+  }
+  .ov-btn-slide-right::after {
+    content: "";
+    background: #0e003c; /* color de fondo hover */
+    position: absolute;
+    z-index: -1;
+    padding: 16px 20px;
+    display: block;
+    top: 0;
+    bottom: 0;
+    left: 100%;
+    right: -100%;
+    -webkit-transition: all 0.35s;
+    transition: all 0.35s;
+  }
+
+  .ov-btn-slide-right:hover::after {
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    -webkit-transition: all 0.35s;
+    transition: all 0.35s;
+  }

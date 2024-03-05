@@ -74,52 +74,50 @@
                             oninput="validateContrasena(event)" required
                             placeholder="********">
                     </div>
+                    <div>
+                        <br>
+                        <button  type="submit" name="accion" value="buscar"  class="ov-btn-slide-right" style=" 
+                        color: white; 
+                        padding: 10px 25px; 
+                         cursor: pointer; 
+                        min-width: 150px; 
+    "
+                         onclick="validateForm('/buscar')">
+                            Buscar
+                        </button>
+                    </div>
                 </div>
-                <br><br><br><br><br><br>
 
-               
-                
+
                 <div id="botones">
                     <br><br>
-
-                    <button type="submit" name="accion" value="buscar"
-                        class="boton-modificar"
-                        onclick="validateForm('/buscar')">
-                        <img src="/image/search.png" alt="Buscar"
-                            style="width: 30px; height: 30px;"><br>
-                    </button>
-                    <br><br>
-
-
-                        <button type="submit" name="accion" value="modificar"
+                        <button type="submit" name="accion" value="modificar" class="ov-btn-slide-right"
                             onclick="validateForm('/modificar')">
-                            <img src="/image/guardar.png" alt="Modificar"
-                                style="width: 90px; height: 30px;"><br>
+                            Guardar
                         </button>
 
-                        <button type="submit" name="accion" value="guardar"
+                        <button type="submit" name="accion" value="guardar" class="ov-btn-slide-right"
                             onclick="validateForm('/insertar')">
-                            <img src="/image/crear.png" alt="Guardar"
-                                style="width: 90px; height: 30px;"><br>
+                           Crear
                         </button>
 
 
-                        <button type="button" name="accion" value="eliminar"
+                        <button type="button" name="accion" value="eliminar" class="ov-btn-slide-right"
                             onclick="validateForm('/eliminar')">
-                            <img src="/image/eliminar.png" alt="eliminar"
-                                style="width: 90px; height: 30px;"><br>
+                          Eliminar
                         </button>
 
-                        <button type="button" name="accion" value="cancelar"
+                        <button type="button" name="accion" value="cancelar" class="ov-btn-slide-right"
                             onclick="cancelarFormulario()">
-                            <img src="/image/cancelar.png" alt="cancelar"
-                                style="width: 90px; height: 30px;"><br>
+                         Cancelar
                         </button>
 
                 </div>
             </form>
 
-            <div id="tabla"></div>
+            <div id="tabla" >
+                
+            </div>
 
         </body>
     </html>

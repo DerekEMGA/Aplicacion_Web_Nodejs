@@ -154,18 +154,26 @@ h1 {
 
 #campos-izquierda input,
 #campos-derecha input {
-    display: block;
+    display: grid;
     margin-bottom: 10px;
+    grid-template-columns: 1fr;
+    gap: 10px;
 }
 
 .campo {
     margin-bottom: 10px;
 }
 
+.boton-modificar {
+    display: block;
+    margin-bottom: 10px;
+    /* Otros estilos específicos de boton-modificar */
+}
+
 .campo input {
     display: block;
     margin-bottom: 5px;
-    background-color: #E9F0FB;
+    background-color: #F7F7F7;
     border: 1px solid #ccc;
     font-size: 18px;
     padding:  3px;
@@ -177,27 +185,12 @@ h1 {
 }
 
 #tabla {
-    position: fixed;
+    position: absolute;
     bottom: 0;
-    left: 50%;
+    left: 5%; /* Ajusta este valor según sea necesario */
     transform: translateX(-50%);
     width: 90%;
-    height: 100px; 
-    background-color: lightblue; 
+    height: 10vh;
+    background-color: lightblue;
 }
 
-
-
-
-
-#botones {
-    position: absolute;
-    top: 20px;
-    right: 110px;
-    text-align: right;
-}
-
-#botones button {
-    display: block;
-    margin-bottom: 15px;
-}
