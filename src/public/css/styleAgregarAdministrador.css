@@ -103,7 +103,7 @@ h1 {
 .campo input {
     display: block;
     margin-bottom: 5px;
-    background-color: #E9F0FB;
+    background-color: #F7F7F7;
     border: 1px solid #ccc;
     font-size: 18px;
     padding: 3px;
@@ -200,9 +200,9 @@ h1 {
 
 /*** ESTILOS BOTÓN SLIDE RIGHT ***/
 .ov-btn-slide-right {
-    background:#395B95; /* color de fondo */
+    background:#162030; /* color de fondo */
     color: #4741d7; /* color de fuente */
-    border: 2px solid #4741d7; /* tamaño y color de borde */
+    border: 2px solid #162030; /* tamaño y color de borde */
     padding: 16px 20px;
     position: relative;
     z-index: 1;
@@ -214,7 +214,7 @@ h1 {
   }
   .ov-btn-slide-right::after {
     content: "";
-    background: #0e003c; /* color de fondo hover */
+    background: #3D8BD2; /* color de fondo hover */
     position: absolute;
     z-index: -1;
     padding: 16px 20px;
