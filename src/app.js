@@ -34,6 +34,7 @@ app.use("/administrador", administradorRoutes)
 app.use("administrador/agregarPersonal",administradorRoutes)
 app.use("/docente", docenteRoutes)
 app.use("/alumno", alumnoRoutes)
+app.use("/personal/agregarDocente",personalRoutes)
 
 //CRUD routes
 app.get("/administrador/modificarPersonal", function(req, res){res.redirect('/administrador/agregarPersonal');});
@@ -124,6 +125,8 @@ app.post("/modificar", function(req, res) {
     const clave = datosPersonal.clave; // Usamos la clave como referencia
     let nuevaClave = datosPersonal.clave; // Nueva clave a modificar (puede ser igual a clave)
     let contrasena = datosPersonal.contrasena;
+
+
 
     // Check if any field is empty
     if (!nombre || !apellidoPaterno || !apellidoMaterno || !antiguedad || !clave  || !contrasena) {
@@ -296,6 +299,240 @@ function buildTableHtml(results) {
 app.get('/administrador/agregarPersonal/tabla', function(req, res) {
     // Realiza la consulta para obtener los últimos 5 registros
     connection.query('SELECT nombre,apellido_paterno,apellido_materno,ocupacion,antiguedad,clave FROM personal ORDER BY id DESC LIMIT 5', function(error, results, fields) {
+        if (error) {
+            console.error('Error en la consulta a la base de datos:', error);
+            return res.status(500).send('Error en la consulta a la base de datos');
+        }
+
+        // Construye la tabla HTML
+        const tableHtml = buildTableHtml(results);
+
+        // Envía la tabla HTML como respuesta al cliente
+        res.status(200).send(tableHtml);
+    });
+});
+
+//Seccion de agregarDocente
+
+// Insertar un nuevo registro de profesor
+app.post("/insertarProfesor", function(req, res) {
+    const datosProfesor = req.body;
+
+    let nombre = datosProfesor.nombre;
+    let apellidoPaterno = datosProfesor.apellidoPaterno;
+    let apellidoMaterno = datosProfesor.apellidoMaterno;
+    let profesion = datosProfesor.profesion;
+    let clave = datosProfesor.clave;
+    let contrasena = datosProfesor.contrasena;
+
+    // Verificar si el profesor ya existe
+    connection.query("SELECT * FROM profesor WHERE clave = ?", [clave], function(error, results, fields) {
+        if (error) {
+            throw error;
+        }
+
+        // Si hay resultados, significa que el profesor ya existe
+        if (results.length > 0) {
+            console.log('Profesor ya existe');
+            res.redirect('/administrador/agregarProfesor?mensaje=El%20profesor%20ya%20existe');
+        } else {
+            // Comenzar una transacción
+            connection.beginTransaction(function(err) {
+                if (err) {
+                    throw err;
+                }
+
+                // Insertar en la tabla profesor
+                connection.query("INSERT INTO profesor(nombre, apellido_paterno, apellido_materno, profesion, clave) VALUES (?, ?, ?, ?, ?)",
+                    [nombre, apellidoPaterno, apellidoMaterno, profesion, clave],
+                    function(error, results, fields) {
+                        if (error) {
+                            return connection.rollback(function() {
+                                throw error;
+                            });
+                        }
+
+                        // Insertar en la tabla usuario
+                        connection.query("INSERT INTO usuario(matricula_clave, contrasena, tipo) VALUES (?, ?, 'profesor')",
+                            [clave, contrasena],
+                            function(error, results, fields) {
+                                if (error) {
+                                    return connection.rollback(function() {
+                                        throw error;
+                                    });
+                                }
+
+                                // Commit si todo está bien
+                                connection.commit(function(err) {
+                                    if (err) {
+                                        return connection.rollback(function() {
+                                            throw err;
+                                        });
+                                    }
+                                    console.log('Datos del profesor almacenados correctamente');
+                                    res.redirect('/administrador/agregarProfesor?mensaje=Datos%20almacenados%20correctamente');
+                                });
+                            });
+                    });
+            });
+        }
+    });
+});
+
+// Modificar un registro de profesor
+app.post("/modificarProfesor", function(req, res) {
+    const datosProfesor = req.body;
+
+    let nombre = datosProfesor.nombre;
+    let apellidoPaterno = datosProfesor.apellidoPaterno;
+    let apellidoMaterno = datosProfesor.apellidoMaterno;
+    let profesion = datosProfesor.profesion;
+    let antiguedad = datosProfesor.antiguedad;
+    const clave = datosProfesor.clave; // Usamos la clave como referencia
+    let contrasena = datosProfesor.contrasena;
+
+    // Check if any field is empty
+    if (!nombre || !apellidoPaterno || !apellidoMaterno || !profesion || !clave || !contrasena) {
+        return res.redirect('/administrador/modificarProfesor?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario.');
+    }
+
+    // Check if the professor with the given clave exists
+    connection.query("SELECT * FROM profesor WHERE clave = ?", [clave], function(error, results, fields) {
+        if (error) {
+            console.error('Error en la consulta a la base de datos:', error);
+            return res.redirect('/administrador/modificarProfesor?mensaje=Error%20en%20la%20consulta%20a%20la%20base%20de%20datos');
+        }
+
+        // Check if there's a professor with the provided clave
+        if (results.length === 0) {
+            return res.redirect('/administrador/modificarProfesor?mensaje=Profesor%20no%20encontrado');
+        }
+
+        // Continue with the update code
+        connection.beginTransaction(function(err) {
+            if (err) { throw err; }
+
+            // Modificar el registro en la tabla profesor
+            connection.query("UPDATE profesor SET nombre = ?, apellido_paterno = ?, apellido_materno = ?, profesion = ? WHERE clave = ?",
+                [nombre, apellidoPaterno, apellidoMaterno, profesion, clave],
+                function(error, results, fields) {
+                    if (error) {
+                        return connection.rollback(function() {
+                            throw error;
+                        });
+                    }
+
+                    // Modificar el registro en la tabla usuario
+                    connection.query("UPDATE usuario SET contrasena = ? WHERE matricula_clave = ?",
+                        [contrasena, clave], // Utilizamos la clave como referencia
+                        function(error, results, fields) {
+                            if (error) {
+                                return connection.rollback(function() {
+                                    throw error;
+                                });
+                            }
+
+                            // Commit si todo está bien
+                            connection.commit(function(err) {
+                                if (err) {
+                                    return connection.rollback(function() {
+                                        throw err;
+                                    });
+                                }
+                                console.log('Registro de profesor modificado correctamente');
+                                res.redirect('/administrador/modificarProfesor?mensaje=Profesor%20modificado%20correctamente');
+                            });
+                        });
+                });
+        });
+    });
+});
+
+// Eliminar un registro de profesor
+app.post("/eliminarProfesor", function(req, res){
+    const clave = req.body.clave;
+    console.log(`Recibiendo solicitud para eliminar el profesor con clave: ${clave}`);
+
+    // Comenzar una transacción
+    connection.beginTransaction(function(err) {
+        if (err) { throw err; }
+
+        // Eliminar el registro de la tabla usuario (si existe)
+        connection.query("DELETE FROM usuario WHERE matricula_clave = ?",
+            [clave],
+            function(error, results, fields) {
+                if (error) {
+                    return connection.rollback(function() {
+                        throw error;
+                    });
+                }
+
+                if (results.affectedRows === 0) {
+                    // El profesor no existe, enviar una alerta
+                    res.redirect('/administrador/eliminarProfesor?mensaje=Profesor%20no%20encontrado');
+                    return;
+                }
+
+                // Eliminar el registro de la tabla profesor
+                connection.query("DELETE FROM profesor WHERE clave = ?",
+                    [clave],
+                    function(error, results, fields) {
+                        if (error) {
+                            return connection.rollback(function() {
+                                throw error;
+                            });
+                        }
+
+                        // Commit si todo está bien
+                        connection.commit(function(err) {
+                            if (err) {
+                                return connection.rollback(function() {
+                                    throw err;
+                                });
+                            }
+                            console.log('Registro de profesor eliminado correctamente');
+                            res.redirect('/administrador/eliminarProfesor?mensaje=Profesor%20eliminado%20correctamente');
+                        });
+                    });
+            });
+    });
+});
+
+// Buscar un profesor por su clave
+app.post("/buscarProfesor", function(req, res){
+    const clave = req.body.clave;
+    console.log('Recibiendo solicitud para buscar el profesor con clave:');
+    console.log(clave);
+
+    // Realizar la consulta para obtener los datos del profesor
+    connection.query(`
+        SELECT * FROM profesor WHERE clave = ?
+    `,
+    [clave],
+    function(error, results, fields) {
+        if (error) {
+            console.error('Error en la consulta a la base de datos:', error);
+            return res.redirect('/personal/agregarDocente?mensaje=Error%20en%20la%20consulta%20a%20la%20base%20de%20datos');
+        }
+
+        // Comprobar si se encontraron resultados
+        if (results.length === 0) {
+            return res.redirect('/personal/agregarDocente?mensaje=Profesor%20no%20encontrado');
+        }
+
+        // Obtener datos del profesor y construir la URL de redireccionamiento
+        const profesor = results[0];
+        const redirectURL = `/personal/agregarDocente?nombre=${profesor.nombre}&apellidoPaterno=${profesor.apellido_paterno}&apellidoMaterno=${profesor.apellido_materno}&profesion=${profesor.profesion}&clave=${profesor.clave}`;
+
+        // Redirigir al usuario con los datos en la URL
+        res.redirect(redirectURL);
+    });
+});
+
+
+app.get('/administrador/agregarDocente/tabla', function(req, res) {
+    // Realiza la consulta para obtener los últimos 5 registros
+    connection.query('SELECT nombre,apellido_paterno,apellido_materno,profesion,clave FROM profesor ORDER BY id DESC LIMIT 5', function(error, results, fields) {
         if (error) {
             console.error('Error en la consulta a la base de datos:', error);
             return res.status(500).send('Error en la consulta a la base de datos');
