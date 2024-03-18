@@ -99,7 +99,7 @@ function validateForm(action) {
       sessionStorage.setItem("messageShown", "true");
     }
   
-    fetch("/administrador/agregarDocente/tabla")
+    fetch("/personal/agregarDocente/tabla")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Error al obtener la tabla");

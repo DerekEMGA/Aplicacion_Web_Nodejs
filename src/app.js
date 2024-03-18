@@ -58,55 +58,68 @@ app.post("/insertar", function(req, res) {
     let clave = datosPersonal.clave;
     let contrasena = datosPersonal.contrasena;
 
-    // Verificar si el usuario ya existe
-    connection.query("SELECT * FROM usuario WHERE matricula_clave = ?", [clave], function(error, results, fields) {
+    // Verificar si el usuario ya existe en la tabla usuario
+    connection.query("SELECT * FROM usuario WHERE matricula_clave = ?", [clave], function(error, usuarioResults, fields) {
         if (error) {
             throw error;
         }
 
-        // Si hay resultados, significa que el usuario ya existe
-        if (results.length > 0) {
+        // Si hay resultados, significa que el usuario ya existe en la tabla usuario
+        if (usuarioResults.length > 0) {
             console.log('Usuario ya existe');
-            res.redirect('/administrador/agregarPersonal?mensaje=El%20Personal%20ya%20existe');
+            res.redirect('/administrador/agregarPersonal?mensaje=Numero%20de%20empleado%20y/o%20nombres%20duplicados');
         } else {
-            // Comenzar una transacción
-            connection.beginTransaction(function(err) {
-                if (err) {
-                    throw err;
+            // Verificar si el usuario ya existe en la tabla personal
+            connection.query("SELECT * FROM personal WHERE nombre = ? AND apellido_paterno = ? AND apellido_materno = ?", [nombre, apellidoPaterno, apellidoMaterno], function(error, personalResults, fields) {
+                if (error) {
+                    throw error;
                 }
 
-                // Insertar en la tabla personal
-                connection.query("INSERT INTO personal(nombre, apellido_paterno, apellido_materno, ocupacion, antiguedad, clave) VALUES (?, ?, ?, ?, ?, ?)",
-                    [nombre, apellidoPaterno, apellidoMaterno, 'personal', antiguedad, clave],
-                    function(error, results, fields) {
-                        if (error) {
-                            return connection.rollback(function() {
-                                throw error;
-                            });
+                // Si hay resultados, significa que el usuario ya existe en la tabla personal
+                if (personalResults.length > 0) {
+                    console.log('Nombre y apellidos duplicados');
+                    res.redirect('/administrador/agregarPersonal?mensaje=Numero%20de%20empleado%20y/o%20nombres%20duplicados');
+                } else {
+                    // Comenzar una transacción
+                    connection.beginTransaction(function(err) {
+                        if (err) {
+                            throw err;
                         }
 
-                        // Insertar en la tabla usuario
-                        connection.query("INSERT INTO usuario(matricula_clave, contrasena, tipo) VALUES (?, ?, 'personal')",
-                            [clave, contrasena],
-                            function(error, results, fields) {
+                        // Insertar en la tabla personal
+                        connection.query("INSERT INTO personal(nombre, apellido_paterno, apellido_materno, ocupacion, antiguedad, clave) VALUES (?, ?, ?, ?, ?, ?)",
+                            [nombre, apellidoPaterno, apellidoMaterno, 'personal', antiguedad, clave],
+                            function(error, personalInsertResult, fields) {
                                 if (error) {
                                     return connection.rollback(function() {
                                         throw error;
                                     });
                                 }
 
-                                // Commit si todo está bien
-                                connection.commit(function(err) {
-                                    if (err) {
-                                        return connection.rollback(function() {
-                                            throw err;
+                                // Insertar en la tabla usuario
+                                connection.query("INSERT INTO usuario(matricula_clave, contrasena, tipo) VALUES (?, ?, 'personal')",
+                                    [clave, contrasena],
+                                    function(error, usuarioInsertResult, fields) {
+                                        if (error) {
+                                            return connection.rollback(function() {
+                                                throw error;
+                                            });
+                                        }
+
+                                        // Commit si todo está bien
+                                        connection.commit(function(err) {
+                                            if (err) {
+                                                return connection.rollback(function() {
+                                                    throw err;
+                                                });
+                                            }
+                                            console.log('Datos almacenados correctamente');
+                                            res.redirect('/administrador/agregarPersonal?mensaje=Datos%20almacenados%20correctamente');
                                         });
-                                    }
-                                    console.log('Datos almacenados correctamente');
-                                    res.redirect('/administrador/agregarPersonal?mensaje=Datos%20almacenados%20correctamente');
-                                });
+                                    });
                             });
                     });
+                }
             });
         }
     });
@@ -314,7 +327,6 @@ app.get('/administrador/agregarPersonal/tabla', function(req, res) {
 
 //Seccion de agregarDocente
 
-// Insertar un nuevo registro de profesor
 app.post("/insertarProfesor", function(req, res) {
     const datosProfesor = req.body;
 
@@ -325,59 +337,73 @@ app.post("/insertarProfesor", function(req, res) {
     let clave = datosProfesor.clave;
     let contrasena = datosProfesor.contrasena;
 
-    // Verificar si el profesor ya existe
-    connection.query("SELECT * FROM profesor WHERE clave = ?", [clave], function(error, results, fields) {
+    // Verificar si el profesor ya existe en la tabla usuario
+    connection.query("SELECT * FROM usuario WHERE matricula_clave = ?", [clave], function(error, usuarioResults, fields) {
         if (error) {
             throw error;
         }
 
-        // Si hay resultados, significa que el profesor ya existe
-        if (results.length > 0) {
-            console.log('Profesor ya existe');
-            res.redirect('/administrador/agregarProfesor?mensaje=El%20profesor%20ya%20existe');
+        // Si hay resultados, significa que el profesor ya existe en la tabla usuario
+        if (usuarioResults.length > 0) {
+            console.log('Numero de empleado y/o nombres duplicados');
+            res.redirect('/personal/agregarDocente?mensaje=Numero%20de%20empleado%20y/o%20nombres%20duplicados');
         } else {
-            // Comenzar una transacción
-            connection.beginTransaction(function(err) {
-                if (err) {
-                    throw err;
+            // Verificar si el profesor ya existe en la tabla profesor
+            connection.query("SELECT * FROM profesor WHERE nombre = ? AND apellido_paterno = ? AND apellido_materno = ?", [nombre, apellidoPaterno, apellidoMaterno], function(error, profesorResults, fields) {
+                if (error) {
+                    throw error;
                 }
 
-                // Insertar en la tabla profesor
-                connection.query("INSERT INTO profesor(nombre, apellido_paterno, apellido_materno, profesion, clave) VALUES (?, ?, ?, ?, ?)",
-                    [nombre, apellidoPaterno, apellidoMaterno, profesion, clave],
-                    function(error, results, fields) {
-                        if (error) {
-                            return connection.rollback(function() {
-                                throw error;
-                            });
+                // Si hay resultados, significa que el profesor ya existe en la tabla profesor
+                if (profesorResults.length > 0) {
+                    console.log('Numero de empleado y/o nombres duplicados');
+                    res.redirect('/personal/agregarDocente?mensaje=Numero%20de%20empleado%20y/o%20nombres%20duplicados');
+                } else {
+                    // Comenzar una transacción
+                    connection.beginTransaction(function(err) {
+                        if (err) {
+                            throw err;
                         }
 
-                        // Insertar en la tabla usuario
-                        connection.query("INSERT INTO usuario(matricula_clave, contrasena, tipo) VALUES (?, ?, 'profesor')",
-                            [clave, contrasena],
-                            function(error, results, fields) {
+                        // Insertar en la tabla profesor
+                        connection.query("INSERT INTO profesor(nombre, apellido_paterno, apellido_materno, profesion, clave) VALUES (?, ?, ?, ?, ?)",
+                            [nombre, apellidoPaterno, apellidoMaterno, profesion, clave],
+                            function(error, profesorInsertResult, fields) {
                                 if (error) {
                                     return connection.rollback(function() {
                                         throw error;
                                     });
                                 }
 
-                                // Commit si todo está bien
-                                connection.commit(function(err) {
-                                    if (err) {
-                                        return connection.rollback(function() {
-                                            throw err;
+                                // Insertar en la tabla usuario
+                                connection.query("INSERT INTO usuario(matricula_clave, contrasena, tipo) VALUES (?, ?, 'profesor')",
+                                    [clave, contrasena],
+                                    function(error, usuarioInsertResult, fields) {
+                                        if (error) {
+                                            return connection.rollback(function() {
+                                                throw error;
+                                            });
+                                        }
+
+                                        // Commit si todo está bien
+                                        connection.commit(function(err) {
+                                            if (err) {
+                                                return connection.rollback(function() {
+                                                    throw err;
+                                                });
+                                            }
+                                            console.log('Datos del profesor almacenados correctamente');
+                                            res.redirect('/personal/agregarDocente?mensaje=Datos%20almacenados%20correctamente');
                                         });
-                                    }
-                                    console.log('Datos del profesor almacenados correctamente');
-                                    res.redirect('/administrador/agregarProfesor?mensaje=Datos%20almacenados%20correctamente');
-                                });
+                                    });
                             });
                     });
+                }
             });
         }
     });
 });
+
 
 // Modificar un registro de profesor
 app.post("/modificarProfesor", function(req, res) {
@@ -393,19 +419,19 @@ app.post("/modificarProfesor", function(req, res) {
 
     // Check if any field is empty
     if (!nombre || !apellidoPaterno || !apellidoMaterno || !profesion || !clave || !contrasena) {
-        return res.redirect('/administrador/modificarProfesor?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario.');
+        return res.redirect('/personal/agregarDocente?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario.');
     }
 
     // Check if the professor with the given clave exists
     connection.query("SELECT * FROM profesor WHERE clave = ?", [clave], function(error, results, fields) {
         if (error) {
             console.error('Error en la consulta a la base de datos:', error);
-            return res.redirect('/administrador/modificarProfesor?mensaje=Error%20en%20la%20consulta%20a%20la%20base%20de%20datos');
+            return res.redirect('/personal/agregarDocente?mensaje=Error%20en%20la%20consulta%20a%20la%20base%20de%20datos');
         }
 
         // Check if there's a professor with the provided clave
         if (results.length === 0) {
-            return res.redirect('/administrador/modificarProfesor?mensaje=Profesor%20no%20encontrado');
+            return res.redirect('/personal/agregarDocente?mensaje=Profesor%20no%20encontrado');
         }
 
         // Continue with the update code
@@ -440,7 +466,7 @@ app.post("/modificarProfesor", function(req, res) {
                                     });
                                 }
                                 console.log('Registro de profesor modificado correctamente');
-                                res.redirect('/administrador/modificarProfesor?mensaje=Profesor%20modificado%20correctamente');
+                                res.redirect('/personal/agregarDocente?mensaje=Profesor%20modificado%20correctamente');
                             });
                         });
                 });
@@ -469,7 +495,7 @@ app.post("/eliminarProfesor", function(req, res){
 
                 if (results.affectedRows === 0) {
                     // El profesor no existe, enviar una alerta
-                    res.redirect('/administrador/eliminarProfesor?mensaje=Profesor%20no%20encontrado');
+                    res.redirect('/personal/agregarDocente?mensaje=Profesor%20no%20encontrado');
                     return;
                 }
 
@@ -491,7 +517,7 @@ app.post("/eliminarProfesor", function(req, res){
                                 });
                             }
                             console.log('Registro de profesor eliminado correctamente');
-                            res.redirect('/administrador/eliminarProfesor?mensaje=Profesor%20eliminado%20correctamente');
+                            res.redirect('/personal/agregarDocente?mensaje=Profesor%20eliminado%20correctamente');
                         });
                     });
             });
@@ -506,8 +532,11 @@ app.post("/buscarProfesor", function(req, res){
 
     // Realizar la consulta para obtener los datos del profesor
     connection.query(`
-        SELECT * FROM profesor WHERE clave = ?
-    `,
+    SELECT profesor.*, usuario.contrasena
+    FROM profesor
+    LEFT JOIN usuario ON profesor.clave = usuario.matricula_clave
+    WHERE profesor.clave = ?
+`,
     [clave],
     function(error, results, fields) {
         if (error) {
@@ -522,7 +551,7 @@ app.post("/buscarProfesor", function(req, res){
 
         // Obtener datos del profesor y construir la URL de redireccionamiento
         const profesor = results[0];
-        const redirectURL = `/personal/agregarDocente?nombre=${profesor.nombre}&apellidoPaterno=${profesor.apellido_paterno}&apellidoMaterno=${profesor.apellido_materno}&profesion=${profesor.profesion}&clave=${profesor.clave}`;
+        const redirectURL = `/personal/agregarDocente?nombre=${profesor.nombre}&apellidoPaterno=${profesor.apellido_paterno}&apellidoMaterno=${profesor.apellido_materno}&profesion=${profesor.profesion}&clave=${profesor.clave}&contrasena=${profesor.contrasena}`;
 
         // Redirigir al usuario con los datos en la URL
         res.redirect(redirectURL);
@@ -530,7 +559,7 @@ app.post("/buscarProfesor", function(req, res){
 });
 
 
-app.get('/administrador/agregarDocente/tabla', function(req, res) {
+app.get('/personal/agregarDocente/tabla', function(req, res) {
     // Realiza la consulta para obtener los últimos 5 registros
     connection.query('SELECT nombre,apellido_paterno,apellido_materno,profesion,clave FROM profesor ORDER BY id DESC LIMIT 5', function(error, results, fields) {
         if (error) {
