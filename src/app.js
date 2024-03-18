@@ -35,6 +35,7 @@ app.use("administrador/agregarPersonal",administradorRoutes)
 app.use("/docente", docenteRoutes)
 app.use("/alumno", alumnoRoutes)
 app.use("/personal/agregarDocente",personalRoutes)
+app.use("/personal/agregarMateria",personalRoutes)
 
 //CRUD routes
 app.get("/administrador/modificarPersonal", function(req, res){res.redirect('/administrador/agregarPersonal');});
@@ -574,3 +575,265 @@ app.get('/personal/agregarDocente/tabla', function(req, res) {
         res.status(200).send(tableHtml);
     });
 });
+
+
+//Seccion para agregar Materia
+
+// Sección de agregar Materia
+app.post("/insertarMateria", function(req, res) {
+    const datosMateria = req.body;
+    console.log(req.body);
+
+    let nombre = datosMateria.nombre;
+    let docente = datosMateria.docente;
+    let hora = datosMateria.hora;
+    let diaSemana = datosMateria.dias;
+    let semestre = datosMateria.semestre;
+
+   
+
+    // Verificar si ya existe una materia con los mismos datos
+    connection.query("SELECT * FROM materias WHERE NOMBRE = ? AND ID_MAESTRO = ? AND HORA = ? AND DIA_SEMANA = ?",
+        [nombre, docente, hora, diaSemana],
+        function(error, results, fields) {
+            if (error) {
+                throw error;
+            }
+
+            if (results.length > 0) {
+                // Si ya existe una materia con los mismos datos, enviar mensaje de error
+                console.log('Ya existe una materia con los mismos datos.');
+                res.redirect('/personal/agregarMateria?mensaje=Error:%20Ya%20existe%20una%20materia%20con%20los%20mismos%20datos');
+            } else {
+                // Verificar si el docente tiene otro registro a la misma hora
+                connection.query("SELECT * FROM materias WHERE ID_MAESTRO = ? AND HORA = ?",
+                    [docente, hora],
+                    function(error, results, fields) {
+                        if (error) {
+                            throw error;
+                        }
+
+                        if (results.length > 0) {
+                            // Si el docente ya tiene otro registro a la misma hora, enviar mensaje de error
+                            console.log('El docente ya tiene otro registro a la misma hora.');
+                            res.redirect('/personal/agregarMateria?mensaje=Error:%20El%20docente%20ya%20tiene%20otro%20registro%20a%20la%20misma%20hora');
+                        } else {
+                            // Comenzar una transacción
+                            connection.beginTransaction(function(err) {
+                                if (err) {
+                                    throw err;
+                                }
+
+                                // Insertar en la tabla Materias
+                                connection.query("INSERT INTO materias (NOMBRE, ID_MAESTRO, HORA, DIA_SEMANA, SEMESTRE) VALUES (?, ?, ?, ?, ?)",
+                                    [nombre, docente, hora, diaSemana, semestre],
+                                    function(error, results, fields) {
+                                        if (error) {
+                                            return connection.rollback(function() {
+                                                throw error;
+                                            });
+                                        }
+
+                                        // Commit si todo está bien
+                                        connection.commit(function(err) {
+                                            if (err) {
+                                                return connection.rollback(function() {
+                                                    throw err;
+                                                });
+                                            }
+                                            console.log('Datos de la materia almacenados correctamente');
+                                            res.redirect('/personal/agregarMateria?mensaje=Datos%20almacenados%20correctamente');
+                                        });
+                                    });
+                            });
+                        }
+                    });
+            }
+        });
+});
+
+
+
+// Modificar Materia
+
+app.post("/modificarMateria", function(req, res) {
+    const datosMateria = req.body;
+    console.log(req.body);
+
+    let nombre = datosMateria.nombre;
+    let idMaestro = datosMateria.docente;
+    let hora = datosMateria.hora;
+    let diaSemana = datosMateria.dias;
+    let semestre = datosMateria.semestre;
+
+    // Check if any field is empty
+    if (!nombre || !idMaestro || !hora || !diaSemana || !semestre) {
+        return res.redirect('/personal/agregarMateria?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario.');
+    }
+
+    // Continuar con el código de verificación
+    connection.beginTransaction(function(err) {
+        if (err) { throw err; }
+
+        // Verificar si el docente tiene otro registro a la misma hora excluyendo la materia que se está modificando
+        connection.query("SELECT * FROM materias WHERE ID_MAESTRO = ? AND HORA = ? AND NOT (NOMBRE = ? AND HORA = ? AND ID_MAESTRO = ? AND DIA_SEMANA = ?)",
+            [idMaestro, hora, nombre, hora, idMaestro, diaSemana],
+            function(error, results, fields) {
+                if (error) {
+                    return connection.rollback(function() {
+                        throw error;
+                    });
+                }
+
+                if (results.length > 0) {
+                    // Si el docente ya tiene otro registro a la misma hora, enviar mensaje de error
+                    console.log('El docente ya tiene otro registro a la misma hora.');
+                    return res.redirect('/personal/agregarMateria?mensaje=Error:%20El%20docente%20ya%20tiene%20otro%20registro%20a%20la%20misma%20hora');
+                } else {
+                    // Continuar con el código de actualización
+                    connection.query("UPDATE materias SET NOMBRE = ?, ID_MAESTRO = ?, HORA = ?, DIA_SEMANA = ?, SEMESTRE = ? WHERE NOMBRE = ? AND ID_MAESTRO = ? AND HORA = ? AND DIA_SEMANA = ?",
+                        [nombre, idMaestro, hora, diaSemana, semestre, nombre, idMaestro, hora, diaSemana],
+                        function(error, results, fields) {
+                            if (error) {
+                                return connection.rollback(function() {
+                                    throw error;
+                                });
+                            }
+
+                            // Commit si todo está bien
+                            connection.commit(function(err) {
+                                if (err) {
+                                    return connection.rollback(function() {
+                                        throw err;
+                                    });
+                                }
+                                console.log('Registro de materia modificado correctamente');
+                                res.redirect('/personal/agregarMateria?mensaje=Materia%20modificada%20correctamente');
+                            });
+                        });
+                }
+            });
+    });
+});
+
+
+
+// Eliminar Materia
+app.post("/eliminarMateria", function(req, res){
+    const docente = req.body.docente;
+    const hora = req.body.hora;
+    console.log(`Recibiendo solicitud para eliminar la materia con docente: ${docente} y hora: ${hora}`);
+
+    // Verificar si se proporcionaron los datos necesarios
+    if (!docente || !hora) {
+        return res.redirect('/personal/agregarMateria?mensaje=Error:%20Se%20requieren%20el%20docente%20y%20la%20hora%20para%20eliminar%20una%20materia');
+    }
+
+    // Comenzar una transacción
+    connection.beginTransaction(function(err) {
+        if (err) { throw err; }
+
+        // Verificar si la materia con el docente y la hora proporcionados existe
+        connection.query("SELECT * FROM materias WHERE ID_MAESTRO = ? AND HORA = ?",
+            [docente, hora],
+            function(error, results, fields) {
+                if (error) {
+                    return connection.rollback(function() {
+                        throw error;
+                    });
+                }
+
+                if (results.length === 0) {
+                    // La materia no existe, enviar una alerta
+                    res.redirect('/personal/agregarMateria?mensaje=Materia%20no%20encontrada');
+                    return;
+                }
+
+                // Eliminar el registro de la tabla Materias
+                connection.query("DELETE FROM materias WHERE ID_MAESTRO = ? AND HORA = ?",
+                    [docente, hora],
+                    function(error, results, fields) {
+                        if (error) {
+                            return connection.rollback(function() {
+                                throw error;
+                            });
+                        }
+
+                        // Commit si todo está bien
+                        connection.commit(function(err) {
+                            if (err) {
+                                return connection.rollback(function() {
+                                    throw err;
+                                });
+                            }
+                            console.log('Registro de materia eliminado correctamente');
+                            res.redirect('/personal/agregarMateria?mensaje=Materia%20eliminada%20correctamente');
+                        });
+                    });
+            });
+    });
+});
+
+
+
+// Buscar Materia
+app.post("/buscarMateria", function(req, res){
+    const docente = req.body.docente;
+    const hora = req.body.hora;
+    console.log('Recibiendo solicitud para buscar la materia con docente:');
+    console.log(docente);
+    console.log('y hora:');
+    console.log(hora);
+
+    // Realizar la consulta para obtener los datos de la materia
+    connection.query("SELECT * FROM materias WHERE ID_MAESTRO = ? AND HORA = ?",
+        [docente, hora],
+        function(error, results, fields) {
+            if (error) {
+                console.error('Error en la consulta a la base de datos:', error);
+                return res.redirect('/personal/agregarMateria?mensaje=Error%20en%20la%20consulta%20a%20la%20base%20de%20datos');
+            }
+
+            // Comprobar si se encontraron resultados
+            if (results.length === 0) {
+                return res.redirect('/personal/agregarMateria?mensaje=Materia%20no%20encontrada');
+            }
+
+            // Obtener datos de la materia y construir la URL de redireccionamiento
+            const materia = results[0];
+            const redirectURL = `/personal/agregarMateria?nombre=${materia.NOMBRE}&idMaestro=${materia.ID_MAESTRO}&hora=${materia.HORA}&diaSemana=${materia.DIA_SEMANA}&semestre=${materia.SEMESTRE}`;
+
+            // Redirigir al usuario con los datos en la URL
+            res.redirect(redirectURL);
+        });
+});
+
+
+app.get('/personal/agregarMateria/tabla', function(req, res) {
+    // Realiza la consulta para obtener los últimos 5 registros
+    connection.query('SELECT materias.NOMBRE AS NOMBRE_MATERIA, profesor.nombre AS NOMBRE_PROFESOR, materias.SEMESTRE, materias.HORA, materias.DIA_SEMANA FROM materias INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id ORDER BY materias.id DESC LIMIT 5', function(error, results, fields) {
+        if (error) {
+            console.error('Error en la consulta a la base de datos:', error);
+            return res.status(500).send('Error en la consulta a la base de datos');
+        }
+
+        // Construye la tabla HTML
+        const tableHtml = buildTableHtml(results);
+
+        // Envía la tabla HTML como respuesta al cliente
+        res.status(200).send(tableHtml);
+    });
+});
+
+
+app.get('/profesores', (req, res) => {
+    connection.query('SELECT * FROM profesor', (err, results) => {
+      if (err) {
+        console.error('Error al obtener los profesores:', err);
+        res.status(500).send('Error interno del servidor');
+        return;
+      }
+      res.json(results);
+    });
+  });
+  

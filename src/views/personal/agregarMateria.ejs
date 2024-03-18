@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal</title>
+    <link rel="stylesheet" href="/css/styleAgregarMateria.css">
+    <script src="/script/scriptAgregarMateria.js"></script>
+</head>
+<body>
+
+<div id="franjaSuperior"></div>
+
+<%- include('../partials/menuPersonal') %>
+ 
+
+    <div id="contenido">
+        <form id="formularioMateria" method="post" onsubmit="return validateForm(action)" >
+
+        <div class="campo" id="campos-izquierda">
+            <label for="nombre">Nombre de la materia</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Ingresa el nombre"
+             onkeydown="validateInput(event)" required>
+        </div>
+
+        <div class="campo" id="campos-derecha">
+            <label for="docente">Profesor</label>
+            <select id="docente" name="docente"></select>
+        </div>
+
+        <div class="campo" id="campos-izquierda">
+            <label for="hora">Hora</label>
+            <select id="hora" name="hora">
+                <option value="07:00:00">07:00 - 08:00</option>
+                <option value="08:00:00">08:00 - 09:00</option>
+                <option value="09:00:00">09:00 - 10:00</option>
+                <option value="10:00:00">10:00 - 11:00</option>
+                <option value="11:00:00">11:00 - 12:00</option>
+                <option value="12:00:00">12:00 - 13:00</option>
+                <option value="13:00:00">13:00 - 14:00</option>
+            </select>
+
+            <label for="dias">Dias</label>
+            <select id="dias" name="dias">
+                <option value="Lunes-Viernes">Lunes-Viernes</option>
+                <option value="Lunes-Jueves">Lunes-Jueves</option>
+                <option value="Miercoles-Jueves">Miercoles-Jueves</option>
+            </select>
+        </div>
+
+        <div class="campo" id="campos-derecha">
+            <label for="semestre">Semestre</label>
+            <select id="semestre" name="semestre">
+                <option value="1">1°</option>
+                <option value="2">2°</option>
+                <option value="3">3°</option>
+                <option value="4">4°</option>
+                <option value="5">5°</option>
+                <option value="6">6°</option>
+                <option value="7">7°</option>
+            </select>
+            <button  type="submit" name="accion" value="buscar"  class="ov-btn-slide-right" style=" 
+                        color: white; 
+                        padding: 10px 25px; 
+                         cursor: pointer; 
+                        min-width: 150px; 
+    "
+                         onclick="validateForm('/buscarMateria')">
+                            Buscar
+                        </button>
+        </div>
+
+        <div id="botones">
+            <br><br>
+            <button type="submit" name="accion" value="modificar" class="ov-btn-slide-right" onclick="validateForm('/modificarMateria')">Guardar</button>
+            <button type="submit" name="accion" value="guardar" class="ov-btn-slide-right" onclick="validateForm('/insertarMateria')">Crear</button>
+            <button type="button" name="accion" value="eliminar" class="ov-btn-slide-right" onclick="validateForm('/eliminarMateria')">Eliminar</button>
+            <button type="button" name="accion" value="cancelar" class="ov-btn-slide-right" onclick="cancelarFormulario()">Cancelar</button>
+        </div>
+
+    </div>
+</form>
+
+<div id="tabla"></div>
+
+</body>
+</html>
