@@ -346,8 +346,8 @@ app.post("/insertarProfesor", function(req, res) {
 
         // Si hay resultados, significa que el profesor ya existe en la tabla usuario
         if (usuarioResults.length > 0) {
-            console.log('Numero de empleado y/o nombres duplicados');
-            res.redirect('/personal/agregarDocente?mensaje=Numero%20de%20empleado%20y/o%20nombres%20duplicados');
+            console.log('Numero de empleado ya esta en uso');
+            res.redirect('/personal/agregarDocente?mensaje=Este%20numero%20de%20empleado%20ya%20esta%20en%20uso');
         } else {
             // Verificar si el profesor ya existe en la tabla profesor
             connection.query("SELECT * FROM profesor WHERE nombre = ? AND apellido_paterno = ? AND apellido_materno = ?", [nombre, apellidoPaterno, apellidoMaterno], function(error, profesorResults, fields) {
@@ -357,8 +357,8 @@ app.post("/insertarProfesor", function(req, res) {
 
                 // Si hay resultados, significa que el profesor ya existe en la tabla profesor
                 if (profesorResults.length > 0) {
-                    console.log('Numero de empleado y/o nombres duplicados');
-                    res.redirect('/personal/agregarDocente?mensaje=Numero%20de%20empleado%20y/o%20nombres%20duplicados');
+                    console.log('Este docente ya existe ');
+                    res.redirect('/personal/agregarDocente?mensaje=El%20docente%20ya%20existe');
                 } else {
                     // Comenzar una transacción
                     connection.beginTransaction(function(err) {
@@ -467,7 +467,7 @@ app.post("/modificarProfesor", function(req, res) {
                                     });
                                 }
                                 console.log('Registro de profesor modificado correctamente');
-                                res.redirect('/personal/agregarDocente?mensaje=Profesor%20modificado%20correctamente');
+                                res.redirect('/personal/agregarDocente?mensaje=Docente%20modificado%20correctamente');
                             });
                         });
                 });
@@ -475,7 +475,7 @@ app.post("/modificarProfesor", function(req, res) {
     });
 });
 
-// Eliminar un registro de profesor
+// Eliminar un registro de profesor si tiene materias lanzar alerta para confirmar que elimine materias 
 app.post("/eliminarProfesor", function(req, res){
     const clave = req.body.clave;
     console.log(`Recibiendo solicitud para eliminar el profesor con clave: ${clave}`);
@@ -518,7 +518,7 @@ app.post("/eliminarProfesor", function(req, res){
                                 });
                             }
                             console.log('Registro de profesor eliminado correctamente');
-                            res.redirect('/personal/agregarDocente?mensaje=Profesor%20eliminado%20correctamente');
+                            res.redirect('/personal/agregarDocente?mensaje=Docente%20eliminado%20correctamente');
                         });
                     });
             });
@@ -528,6 +528,7 @@ app.post("/eliminarProfesor", function(req, res){
 // Buscar un profesor por su clave
 app.post("/buscarProfesor", function(req, res){
     const clave = req.body.clave;
+    const hora = req.body.hora;
     console.log('Recibiendo solicitud para buscar el profesor con clave:');
     console.log(clave);
 
@@ -536,7 +537,7 @@ app.post("/buscarProfesor", function(req, res){
     SELECT profesor.*, usuario.contrasena
     FROM profesor
     LEFT JOIN usuario ON profesor.clave = usuario.matricula_clave
-    WHERE profesor.clave = ?
+    WHERE profesor.clave = ? 
 `,
     [clave],
     function(error, results, fields) {
@@ -547,7 +548,7 @@ app.post("/buscarProfesor", function(req, res){
 
         // Comprobar si se encontraron resultados
         if (results.length === 0) {
-            return res.redirect('/personal/agregarDocente?mensaje=Profesor%20no%20encontrado');
+            return res.redirect('/personal/agregarDocente?mensaje=Docente%20no%20encontrado');
         }
 
         // Obtener datos del profesor y construir la URL de redireccionamiento
@@ -780,6 +781,7 @@ app.post("/eliminarMateria", function(req, res){
 app.post("/buscarMateria", function(req, res){
     const docente = req.body.docente;
     const hora = req.body.hora;
+    const semestre = req.body.semestre;
     console.log('Recibiendo solicitud para buscar la materia con docente:');
     console.log(docente);
     console.log('y hora:');
@@ -811,7 +813,7 @@ app.post("/buscarMateria", function(req, res){
 
 app.get('/personal/agregarMateria/tabla', function(req, res) {
     // Realiza la consulta para obtener los últimos 5 registros
-    connection.query('SELECT materias.NOMBRE AS NOMBRE_MATERIA, profesor.nombre AS NOMBRE_PROFESOR, materias.SEMESTRE, materias.HORA, materias.DIA_SEMANA FROM materias INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id ORDER BY materias.id DESC LIMIT 5', function(error, results, fields) {
+    connection.query('SELECT materias.NOMBRE AS NOMBRE_MATERIA, CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, materias.SEMESTRE, CASE WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" END AS HORA, materias.DIA_SEMANA FROM materias INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id ORDER BY materias.id DESC LIMIT 5', function(error, results, fields) {
         if (error) {
             console.error('Error en la consulta a la base de datos:', error);
             return res.status(500).send('Error en la consulta a la base de datos');

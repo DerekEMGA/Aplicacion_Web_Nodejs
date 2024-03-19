@@ -133,7 +133,7 @@ function validateForm(action) {
       const regex = /^[A-Za-z\s]+$/;
       const inputValue = event.key;
   
-      if (!regex.test(inputValue)) {
+      if (inputValue === "'" || inputValue === "´" || inputValue === " ´´" || inputValue === "`" || !regex.test(inputValue)) {
         event.preventDefault();
       }
     }
@@ -141,7 +141,7 @@ function validateForm(action) {
       const regex = /^[A-Za-z\s]+$/;
       const inputValue = event.key;
   
-      if (!regex.test(inputValue)) {
+      if (inputValue === "'" || inputValue === "´" || inputValue === "`" || !regex.test(inputValue)) {
         event.preventDefault();
       }
     }
@@ -149,7 +149,7 @@ function validateForm(action) {
       const regex = /^[A-Za-z\s]+$/;
       const inputValue = event.key;
   
-      if (!regex.test(inputValue)) {
+      if (inputValue === "'" || inputValue === "´" || inputValue === "`" || !regex.test(inputValue)) {
         event.preventDefault();
       }
     }
@@ -157,9 +157,11 @@ function validateForm(action) {
         const regex = /^[A-Za-z\s]+$/;
         const inputValue = event.key;
     
-        if (!regex.test(inputValue)) {
-          event.preventDefault();
-        }
+          if (inputValue === "'" || inputValue === "´" || inputValue === "`" || !regex.test(inputValue)) {
+    event.preventDefault();
+  }
+    
+
       }
   }
   

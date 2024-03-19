@@ -36,7 +36,7 @@ function validateForm(action) {
       case "/eliminarMateria":
 
         if (docente === "" || hora === "") {
-          alert("Ingrese un nombre y hora de la materia antes de eliminar.");
+          alert("Ingrese un nombre de profesor y hora de la materia antes de buscar");
           return false;
         }
         document.getElementById("formularioMateria").action = action;
@@ -52,7 +52,7 @@ function validateForm(action) {
       case "/buscarMateria":
         // Validar que la clave no esté vacía
         if (docente === "" || hora === "") {
-          alert("Ingrese un nombre y hora de la materia antes de buscar");
+          alert("Ingrese un nombre de profesor y hora de la materia antes de buscar");
           document.preventDefault();
         } else {
           clearLocalStorage();
