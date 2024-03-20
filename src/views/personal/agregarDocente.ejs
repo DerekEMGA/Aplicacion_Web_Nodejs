@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal</title>
+    <link rel="stylesheet" href="/css/styleAgregarDocente.css">
+    <script src="/script/scriptAgregarDocente.js"></script>
+
+</head>
+<body>
+<div id="franjaSuperior"></div>
+
+<%- include('../partials/menuPersonal') %>
+
+
+<div id="contenido">
+    
+    <form id="formularioDocente" method="post"
+            onsubmit="return validateForm(action)">
+
+    <div id="campos-izquierda">
+        <div class="campo">
+            <label for="nombre">Nombre(s):</label>
+            <input type="text" name="nombre" id="nombre" maxlength="30"
+            placeholder="Inserta nombre"
+            onkeydown="validateInput(event)" required
+            >
+        </div>
+        <div class="campo">
+            <label for="apellidoPaterno">Apellido Paterno:</label>
+            <input type="text" name="apellidoPaterno" id="apellidoPaterno" maxlength="30"
+            placeholder="Inserta Apellido Paterno"
+            onkeydown="validateInput(event)" required
+            >
+        </div>
+        <div class="campo">
+            <label for="apellidoMaterno">Apellido Materno:</label>
+            <input type="text" name="apellidoMaterno" id="apellidoMaterno" maxlength="30"
+            placeholder="Inserta Apellido Materno"
+            onkeydown="validateInput(event)" required
+            >
+        </div>
+        
+    </div>
+      <div id="campos-derecha">
+        <div class="campo">
+             <label for="profesion">Profesión:</label>
+            <input type="text" name="profesion" id="profesion"
+            onkeydown="validateInput(event)" required
+            placeholder="Selecciona la profesión">
+        </div>
+        <div class="campo">
+            <label for="clave">Clave:</label>
+            <input type="text" name="clave" id="clave"
+            oninput="validateNumeroEmpleado(event)" required
+            placeholder="Inserta la matrícula">
+        </div>
+       
+        <div class="campo">
+            <label for="contrasena">Contraseña:</label>
+            <input type="password" name="contrasena" id="contrasena"
+            oninput="validateContrasena(event)" required
+            placeholder="Inserta la contraseña">
+        </div>
+        <button  type="submit" name="accion" value="buscar"  class="ov-btn-slide-right" style=" 
+                        color: white; 
+                        padding: 10px 25px; 
+                         cursor: pointer; 
+                        min-width: 150px; 
+    "
+                         onclick="validateForm('/buscarProfesor')">
+                            Buscar
+                        </button>
+    </div>
+
+    
+    <div id="botones">
+        <br><br>
+            <button type="submit" name="accion" value="modificar" class="ov-btn-slide-right"
+                onclick="validateForm('/modificarProfesor')">
+                Guardar
+            </button>
+
+            <button type="submit" name="accion" value="guardar" class="ov-btn-slide-right"
+                onclick="validateForm('/insertarProfesor')">
+               Crear
+            </button>
+
+
+            <button type="button" name="accion" value="eliminar" class="ov-btn-slide-right"
+                onclick="validateForm('/eliminarProfesor')">
+              Eliminar
+            </button>
+
+            <button type="button" name="accion" value="cancelar" class="ov-btn-slide-right"
+                onclick="cancelarFormulario()">
+             Cancelar
+            </button>
+
+    </div>
+</div>
+</from>
+
+<div id="tabla" >
+
+</body>
+</html>
