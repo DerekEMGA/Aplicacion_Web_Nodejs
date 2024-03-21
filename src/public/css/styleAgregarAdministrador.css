@@ -129,35 +129,7 @@ h1 {
     color: #172C51;
 } 
 
-#tabla {
-    margin: 0 auto; 
-    width:120%;
-    position: absolute;
-    top: 400px;
-    left: 470px;
-    transform: translate(-50%, -50%); 
-}
 
-#tabla th,
-#tabla td {
-    padding: 10px;
-    text-align: center;
-    border: 1px solid #0e003c;
-}
-
-#tabla th {
-    background-color: #162030;
-    color: #FFFFFF;
-    font-weight: bold;
-}
-
-#tabla tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-#tabla tr:hover {
-    background-color: #3D8BD2;
-}
 
 #botones {
     position: absolute;

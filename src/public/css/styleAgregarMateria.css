@@ -104,25 +104,7 @@
             display: block;
             color: #172C51;
         }
-        #tabla {
-            margin: 0 auto; 
-            width: 95%;
-            position: absolute;
-            top: 55%;
-            left: 49%;
-            transform: translate(-50%, -50%); 
-        }
-        #tabla th {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            background-color: #395B95;
-            color: #FFFFFF;
-        }
-        #tabla tr {
-            background-color: #E9F0FB;
-            text-align: center;
-        }
+       
         #botones {
             position: absolute;
             top: 114px;
