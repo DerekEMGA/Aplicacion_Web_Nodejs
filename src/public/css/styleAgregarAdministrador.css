@@ -130,11 +130,12 @@ h1 {
 } 
 
 #tabla {
+    margin: 0 auto; 
+    width:120%;
     position: absolute;
-    top: 350px;
-    left: 300px;
-    margin: 0 auto;
-    border-collapse: collapse;
+    top: 400px;
+    left: 470px;
+    transform: translate(-50%, -50%); 
 }
 
 #tabla th,

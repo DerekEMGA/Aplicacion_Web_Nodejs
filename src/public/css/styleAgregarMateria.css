@@ -105,10 +105,12 @@
             color: #172C51;
         }
         #tabla {
-            margin-top: 200px;
-            margin-bottom: 40px;
-            width: 75%;
-            margin-left: 280px;
+            margin: 0 auto; 
+            width: 95%;
+            position: absolute;
+            top: 55%;
+            left: 49%;
+            transform: translate(-50%, -50%); 
         }
         #tabla th {
             white-space: nowrap;
@@ -119,6 +121,7 @@
         }
         #tabla tr {
             background-color: #E9F0FB;
+            text-align: center;
         }
         #botones {
             position: absolute;

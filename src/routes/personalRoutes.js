@@ -5,5 +5,6 @@ const personalControllers=require('../controllers/personalControllers.js')
 router.get('/',personalControllers.mostrarPersonal)
 router.get('/agregarDocente',personalControllers.mostrarAgregarDocente)
 router.get('/agregarMateria',personalControllers.mostrarAgregarMateria)
+router.get('/agregarAlumnos',personalControllers.mostrarAgregarAlumnos)
 
 module.exports=router
