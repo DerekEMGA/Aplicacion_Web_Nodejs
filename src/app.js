@@ -354,7 +354,7 @@ app.post("/buscar", function (req, res) {
 function buildTableHtml(results) {
   // Construye la tabla HTML aquí
   let tableHtml =
-    '<table name="tabla" style="max-height: 300px; overflow-y: auto; position: fixed; bottom: 0%; left: 60%; transform: translateX(-50%); width: 80%; height: 60px; border: 1px solid #395B95; border-collapse: collapse;" cellpadding="8">';
+    '<table name="tabla"  cellpadding="8">';
 
   // Construye la fila de encabezados utilizando los nombres de los campos
   tableHtml += "<tr>";
@@ -522,7 +522,7 @@ app.post("/modificarProfesor", function (req, res) {
 
   // Check if the professor with the given clave exists
   connection.query(
-    "SELECT * FROM profesor WHERE clave = ?",
+    "SELECT * FROM profesor WHERE clave = ? ",
     [clave],
     function (error, results, fields) {
       if (error) {
@@ -539,27 +539,34 @@ app.post("/modificarProfesor", function (req, res) {
         );
       }
 
-      // Continue with the update code
-      connection.beginTransaction(function (err) {
-        if (err) {
-          throw err;
-        }
+      // Check if the combination of nombre, apellidoPaterno, and apellidoMaterno exists in another professor
+      connection.query(
+        "SELECT * FROM profesor WHERE nombre = ? AND apellido_paterno = ? AND apellido_materno = ? AND clave != ?",
+        [nombre, apellidoPaterno, apellidoMaterno, clave],
+        function (error, results, fields) {
+          if (error) {
+            console.error("Error en la consulta a la base de datos:", error);
+            return res.redirect(
+              "/personal/agregarDocente?mensaje=Error%20en%20la%20consulta%20a%20la%20base%20de%20datos"
+            );
+          }
 
-        // Modificar el registro en la tabla profesor
-        connection.query(
-          "UPDATE profesor SET nombre = ?, apellido_paterno = ?, apellido_materno = ?, profesion = ? WHERE clave = ?",
-          [nombre, apellidoPaterno, apellidoMaterno, profesion, clave],
-          function (error, results, fields) {
-            if (error) {
-              return connection.rollback(function () {
-                throw error;
-              });
+          if (results.length > 0) {
+            return res.redirect(
+              "/personal/agregarDocente?mensaje=Ya%20existe%20un%20profesor%20con%20el%20mismo%20nombre%20y%20apellidos%20y/o%20clave"
+            );
+          }
+
+          // Continue with the update code
+          connection.beginTransaction(function (err) {
+            if (err) {
+              throw err;
             }
 
-            // Modificar el registro en la tabla usuario
+            // Modificar el registro en la tabla profesor
             connection.query(
-              "UPDATE usuario SET contrasena = ? WHERE matricula_clave = ?",
-              [contrasena, clave], // Utilizamos la clave como referencia
+              "UPDATE profesor SET nombre = ?, apellido_paterno = ?, apellido_materno = ?, profesion = ? WHERE clave = ?",
+              [nombre, apellidoPaterno, apellidoMaterno, profesion, clave],
               function (error, results, fields) {
                 if (error) {
                   return connection.rollback(function () {
@@ -567,26 +574,40 @@ app.post("/modificarProfesor", function (req, res) {
                   });
                 }
 
-                // Commit si todo está bien
-                connection.commit(function (err) {
-                  if (err) {
-                    return connection.rollback(function () {
-                      throw err;
+                // Modificar el registro en la tabla usuario
+                connection.query(
+                  "UPDATE usuario SET contrasena = ? WHERE matricula_clave = ?",
+                  [contrasena, clave], // Utilizamos la clave como referencia
+                  function (error, results, fields) {
+                    if (error) {
+                      return connection.rollback(function () {
+                        throw error;
+                      });
+                    }
+
+                    // Commit si todo está bien
+                    connection.commit(function (err) {
+                      if (err) {
+                        return connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+                      console.log("Registro de profesor modificado correctamente");
+                      res.redirect(
+                        "/personal/agregarDocente?mensaje=Profesor%20modificado%20correctamente"
+                      );
                     });
                   }
-                  console.log("Registro de profesor modificado correctamente");
-                  res.redirect(
-                    "/personal/agregarDocente?mensaje=Profesor%20modificado%20correctamente"
-                  );
-                });
+                );
               }
             );
-          }
-        );
-      });
+          });
+        }
+      );
     }
   );
 });
+
 
 // Eliminar un registro de profesor
 app.post("/eliminarProfesor", function (req, res) {
@@ -1030,7 +1051,6 @@ app.post("/insertarAlumnos", function (req, res) {
     let contrasena = datosAlumnos.contrasena;
   
     let genero = datosAlumnos.genero;
-    let Correo = datosAlumnos.Correo;
     let Domicilio = datosAlumnos.Domicilio;
     let Fecha_Nacimiento = datosAlumnos.Fecha_Nacimiento;
     let semestre = datosAlumnos.semestre;
@@ -1088,14 +1108,13 @@ app.post("/insertarAlumnos", function (req, res) {
   
                   // Insertar en la tabla Alumnos
                   connection.query(
-                    "INSERT INTO alumnos(nombre, apellido_paterno, apellido_materno, genero, matricula, Correo, Domicilio, Fecha_Nacimiento, semestre) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    "INSERT INTO alumnos(nombre, apellido_paterno, apellido_materno, genero, matricula, Domicilio, Fecha_Nacimiento, semestre) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     [
                       nombre,
                       apellidoPaterno,
                       apellidoMaterno,
                       genero,
                       matricula,
-                      Correo,
                       Domicilio,
                       fechaFormateada,
                       semestre,
@@ -1146,121 +1165,78 @@ app.post("/insertarAlumnos", function (req, res) {
   });
   
 
-// Modificar un registro de Alumnos
-app.post("/modificarAlumnos", function (req, res) {
+  app.post("/modificarAlumnos", function (req, res) {
     const datosAlumnos = req.body;
-  
+
     let nombre = datosAlumnos.nombre;
     let apellidoPaterno = datosAlumnos.apellidoPaterno;
     let apellidoMaterno = datosAlumnos.apellidoMaterno;
     let matricula = datosAlumnos.matricula;
     let contrasena = datosAlumnos.contrasena;
-  
     let genero = datosAlumnos.genero;
-    let Correo = datosAlumnos.Correo;
     let Domicilio = datosAlumnos.Domicilio;
     let Fecha_Nacimiento = datosAlumnos.Fecha_Nacimiento;
     let semestre = datosAlumnos.semestre;
-  
+
     // Check if any field is empty
-    if (
-      !nombre ||
-      !apellidoPaterno ||
-      !apellidoMaterno ||
-      !genero ||
-      !matricula ||
-      !contrasena ||
-      !Domicilio ||
-      !Correo ||
-      !Fecha_Nacimiento ||
-      !semestre
-    ) {
-      return res.redirect(
-        "/personal/agregarAlumnos?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario."
-      );
+    if (!nombre || !apellidoPaterno || !apellidoMaterno || !genero || !matricula || !contrasena || !Domicilio  || !Fecha_Nacimiento || !semestre) {
+        return res.redirect("/personal/agregarAlumnos?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario.");
     }
-  
+
     // Formatear la fecha de nacimiento al formato deseado (YYYY-MM-DD)
     let fechaFormateada = new Date(Fecha_Nacimiento).toISOString().split("T")[0];
-  
-    // Check if the student with the given matricula exists
-    connection.query(
-      "SELECT * FROM alumnos WHERE matricula = ?",
-      [matricula],
-      function (error, results, fields) {
-        if (error) {
-          console.error("Error en la consulta a la base de datos:", error);
-          return res.redirect(
-            "/personal/agregarAlumnos?mensaje=Error%20en%20la%20consulta%20a%20la%20base%20de%20datos"
-          );
-        }
-  
-        // Check if there's a student with the provided matricula
-        if (results.length === 0) {
-          return res.redirect(
-            "/personal/agregarAlumnos?mensaje=Alumno%20no%20encontrado"
-          );
-        }
-  
-        // Continue with the update code
-        connection.beginTransaction(function (err) {
-          if (err) {
+
+    // Continue with the update code
+    connection.beginTransaction(function (err) {
+        if (err) {
             throw err;
-          }
-  
-          // Modificar el registro en la tabla Alumnos
-          connection.query(
-            "UPDATE alumnos SET nombre = ?, apellido_paterno = ?, apellido_materno = ?, genero = ?, matricula = ?, Correo = ?, Domicilio = ?, Fecha_Nacimiento = ?, semestre = ?  WHERE matricula = ?",
-            [
-              nombre,
-              apellidoPaterno,
-              apellidoMaterno,
-              genero,
-              matricula,
-              Correo,
-              Domicilio,
-              fechaFormateada,
-              semestre,
-              matricula,
-            ],
-            function (error, results, fields) {
-              if (error) {
+        }
+
+        // Modificar el registro en la tabla Alumnos
+        connection.query("UPDATE alumnos SET nombre = ?, apellido_paterno = ?, apellido_materno = ?, genero = ?, Domicilio = ?, Fecha_Nacimiento = ?, semestre = ?  WHERE matricula = ?", [nombre, apellidoPaterno, apellidoMaterno, genero, Domicilio, fechaFormateada, semestre, matricula], function (error, results, fields) {
+            if (error) {
                 return connection.rollback(function () {
-                  throw error;
+                    throw error;
                 });
-              }
-  
-              // Modificar el registro en la tabla usuario
-              connection.query(
-                "UPDATE usuario SET contrasena = ? WHERE matricula_clave = ?",
-                [contrasena, matricula], // Utilizamos la matricula como referencia
-                function (error, results, fields) {
-                  if (error) {
-                    return connection.rollback(function () {
-                      throw error;
-                    });
-                  }
-  
-                  // Commit si todo está bien
-                  connection.commit(function (err) {
-                    if (err) {
-                      return connection.rollback(function () {
-                        throw err;
-                      });
-                    }
-                    console.log("Registro de Alumno modificado correctamente");
-                    res.redirect(
-                      "/personal/agregarAlumnos?mensaje=Alumnos%20modificado%20correctamente"
-                    );
-                  });
-                }
-              );
             }
-          );
+
+            // Modificar el registro en la tabla usuario
+            connection.query("UPDATE usuario SET contrasena = ? WHERE matricula_clave = ?", [contrasena, matricula], function (error, results, fields) {
+                if (error) {
+                    return connection.rollback(function () {
+                        throw error;
+                    });
+                }
+
+                // Check if the combination of nombre, apellidoPaterno, and apellidoMaterno exists in another alumno
+                connection.query("SELECT * FROM alumnos WHERE nombre = ? AND apellido_paterno = ? AND apellido_materno = ? AND matricula != ?", [nombre, apellidoPaterno, apellidoMaterno, matricula], function (error, results, fields) {
+                    if (error) {
+                        console.error("Error en la consulta a la base de datos:", error);
+                        return res.redirect("/personal/agregarAlumnos?mensaje=Error%20en%20la%20consulta%20a%20la%20base%20de%20datos");
+                    }
+
+                    if (results.length > 0) {
+                        return res.redirect("/personal/agregarAlumnos?mensaje=Ya%20existe%20un%20alumno%20con%20el%20mismo%20nombre%20y%20apellidos%20y/o%20intento%20cambiar%20la%20matricula");
+                    }
+
+                    
+
+                    // Commit si todo está bien
+                    connection.commit(function (err) {
+                        if (err) {
+                            return connection.rollback(function () {
+                                throw err;
+                            });
+                        }
+                        console.log("Registro de Alumno modificado correctamente");
+                        res.redirect("/personal/agregarAlumnos?mensaje=Alumnos%20modificado%20correctamente");
+                    });
+                });
+            });
         });
-      }
-    );
-  });
+    });
+});
+
   
 
 // Eliminar un registro de Alumnos
@@ -1367,7 +1343,7 @@ app.post("/buscarAlumnos", function (req, res) {
         .padStart(2, "0")}`;
 
       // Construir la URL de redireccionamiento con la fecha formateada
-      const redirectURL = `/personal/agregarAlumnos?nombre=${alumno.nombre}&apellidoPaterno=${alumno.apellido_paterno}&apellidoMaterno=${alumno.apellido_materno}&genero=${alumno.genero}&matricula=${alumno.matricula}&Correo=${alumno.Correo}&Domicilio=${alumno.Domicilio}&Fecha_Nacimiento=${fechaFormateada}&semestre=${alumno.semestre}&contrasena=${alumno.contrasena}`;
+      const redirectURL = `/personal/agregarAlumnos?nombre=${encodeURIComponent(alumno.nombre)}&apellidoPaterno=${encodeURIComponent(alumno.apellido_paterno)}&apellidoMaterno=${encodeURIComponent(alumno.apellido_materno)}&genero=${encodeURIComponent(alumno.genero)}&matricula=${encodeURIComponent(alumno.matricula)}&fecha_Nacimiento=${encodeURIComponent(fechaFormateada)}&semestre=${encodeURIComponent(alumno.semestre)}&contrasena=${encodeURIComponent(alumno.contrasena)}&domicilio=${encodeURIComponent(alumno.Domicilio)}`;
 
       // Redirigir al usuario con los datos en la URL
       res.redirect(redirectURL);
@@ -1379,7 +1355,7 @@ app.post("/buscarAlumnos", function (req, res) {
 app.get("/personal/agregarAlumnos/tabla", function (req, res) {
   // Realiza la consulta para obtener los últimos 5 registros
   connection.query(
-    'SELECT nombre, apellido_paterno, apellido_materno, genero, matricula, Correo, Domicilio, DATE_FORMAT(Fecha_Nacimiento, "%d-%m-%Y") AS Fecha_Nacimiento, semestre FROM alumnos ORDER BY id DESC LIMIT 5',
+    'SELECT nombre, apellido_paterno, apellido_materno, genero, matricula, Domicilio, DATE_FORMAT(Fecha_Nacimiento, "%d-%m-%Y") AS Fecha_Nacimiento, semestre FROM alumnos ORDER BY id DESC LIMIT 5',
     function (error, results, fields) {
       if (error) {
         console.error("Error en la consulta a la base de datos:", error);

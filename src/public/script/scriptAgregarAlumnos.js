@@ -8,7 +8,6 @@ function validateForm(action) {
     var contrasena = document.getElementById("contrasena").value;
     
     var genero = document.getElementById("genero").value;
-    var Correo = document.getElementById("Correo").value;
     var Domicilio = document.getElementById("Domicilio").value;
     var Fecha_Nacimiento = document.getElementById("Fecha_Nacimiento").value;
     var semestre = document.getElementById("semestre").value;
@@ -22,7 +21,6 @@ function validateForm(action) {
           matricula === "" ||
           contrasena === "" ||
           genero === "" ||
-          Correo === "" ||
           Domicilio === "" ||
           Fecha_Nacimiento === "" ||
           semestre === ""
@@ -73,11 +71,9 @@ function validateForm(action) {
     const apellidoMaterno = urlParams.get("apellidoMaterno") || "";
     const contrasena = urlParams.get("contrasena") || "";
     const matricula = urlParams.get("matricula") || "";
-
     const genero =  urlParams.get("genero") || "";
-    const Correo = urlParams.get("Correo") || "";
-    const Domicilio = urlParams.get("Domicilio") || "";
-    const Fecha_Nacimiento = urlParams.get("Fecha_Nacimiento") || "";
+    const domicilio = urlParams.get("domicilio") || "";
+    const fecha_Nacimiento = urlParams.get("fecha_Nacimiento") || "";
     const semestre = urlParams.get("semestre") || "";
   
     document.getElementById("nombre").value = nombre;
@@ -87,9 +83,8 @@ function validateForm(action) {
     document.getElementById("matricula").value = matricula;
 
     document.getElementById("genero").value = genero;
-    document.getElementById("Correo").value = Correo;
-    document.getElementById("Domicilio").value = Domicilio;
-    document.getElementById("Fecha_Nacimiento").value = Fecha_Nacimiento;
+    document.getElementById("Domicilio").value = domicilio;
+    document.getElementById("Fecha_Nacimiento").value = fecha_Nacimiento;
     document.getElementById("semestre").value = semestre;
   
     window.history.replaceState(
@@ -107,7 +102,6 @@ function validateForm(action) {
     localStorage.removeItem("contrasena");
 
     localStorage.removeItem("genero");
-    localStorage.removeItem("Correo");
     localStorage.removeItem("Domicilio");
     localStorage.removeItem("Fecha_Nacimiento");
     localStorage.removeItem("semestre");
@@ -183,13 +177,18 @@ function validateForm(action) {
   function validateMatricula(event) {
     const maxDigits = 7;
     let inputValue = event.target.value;
-  
+
+    // Eliminar caracteres que no sean números
+    inputValue = inputValue.replace(/\D/g, '');
+
     // Limitar la longitud a 7
     inputValue = inputValue.slice(0, maxDigits);
-  
+
     // Actualizar el valor del campo
     event.target.value = inputValue;
-  }
+}
+
+
   
   function validateContrasena(event) {
     const maxChars = 12;

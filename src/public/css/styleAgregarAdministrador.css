@@ -222,3 +222,36 @@ h1 {
     -webkit-transition: all 0.35s;
     transition: all 0.35s;
   }
+
+  #inicio-btn {
+    position: relative; /* Agrega posicionamiento relativo para utilizar top */
+     margin-top: 100px; /* Mueve el botón hacia abajo */
+     right: -113px; /* Mueve el botón hacia la izquierda */
+     width: 98px; /* Ancho del botón */
+     height: 20px; /* Altura del botón */
+ }
+ 
+ table[name="tabla"] {
+    border-collapse: collapse;
+    width: 100%; /* Reduciendo el ancho de la tabla */
+    margin-top: 400px; /* Ajustando el margen superior para moverla hacia abajo */
+    margin-bottom: 20px; /* Agregando un margen inferior para evitar que se pegue al borde inferior de la pantalla */
+    margin-left:1%; /* Centrando la tabla horizontalmente */
+    margin-right: auto; /* Centrando la tabla horizontalmente */
+}
+
+table[name="tabla"] th,
+table[name="tabla"] td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+table[name="tabla"] th {
+    background-color: #162030;
+    color: #FFFFFF;
+}
+
+table[name="tabla"] tr:nth-child(even) {
+    background-color: #f2f2f2;
+}

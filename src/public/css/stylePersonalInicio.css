@@ -135,3 +135,12 @@ h1 {
     color: #3D8BD2;
     margin-top: 10px;
 }
+
+#inicio-btn {
+    position: relative; /* Agrega posicionamiento relativo para utilizar top */
+     margin-top: 100px; /* Mueve el botón hacia abajo */
+     right: -113px; /* Mueve el botón hacia la izquierda */
+     width: 98px; /* Ancho del botón */
+     height: 20px; /* Altura del botón */
+ }
+ 

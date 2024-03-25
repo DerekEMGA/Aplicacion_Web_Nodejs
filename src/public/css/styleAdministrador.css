@@ -194,3 +194,11 @@ h1 {
     background-color: lightblue;
 }
 
+#inicio-btn {
+    position: relative; /* Agrega posicionamiento relativo para utilizar top */
+     margin-top: 100px; /* Mueve el botón hacia abajo */
+     right: -113px; /* Mueve el botón hacia la izquierda */
+     width: 98px; /* Ancho del botón */
+     height: 20px; /* Altura del botón */
+ }
+ 
