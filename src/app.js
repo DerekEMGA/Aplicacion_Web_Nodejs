@@ -1179,14 +1179,13 @@ app.post("/insertarAlumnos", function (req, res) {
     );
   });
   
-
   app.post("/modificarAlumnos", function (req, res) {
     const datosAlumnos = req.body;
 
     let nombre = datosAlumnos.nombre;
     let apellidoPaterno = datosAlumnos.apellidoPaterno;
     let apellidoMaterno = datosAlumnos.apellidoMaterno;
-    let matricula = datosAlumnos.matricula;
+    const matricula = datosAlumnos.matricula;
     let contrasena = datosAlumnos.contrasena;
     let genero = datosAlumnos.genero;
     let Domicilio = datosAlumnos.Domicilio;
@@ -1195,67 +1194,80 @@ app.post("/insertarAlumnos", function (req, res) {
 
     let fechaFormateada = new Date(Fecha_Nacimiento).toISOString().split("T")[0];
 
+    console.log(nombre)
+    console.log(apellidoPaterno)
+    console.log(apellidoMaterno)
+    console.log(matricula)
+
+    if (
+        !nombre ||
+        !apellidoPaterno ||
+        !apellidoMaterno ||
+        !genero ||
+        !Domicilio ||
+        !fechaFormateada ||
+        !semestre ||
+        !contrasena
+    ) {
+        return res.redirect(
+            "/personal/agregarAlumnos?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario."
+        );
+    }
+
     connection.beginTransaction(function (err) {
         if (err) {
             throw err;
         }
 
-        // Validación de nombre y apellidos
-        connection.query("SELECT * FROM alumnos WHERE nombre = ? AND apellido_paterno = ? AND apellido_materno = ? ", [nombre, apellidoPaterno, apellidoMaterno], function (error, results, fields) {
-            if (error) {
-                return connection.rollback(function () {
-                    throw error;
-                });
-            }
-
-            if (results.length > 0) {
-                return res.redirect("/personal/agregarAlumnos?mensaje=Ya%20existe%20un%20alumno%20con%20el%20mismo%20nombre%20y%20apellidos%20y/o%20intento%20cambiar%20la%20matricula");
-            }
-
-            // Validación de matrícula
-            connection.query("SELECT * FROM alumnos WHERE matricula = ? AND matricula != ?", [matricula, datosAlumnos.matricula], function (error, results, fields) {
+   
+      
+        // Validación de nombres y apellidos
+        connection.query("SELECT * FROM alumnos WHERE nombre = ? AND apellido_paterno = ? AND apellido_materno = ? AND matricula <> ?",
+            [nombre, apellidoPaterno, apellidoMaterno, matricula],
+            function (error, results, fields) {
                 if (error) {
-                    return connection.rollback(function () {
-                        throw error;
-                    });
+                    console.error("Error en la consulta a la base de datos:", error);
+                    return res.redirect("/personal/agregarAlumnos?mensaje=Error%20en%20la%20consulta%20a%20la%20base%20de%20datos");
                 }
 
                 if (results.length > 0) {
-                    return res.redirect("/personal/agregarAlumnos?mensaje=La%20matricula%20ya%20esta%20en%20uso%20por%20otro%20alumno");
+                  return res.redirect("/personal/agregarAlumnos?mensaje=Ya%20existe%20un%20alumno%20con%20el%20mismo%20nombre%20y%20apellidos%20O%20se%20intentó%20cambiar%20la%20matrícula");
                 }
 
-                // Actualizar los datos del alumno en la tabla "alumnos"
-                connection.query("UPDATE alumnos SET nombre = ?, apellido_paterno = ?, apellido_materno = ?, genero = ?, Domicilio = ?, Fecha_Nacimiento = ?, semestre = ?  WHERE matricula = ?", [nombre, apellidoPaterno, apellidoMaterno, genero, Domicilio, fechaFormateada, semestre, matricula], function (error, results, fields) {
-                    if (error) {
-                        return connection.rollback(function () {
-                            throw error;
-                        });
-                    }
-
-                    // Actualizar la contraseña en la tabla "usuario"
-                    connection.query("UPDATE usuario SET contrasena = ? WHERE matricula_clave = ?", [contrasena, matricula], function (error, results, fields) {
+                // Continuar con el código de actualización
+                connection.query("UPDATE alumnos SET nombre = ?, apellido_paterno = ?, apellido_materno = ?, genero = ?, Domicilio = ?, Fecha_Nacimiento = ?, semestre = ? WHERE matricula = ?",
+                    [nombre, apellidoPaterno, apellidoMaterno, genero, Domicilio, fechaFormateada, semestre, matricula],
+                    function (error, results, fields) {
                         if (error) {
                             return connection.rollback(function () {
                                 throw error;
                             });
                         }
 
-                        connection.commit(function (err) {
-                            if (err) {
-                                return connection.rollback(function () {
-                                    throw err;
+                        // Actualizar la contraseña en la tabla "usuario"
+                        connection.query("UPDATE usuario SET contrasena = ? WHERE matricula_clave = ?",
+                            [contrasena, matricula],
+                            function (error, results, fields) {
+                                if (error) {
+                                    return connection.rollback(function () {
+                                        throw error;
+                                    });
+                                }
+
+                                connection.commit(function (err) {
+                                    if (err) {
+                                        return connection.rollback(function () {
+                                            throw err;
+                                        });
+                                    }
+                                    console.log("Registro de Alumno modificado correctamente");
+                                    res.redirect("/personal/agregarAlumnos?mensaje=Alumnos%20modificado%20correctamente");
                                 });
-                            }
-                            console.log("Registro de Alumno modificado correctamente");
-                            res.redirect("/personal/agregarAlumnos?mensaje=Alumnos%20modificado%20correctamente");
-                        });
+                            });
                     });
-                });
             });
-        });
     });
 });
-
 
   
 
