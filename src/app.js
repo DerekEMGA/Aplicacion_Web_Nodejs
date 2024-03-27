@@ -878,12 +878,14 @@ app.post("/modificarMateria", function (req, res) {
   const datosMateria = req.body;
   console.log(req.body);
 
-  let nombre = datosMateria.nombre;
-  let idMaestro = datosMateria.docente;
+  const nombre = datosMateria.nombre;
+  const idMaestro = datosMateria.docente;
   let hora = datosMateria.hora;
   let diaSemana = datosMateria.dias;
   let semestre = datosMateria.semestre;
-
+  const idMaestro_Viejo = datosMateria.docente_antiguo;
+  const hora_antigua = datosMateria.hora_antigua;
+  
   // Check if any field is empty
   if (!nombre || !idMaestro || !hora || !diaSemana || !semestre) {
     return res.redirect(
@@ -897,10 +899,18 @@ app.post("/modificarMateria", function (req, res) {
       throw err;
     }
 
+    // Verificar si se están intentando cambiar el ID del maestro o la hora
+    if (idMaestro !== idMaestro_Viejo || hora !== hora_antigua) {
+      console.log("No se permite cambiar al docente o la hora.");
+      return res.redirect(
+        "/personal/agregarMateria?mensaje=No%20se%20permite%20cambiar%20al%20docente%20o%20la%20hora."
+      );
+    }
+
     // Verificar si el docente tiene otro registro a la misma hora excluyendo la materia que se está modificando
     connection.query(
-      "SELECT * FROM materias WHERE ID_MAESTRO = ? AND HORA = ? AND NOT (NOMBRE = ? AND HORA = ? AND ID_MAESTRO = ? AND DIA_SEMANA = ?)",
-      [idMaestro, hora, nombre, hora, idMaestro, diaSemana],
+      "SELECT * FROM materias WHERE ID_MAESTRO = ? AND HORA = ? AND NOT ( HORA = ? AND ID_MAESTRO = ?)",
+      [idMaestro, hora, hora, idMaestro],
       function (error, results, fields) {
         if (error) {
           return connection.rollback(function () {
@@ -917,17 +927,13 @@ app.post("/modificarMateria", function (req, res) {
         } else {
           // Continuar con el código de actualización
           connection.query(
-            "UPDATE materias SET NOMBRE = ?, ID_MAESTRO = ?, HORA = ?, DIA_SEMANA = ?, SEMESTRE = ? WHERE NOMBRE = ? AND ID_MAESTRO = ? AND HORA = ? AND DIA_SEMANA = ?",
+            "UPDATE materias SET NOMBRE = ?, DIA_SEMANA = ?, SEMESTRE = ? WHERE  ID_MAESTRO = ? AND HORA = ? ",
             [
               nombre,
-              idMaestro,
-              hora,
               diaSemana,
               semestre,
-              nombre,
               idMaestro,
               hora,
-              diaSemana,
             ],
             function (error, results, fields) {
               if (error) {
@@ -955,6 +961,7 @@ app.post("/modificarMateria", function (req, res) {
     );
   });
 });
+
 
 // Eliminar Materia
 app.post("/eliminarMateria", function (req, res) {

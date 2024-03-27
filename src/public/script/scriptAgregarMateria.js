@@ -45,8 +45,11 @@ function validateForm(action) {
         return true; // Evitar envío automático del formulario
   
       case "/modificarMateria":
-        document.getElementById("formularioMateria").action = action;
-        document.getElementById("formularioMateria").submit();
+  
+    
+
+        document.getElementById("formularioMateria").action = action
+        document.getElementById("formularioMateria").submit()
         break;
   
       case "/buscarMateria":
@@ -77,6 +80,13 @@ function validateForm(action) {
     document.getElementById("dias").value = dias;
     document.getElementById("docente").value = docente;
     document.getElementById("semestre").value = semestre;
+
+    const id_maestro = urlParams.get("idMaestro") || ""
+    const hora_antigua1 = urlParams.get("hora") || ""
+    document.getElementById("docente_antiguo").value = id_maestro;
+    document.getElementById("hora_antigua").value = hora_antigua1;
+
+
   
     window.history.replaceState(
       {},
