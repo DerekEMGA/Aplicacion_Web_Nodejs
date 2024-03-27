@@ -194,34 +194,35 @@ app.post("/modificar", function (req, res) {
         );
       }
 
-      // Check for a collision (two records having the same employee number)
-      if (results.length > 1) {
-        return res.redirect(
-          "/administrador/agregarPersonal?mensaje=Colisión:%20El%20número%20de%20empleado%20ya%20existe%20para%20otro%20registro"
-        );
-      }
+      // Check if the user with the given nombre and apellidos already exists with a different clave
+      connection.query(
+        "SELECT * FROM personal WHERE nombre = ? AND apellido_paterno = ? AND apellido_materno = ? AND clave <> ?",
+        [nombre, apellidoPaterno, apellidoMaterno, clave],
+        function (error, resultsSameName, fields) {
+          if (error) {
+            console.error("Error en la consulta a la base de datos:", error);
+            return res.redirect(
+              "/administrador/agregarPersonal?mensaje=Error%20en%20la%20consulta%20a%20la%20base%20de%20datos"
+            );
+          }
 
-      // Continue with the update code
-      connection.beginTransaction(function (err) {
-        if (err) {
-          throw err;
-        }
+          // If there's another user with the same name and apellidos but different clave, return error
+          if (resultsSameName.length > 0) {
+            return res.redirect(
+              "/administrador/agregarPersonal?mensaje=Error:%20Ya%20existe%20otro%20empleado%20con%20el%20mismo%20nombre%20y%20apellidos."
+            );
+          }
 
-        // Modificar el registro en la tabla personal
-        connection.query(
-          "UPDATE personal SET nombre = ?, apellido_paterno = ?, apellido_materno = ?, antiguedad = ? WHERE clave = ?",
-          [nombre, apellidoPaterno, apellidoMaterno, antiguedad, clave],
-          function (error, results, fields) {
-            if (error) {
-              return connection.rollback(function () {
-                throw error;
-              });
+          // Continue with the update code
+          connection.beginTransaction(function (err) {
+            if (err) {
+              throw err;
             }
 
-            // Modificar el registro en la tabla usuario
+            // Modificar el registro en la tabla personal
             connection.query(
-              "UPDATE usuario SET contrasena = ? WHERE matricula_clave = ?",
-              [contrasena, clave], // Utilizamos la clave como referencia
+              "UPDATE personal SET nombre = ?, apellido_paterno = ?, apellido_materno = ?, antiguedad = ? WHERE clave = ?",
+              [nombre, apellidoPaterno, apellidoMaterno, antiguedad, clave],
               function (error, results, fields) {
                 if (error) {
                   return connection.rollback(function () {
@@ -229,26 +230,40 @@ app.post("/modificar", function (req, res) {
                   });
                 }
 
-                // Commit si todo está bien
-                connection.commit(function (err) {
-                  if (err) {
-                    return connection.rollback(function () {
-                      throw err;
+                // Modificar el registro en la tabla usuario
+                connection.query(
+                  "UPDATE usuario SET contrasena = ? WHERE matricula_clave = ?",
+                  [contrasena, clave], // Utilizamos la clave como referencia
+                  function (error, results, fields) {
+                    if (error) {
+                      return connection.rollback(function () {
+                        throw error;
+                      });
+                    }
+
+                    // Commit si todo está bien
+                    connection.commit(function (err) {
+                      if (err) {
+                        return connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+                      console.log("Registro de personal modificado correctamente");
+                      res.redirect(
+                        "/administrador/agregarPersonal?mensaje=Personal%20modificado%20correctamente"
+                      );
                     });
                   }
-                  console.log("Registro de personal modificado correctamente");
-                  res.redirect(
-                    "/administrador/agregarPersonal?mensaje=Personal%20modificado%20correctamente"
-                  );
-                });
+                );
               }
             );
-          }
-        );
-      });
+          });
+        }
+      );
     }
   );
 });
+
 
 // Aquí se elimina un registro de personal y usuario
 app.post("/eliminar", function (req, res) {
@@ -1178,64 +1193,69 @@ app.post("/insertarAlumnos", function (req, res) {
     let Fecha_Nacimiento = datosAlumnos.Fecha_Nacimiento;
     let semestre = datosAlumnos.semestre;
 
-    // Check if any field is empty
-    if (!nombre || !apellidoPaterno || !apellidoMaterno || !genero || !matricula || !contrasena || !Domicilio  || !Fecha_Nacimiento || !semestre) {
-        return res.redirect("/personal/agregarAlumnos?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario.");
-    }
-
-    // Formatear la fecha de nacimiento al formato deseado (YYYY-MM-DD)
     let fechaFormateada = new Date(Fecha_Nacimiento).toISOString().split("T")[0];
 
-    // Continue with the update code
     connection.beginTransaction(function (err) {
         if (err) {
             throw err;
         }
 
-        // Modificar el registro en la tabla Alumnos
-        connection.query("UPDATE alumnos SET nombre = ?, apellido_paterno = ?, apellido_materno = ?, genero = ?, Domicilio = ?, Fecha_Nacimiento = ?, semestre = ?  WHERE matricula = ?", [nombre, apellidoPaterno, apellidoMaterno, genero, Domicilio, fechaFormateada, semestre, matricula], function (error, results, fields) {
+        // Validación de nombre y apellidos
+        connection.query("SELECT * FROM alumnos WHERE nombre = ? AND apellido_paterno = ? AND apellido_materno = ? ", [nombre, apellidoPaterno, apellidoMaterno], function (error, results, fields) {
             if (error) {
                 return connection.rollback(function () {
                     throw error;
                 });
             }
 
-            // Modificar el registro en la tabla usuario
-            connection.query("UPDATE usuario SET contrasena = ? WHERE matricula_clave = ?", [contrasena, matricula], function (error, results, fields) {
+            if (results.length > 0) {
+                return res.redirect("/personal/agregarAlumnos?mensaje=Ya%20existe%20un%20alumno%20con%20el%20mismo%20nombre%20y%20apellidos%20y/o%20intento%20cambiar%20la%20matricula");
+            }
+
+            // Validación de matrícula
+            connection.query("SELECT * FROM alumnos WHERE matricula = ? AND matricula != ?", [matricula, datosAlumnos.matricula], function (error, results, fields) {
                 if (error) {
                     return connection.rollback(function () {
                         throw error;
                     });
                 }
 
-                // Check if the combination of nombre, apellidoPaterno, and apellidoMaterno exists in another alumno
-                connection.query("SELECT * FROM alumnos WHERE nombre = ? AND apellido_paterno = ? AND apellido_materno = ? AND matricula != ?", [nombre, apellidoPaterno, apellidoMaterno, matricula], function (error, results, fields) {
+                if (results.length > 0) {
+                    return res.redirect("/personal/agregarAlumnos?mensaje=La%20matricula%20ya%20esta%20en%20uso%20por%20otro%20alumno");
+                }
+
+                // Actualizar los datos del alumno en la tabla "alumnos"
+                connection.query("UPDATE alumnos SET nombre = ?, apellido_paterno = ?, apellido_materno = ?, genero = ?, Domicilio = ?, Fecha_Nacimiento = ?, semestre = ?  WHERE matricula = ?", [nombre, apellidoPaterno, apellidoMaterno, genero, Domicilio, fechaFormateada, semestre, matricula], function (error, results, fields) {
                     if (error) {
-                        console.error("Error en la consulta a la base de datos:", error);
-                        return res.redirect("/personal/agregarAlumnos?mensaje=Error%20en%20la%20consulta%20a%20la%20base%20de%20datos");
+                        return connection.rollback(function () {
+                            throw error;
+                        });
                     }
 
-                    if (results.length > 0) {
-                        return res.redirect("/personal/agregarAlumnos?mensaje=Ya%20existe%20un%20alumno%20con%20el%20mismo%20nombre%20y%20apellidos%20y/o%20intento%20cambiar%20la%20matricula");
-                    }
-
-                    
-
-                    // Commit si todo está bien
-                    connection.commit(function (err) {
-                        if (err) {
+                    // Actualizar la contraseña en la tabla "usuario"
+                    connection.query("UPDATE usuario SET contrasena = ? WHERE matricula_clave = ?", [contrasena, matricula], function (error, results, fields) {
+                        if (error) {
                             return connection.rollback(function () {
-                                throw err;
+                                throw error;
                             });
                         }
-                        console.log("Registro de Alumno modificado correctamente");
-                        res.redirect("/personal/agregarAlumnos?mensaje=Alumnos%20modificado%20correctamente");
+
+                        connection.commit(function (err) {
+                            if (err) {
+                                return connection.rollback(function () {
+                                    throw err;
+                                });
+                            }
+                            console.log("Registro de Alumno modificado correctamente");
+                            res.redirect("/personal/agregarAlumnos?mensaje=Alumnos%20modificado%20correctamente");
+                        });
                     });
                 });
             });
         });
     });
 });
+
 
   
 
