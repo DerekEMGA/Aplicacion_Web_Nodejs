@@ -637,9 +637,9 @@ app.post("/eliminarProfesor", function (req, res) {
       throw err;
     }
 
-    // Eliminar el registro de la tabla usuario (si existe)
+    // Obtener el id del maestro desde la tabla de profesores
     connection.query(
-      "DELETE FROM usuario WHERE matricula_clave = ?",
+      "SELECT id FROM profesor WHERE clave = ?",
       [clave],
       function (error, results, fields) {
         if (error) {
@@ -648,7 +648,7 @@ app.post("/eliminarProfesor", function (req, res) {
           });
         }
 
-        if (results.affectedRows === 0) {
+        if (results.length === 0) {
           // El profesor no existe, enviar una alerta
           res.redirect(
             "/personal/agregarDocente?mensaje=Profesor%20no%20encontrado"
@@ -656,10 +656,12 @@ app.post("/eliminarProfesor", function (req, res) {
           return;
         }
 
-        // Eliminar el registro de la tabla profesor
+        const id_maestro = results[0].id;
+
+        // Verificar si hay materias asignadas al profesor
         connection.query(
-          "DELETE FROM profesor WHERE clave = ?",
-          [clave],
+          "SELECT COUNT(*) AS count FROM materias WHERE ID_MAESTRO = ?",
+          [id_maestro],
           function (error, results, fields) {
             if (error) {
               return connection.rollback(function () {
@@ -667,24 +669,62 @@ app.post("/eliminarProfesor", function (req, res) {
               });
             }
 
-            // Commit si todo está bien
-            connection.commit(function (err) {
-              if (err) {
-                return connection.rollback(function () {
-                  throw err;
-                });
-              }
-              console.log("Registro de profesor eliminado correctamente");
+            const count = results[0].count;
+
+            if (count > 0) {
+              // El profesor tiene materias asignadas, enviar un mensaje de error
               res.redirect(
-                "/personal/agregarDocente?mensaje=Profesor%20eliminado%20correctamente"
+                "/personal/agregarDocente?mensaje=El%20profesor%20tiene%20materias%20asignadas%20y%20no%20se%20puede%20eliminar"
               );
-            });
+              return;
+            }
+
+            // Si no hay materias asignadas, proceder con la eliminación del profesor
+            // Eliminar el registro de la tabla usuario (si existe)
+            connection.query(
+              "DELETE FROM usuario WHERE matricula_clave = ?",
+              [clave],
+              function (error, results, fields) {
+                if (error) {
+                  return connection.rollback(function () {
+                    throw error;
+                  });
+                }
+
+                // Eliminar el registro de la tabla profesor
+                connection.query(
+                  "DELETE FROM profesor WHERE clave = ?",
+                  [clave],
+                  function (error, results, fields) {
+                    if (error) {
+                      return connection.rollback(function () {
+                        throw error;
+                      });
+                    }
+
+                    // Commit si todo está bien
+                    connection.commit(function (err) {
+                      if (err) {
+                        return connection.rollback(function () {
+                          throw err;
+                        });
+                      }
+                      console.log("Registro de profesor eliminado correctamente");
+                      res.redirect(
+                        "/personal/agregarDocente?mensaje=Profesor%20eliminado%20correctamente"
+                      );
+                    });
+                  }
+                );
+              }
+            );
           }
         );
       }
     );
   });
 });
+
 
 // Buscar un profesor por su clave
 app.post("/buscarProfesor", function (req, res) {
