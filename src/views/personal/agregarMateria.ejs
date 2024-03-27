@@ -79,13 +79,25 @@
             <button type="submit" name="accion" value="guardar" class="ov-btn-slide-right" onclick="validateForm('/insertarMateria')">Crear</button>
             <button type="button" name="accion" value="eliminar" class="ov-btn-slide-right" onclick="validateForm('/eliminarMateria')">Eliminar</button>
             <button type="button" name="accion" value="cancelar" class="ov-btn-slide-right" onclick="cancelarFormulario()">Cancelar</button>
+        
         </div>
 
     </div>
+
+
 </form>
-<br>
-<br>
-<br>
+    
+<div style="margin-top: 200px; margin-right: 30px; display: flex; justify-content: flex-end;">
+    <input type="text" id="filtroNombreMateria" name="filtroNombreMateria" placeholder="Nombre de materia" style="margin-right: 10px;">
+    <select id="filtroIdMaestro" name="filtroIdMaestro" style="margin-right: 10px;" ></select>
+
+    <button id="aplicarFiltrosBtn" class="ov-btn-slide-right" style=" 
+    color: white; 
+    padding: 10px 25px; 
+    cursor: pointer; 
+    min-width: 150px; ">Aplicar Filtros</button>
+</div>
+
 
 <div id="tabla"></div>
 

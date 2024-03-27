@@ -260,7 +260,7 @@
          table[name="tabla"] {
             border-collapse: collapse;
             width: 80%; /* Reduciendo el ancho de la tabla */
-            margin-top: 300px; /* Ajustando el margen superior para moverla hacia abajo */
+            margin-top: 95px; /* Ajustando el margen superior para moverla hacia abajo */
             margin-bottom: 20px; /* Agregando un margen inferior para evitar que se pegue al borde inferior de la pantalla */
             margin-left:19%; /* Centrando la tabla horizontalmente */
             margin-right: auto; /* Centrando la tabla horizontalmente */

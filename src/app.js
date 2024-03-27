@@ -1072,24 +1072,49 @@ app.post("/buscarMateria", function (req, res) {
 });
 
 app.get("/personal/agregarMateria/tabla", function (req, res) {
-  // Realiza la consulta para obtener los últimos 5 registros
-      connection.query('SELECT materias.NOMBRE AS NOMBRE_MATERIA, CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, materias.SEMESTRE, CASE WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" END AS HORA, materias.DIA_SEMANA FROM materias INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id ORDER BY materias.id DESC LIMIT 5', 
-      
+  const filtroNombreMateria = req.query.filtroNombreMateria || ""; // Obtener el filtro de nombre de materia
+  const filtroIdMaestro = req.query.filtroIdMaestro || ""; // Obtener el filtro de id_maestro
 
-    function (error, results, fields) {
-      if (error) {
-        console.error("Error en la consulta a la base de datos:", error);
-        return res.status(500).send("Error en la consulta a la base de datos");
+  // Construir la consulta SQL basada en los filtros
+  let sqlQuery = 'SELECT materias.NOMBRE AS NOMBRE_MATERIA, CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, materias.SEMESTRE, CASE WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" END AS HORA, materias.DIA_SEMANA FROM materias INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id';
+
+  if (filtroNombreMateria || filtroIdMaestro) {
+    // Si hay filtros, agregar condiciones WHERE a la consulta SQL
+    sqlQuery += " WHERE ";
+    if (filtroNombreMateria) {
+      sqlQuery += `materias.NOMBRE LIKE '%${filtroNombreMateria}%'`;
+      if (filtroIdMaestro) {
+        sqlQuery += " AND ";
       }
-
-      // Construye la tabla HTML
-      const tableHtml = buildTableHtml(results);
-
-      // Envía la tabla HTML como respuesta al cliente
-      res.status(200).send(tableHtml);
     }
-  );
+    if (filtroIdMaestro) {
+      sqlQuery += `profesor.id = ${filtroIdMaestro}`;
+    }
+  }
+
+  // Agregar el orden y límite
+  sqlQuery += ' ORDER BY materias.id DESC';
+
+  // Si los filtros están vacíos, establecer el límite en 7, de lo contrario, no hay límite
+  if (!(filtroNombreMateria || filtroIdMaestro)) {
+    sqlQuery += ' LIMIT 7';
+  }
+
+  // Realizar la consulta a la base de datos
+  connection.query(sqlQuery, function (error, results, fields) {
+    if (error) {
+      console.error("Error en la consulta a la base de datos:", error);
+      return res.status(500).send("Error en la consulta a la base de datos");
+    }
+
+    // Construir la tabla HTML
+    const tableHtml = buildTableHtml(results);
+
+    // Enviar la tabla HTML como respuesta al cliente
+    res.status(200).send(tableHtml);
+  });
 });
+
 
 app.get("/profesores", (req, res) => {
   connection.query("SELECT * FROM profesor", (err, results) => {

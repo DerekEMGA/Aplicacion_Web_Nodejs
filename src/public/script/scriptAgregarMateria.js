@@ -46,8 +46,6 @@ function validateForm(action) {
   
       case "/modificarMateria":
   
-    
-
         document.getElementById("formularioMateria").action = action
         document.getElementById("formularioMateria").submit()
         break;
@@ -103,18 +101,22 @@ function validateForm(action) {
     localStorage.removeItem("dias");
     localStorage.removeItem("semestre");
   }
-  
-  document.addEventListener("DOMContentLoaded", function () {
-    console.log("Script ejecutado en la carga de la página."); // Registro para verificar la ejecución
-    const serverMessage = obtenerParametroConsulta("mensaje");
-  
-    if (serverMessage && !sessionStorage.getItem("messageShown")) {
-      console.log("Mensaje recibido:", serverMessage); // Registro para verificar el mensaje recibido
-      alert(serverMessage);
-      sessionStorage.setItem("messageShown", "true");
-    }
-  
-    fetch("/personal/agregarMateria/tabla")
+
+document.addEventListener("DOMContentLoaded", function() {
+  // Obtener referencia a los elementos del DOM
+  const filtroNombreMateriaInput = document.getElementById("filtroNombreMateria");
+  const filtroIdMaestroInput = document.getElementById("filtroIdMaestro");
+  const aplicarFiltrosBtn = document.getElementById("aplicarFiltrosBtn");
+  const tablaContainer = document.getElementById("tabla");
+
+  // Manejar el evento de clic en el botón de aplicar filtros
+  aplicarFiltrosBtn.addEventListener("click", function() {
+    // Obtener los valores de los filtros
+    const filtroNombreMateria = filtroNombreMateriaInput.value.trim();
+    const filtroIdMaestro = filtroIdMaestroInput.value.trim();
+
+    // Realizar una solicitud al servidor con los filtros
+    fetch(`/personal/agregarMateria/tabla?filtroNombreMateria=${filtroNombreMateria}&filtroIdMaestro=${filtroIdMaestro}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Error al obtener la tabla");
@@ -122,38 +124,56 @@ function validateForm(action) {
         return response.text();
       })
       .then((html) => {
-        // Inserta la tabla HTML en el contenedor
-        document.getElementById("tabla").innerHTML = html;
+        // Insertar la tabla HTML en el contenedor
+        tablaContainer.innerHTML = html;
       })
       .catch((error) => {
         console.error("Error al obtener la tabla:", error);
-        // Puedes mostrar un mensaje al usuario indicando el error
+        // Mostrar un mensaje de error al usuario
       });
   });
-  
+});
 
-  fetch('/profesores')
-      .then(response => response.json())
-      .then(profesores => {
-        const select = document.getElementById('docente');
-        profesores.forEach(profesor => {
-          const option = document.createElement('option');
-          option.value = profesor.id; // Asigna el ID como valor
-          option.textContent = profesor.nombre + " " + profesor.apellido_paterno + " " + profesor.apellido_materno; // Muestra el nombre del profesor
-          select.appendChild(option);
-        });
-      })
-      .catch(error => console.error('Error al obtener los profesores:', error));
+fetch('/profesores')
+  .then(response => response.json())
+  .then(profesores => {
+    const selectDocente = document.getElementById('docente');
+    const selectFiltro = document.getElementById('filtroIdMaestro');
 
-  function obtenerParametroConsulta(nombre) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(nombre);
-  }
-  
+    // Agregar las opciones de los profesores al primer select
+    profesores.forEach(profesor => {
+      const optionDocente = document.createElement('option');
+      optionDocente.value = profesor.id;
+      optionDocente.textContent = profesor.nombre + " " + profesor.apellido_paterno + " " + profesor.apellido_materno;
+      selectDocente.appendChild(optionDocente);
+    });
+
+    // Agregar la opción en blanco solo al segundo select (filtroIdMaestro)
+    const optionBlanco = document.createElement('option');
+    optionBlanco.value = '';
+    optionBlanco.textContent = ""; // Deja el texto en blanco
+    selectFiltro.appendChild(optionBlanco);
+
+    // Agregar las opciones de los profesores al segundo select (filtroIdMaestro)
+    profesores.forEach(profesor => {
+      const optionFiltro = document.createElement('option');
+      optionFiltro.value = profesor.id;
+      optionFiltro.textContent = profesor.nombre + " " + profesor.apellido_paterno + " " + profesor.apellido_materno;
+      selectFiltro.appendChild(optionFiltro);
+    });
+  })
+  .catch(error => console.error('Error al obtener los profesores:', error));
+
   const mensaje = obtenerParametroConsulta("mensaje");
   if (mensaje) {
-    alert(mensaje);
+      alert(mensaje);
   }
+
+  function obtenerParametroConsulta(nombre) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(nombre);
+  }
+
   
   function validateInput(event) {
     const fieldName = event.target.name;
