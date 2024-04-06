@@ -1474,3 +1474,34 @@ app.get("/personal/agregarAlumnos/tabla", function (req, res) {
     }
   );
 });
+
+app.get("/personal/crearHorario/tabla", function (req, res) {
+  const filtroSemestre = req.query.filtroSemestre || ""; // Obtener el filtro de semestre
+
+  let sqlQuery = 'SELECT materias.NOMBRE AS NOMBRE_MATERIA, CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, materias.SEMESTRE, CASE WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" END AS HORA, materias.DIA_SEMANA FROM materias INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id';
+
+  if (filtroSemestre) {
+    // Si hay filtros, agregar condiciones WHERE a la consulta SQL
+    sqlQuery += " WHERE ";
+    sqlQuery += `materias.SEMESTRE = '${filtroSemestre}'`;
+  }
+  
+  // Ordenar los resultados por hora descendente
+  sqlQuery += ' ORDER BY HOUR(materias.HORA) ASC';
+
+  // Si los filtros están vacíos, establecer el límite en 7, de lo contrario, no hay límite
+  if (!(filtroSemestre)) {
+    sqlQuery += ' LIMIT 7';
+  }
+
+  // Realizar la consulta a la base de datos
+  connection.query(sqlQuery, function (error, results, fields) {
+    if (error) {
+      console.error("Error en la consulta a la base de datos:", error);
+      return res.status(500).send("Error en la consulta a la base de datos");
+    }
+
+    // Enviar los resultados como JSON al cliente
+    res.status(200).json(results);
+  });
+});

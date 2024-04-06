@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal</title>
+    <link rel="stylesheet" href="/css/styleCrearHorario.css">
+    <link  href="/css/styleBootstrap5.0.2.css" rel="stylesheet" >
+</head>
+<body>
+
+    <div id="franjaSuperior"></div>
+
+    <%- include('../partials/menuPersonal') %>
+ 
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 my-5">
+            <h2 class="mb-3" style="text-align: center;">Consulta de materias</h2>
+
+            <div class="list-group" id="materias" >
+               
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style=" margin-right: 30px; display: flex; justify-content: flex-end;">
+    <select id="filtroSemestre" name="filtroSemestre" style="margin-right: 10px;" >
+        <option value="1">1°</option>
+        <option value="2">2°</option>
+        <option value="3">3°</option>
+        <option value="4">4°</option>
+        <option value="5">5°</option>
+        <option value="6">6°</option>
+        <option value="7">7°</option>
+    </select>
+
+    <button id="aplicarFiltrosBtn" class="ov-btn-slide-right" style=" 
+    color: white; 
+    padding: 10px 25px; 
+    cursor: pointer; 
+    min-width: 150px; ">Aplicar Filtros</button>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 my-5">
+            <h2 class="mb-3" style="text-align: center;">Creacion de horario</h2>
+
+            <div class="list-group" id="horario" style="width: 200px;  text-align: center; align-content: center; ">
+                <div class="list-group-item" style="align-items: center;">
+                    <h5>Materia</h5>
+                    <p class="mb-0">7-8am</p>
+                </div>
+                <div class="list-group-item" style="align-items: center;">
+                    <h5>Materia</h5>
+                    <p class="mb-0">8-9am</p>
+                </div>
+                <div class="list-group-item" style="align-items: center;">
+                    <h5>Materia</h5>
+                    <p class="mb-0">9-10am</p>
+                </div>
+                <div class="list-group-item" style="align-items: center;">
+                    <h5>Materia</h5>
+                    <p  class="mb-0">10-11am</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div id="tabla" name="tabla"></div>
+
+<script src="/script/sortable.min.js"></script>
+<script src="/script/scriptCrearHorario.js"></script>
+</body>
+</html>

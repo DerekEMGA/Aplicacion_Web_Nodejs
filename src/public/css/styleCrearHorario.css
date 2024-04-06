@@ -1,0 +1,317 @@
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Candara, Arial, sans-serif;
+    background-image: url('/image/fondo.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+#franjaSuperior {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 35px;
+    background-color: #ACC5EE;
+    z-index: 9999;
+}
+h1 {
+    text-align: center;
+}
+#menu {
+    position: fixed;
+    margin-top: 35px;
+    left: 0;
+    top: 0px;
+    bottom: 0;
+    width: 250px;
+    font-family: Courier New, sans-serif;
+    color: #FFF;
+    padding: 30px;
+    background-color: #162030;
+    background-size: cover;
+    opacity: 100;
+}
+#menu h2 {
+    margin-top: 10px;
+    margin-left: 50px;
+    font-size: 35px;
+}
+#menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+#menu ul li {
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: auto;
+    align-items: center;
+}
+#menu ul li button {
+    padding: 20px;
+    margin: 10px 0;
+    background-color: transparent;
+    color: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    width: calc(100% - 0px);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+#menu ul li button:hover {
+    background-color: #3D8BD2;
+}
+#contenido {
+    position: relative;
+    margin-left: 260px;
+    margin-right: 20px;
+    margin-top: 45px;
+    padding: 20px;
+    text-align: center;
+    text-align: justify;
+}
+#campos-izquierda,
+#campos-derecha {
+    float: left;
+    width: calc(50% - 0px);
+}
+#campos-izquierda input,
+#campos-derecha input {
+    display: block;
+    margin-bottom: 5px;
+}
+.campo {
+    margin-bottom: 10px;
+
+}
+.campo input, .campo select {
+    display: block;
+    margin-bottom: 5px;
+    background-color: #F7F7F7;
+    border: 1px solid #ccc;
+    font-size: 18px;
+   padding: 3px;
+width: calc(60% - 4px); /* Ancho igual al 100% menos el padding */
+box-sizing: border-box; /* Incluye el padding en el cálculo del ancho */
+
+
+}
+.campo label {
+    display: block;
+    color: #172C51;
+}
+
+#botones {
+    position: absolute;
+    top: 114px;
+    right: 78px;
+    text-align: right;
+}
+#botones button {
+    display: block;
+    margin-bottom: 15px;
+}
+
+
+#search-container {
+    position: fixed;
+    top: 65px; 
+    right: 76px; 
+    z-index: 9999;
+}
+
+#search-container input[type="text"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    background-image: url('/image/search.png'); 
+    background-position: 10px 10px;
+    background-repeat: no-repeat;
+    padding-left: 40px;
+    width: 125px; 
+    box-sizing: border-box;
+}
+
+
+#menu ul li button {
+    padding: 20px;
+    margin: 10px 0;
+    background-color: transparent;
+    color: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    width: calc(100% - 0px);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#menu ul li button:hover {
+    background-color: #3D8BD2;
+}
+
+
+#botones {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    text-align: center;
+    border-radius: 5px;
+    border:#162030; 
+
+}
+
+#botones button {
+    display: block;
+    margin-bottom: 15px;
+    color: white; 
+    padding: 10px 25px; 
+    cursor: pointer; 
+    min-width: 150px; /* Establece el ancho mínimo deseado */
+
+}
+
+
+.primary {background-color: white; border: 2px solid #007bff;} 
+.primary:hover {background: #0b7dda; color: white;}
+
+#botones img {
+    width: 120px;
+    height: 40px;
+    margin: 2px;
+    cursor: pointer;
+    border: 1px solid #3D8BD2;
+    border-radius: 5px;
+    padding: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#botones img:hover {
+    background-color: #3D8BD2;
+    color: #fff;
+}
+
+.boton-modificar {
+    position: absolute;
+    top: 8px;
+    /* Ajusta según sea necesario */
+    right: 10px;
+    /* Ajusta según sea necesario */
+    border: none;
+    background: none;
+    cursor: pointer;
+    outline: none;
+    padding: 15;
+    /* Agrega padding para asegurarte de que el botón sea clickeable */
+}
+
+/*** ESTILOS BOTÓN SLIDE RIGHT ***/
+.ov-btn-slide-right {
+    background:#162030; /* color de fondo */
+    color: #4741d7; /* color de fuente */
+    border: 2px solid #162030; /* tamaño y color de borde */
+    padding: 16px 20px;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    display: inline-block;
+  }
+  .ov-btn-slide-right:hover {
+    color: #fff; /* color de fuente hover */
+  }
+  .ov-btn-slide-right::after {
+    content: "";
+    background: #3D8BD2; /* color de fondo hover */
+    position: absolute;
+    z-index: -1;
+    padding: 16px 20px;
+    display: block;
+    top: 0;
+    bottom: 0;
+    left: 100%;
+    right: -100%;
+    -webkit-transition: all 0.35s;
+    transition: all 0.35s;
+  }
+
+  .ov-btn-slide-right:hover::after {
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    -webkit-transition: all 0.35s;
+    transition: all 0.35s;
+  }
+
+  #inicio-btn {
+    position: relative; /* Agrega posicionamiento relativo para utilizar top */
+     margin-top: 100px; /* Mueve el botón hacia abajo */
+     right: -113px; /* Mueve el botón hacia la izquierda */
+     width: 98px; /* Ancho del botón */
+     height: 20px; /* Altura del botón */
+ }
+ 
+ table[name="tabla"] {
+    border-collapse: collapse;
+    width: 80%; /* Reduciendo el ancho de la tabla */
+    margin-top: 95px; /* Ajustando el margen superior para moverla hacia abajo */
+    margin-bottom: 20px; /* Agregando un margen inferior para evitar que se pegue al borde inferior de la pantalla */
+    margin-left:19%; /* Centrando la tabla horizontalmente */
+    margin-right: auto; /* Centrando la tabla horizontalmente */
+}
+
+table[name="tabla"] th,
+table[name="tabla"] td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+table[name="tabla"] th {
+    background-color: #162030;
+    color: #FFFFFF;
+}
+
+table[name="tabla"] tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#materias {
+    display: grid;
+    padding-left: 200px;
+    grid-template-columns: repeat(5, 1fr); /* Define 5 columnas */
+    gap: 10px; /* Espacio entre elementos */
+  }
+  
+  .materia {
+    border: 1px solid #dee2e6;
+    border-radius: .25rem;
+    background-color: #fff;
+    padding: 20px; /* Aumenta el relleno para dar más espacio al contenido */
+    font-size: 16px; /* Tamaño de fuente más grande */
+    text-align: center; /* Alineación del texto */
+    width: 180px; /* Ancho de cada celda */
+    height: 180px; /* Altura de cada celda */
+    margin: 20px; /* Margen entre celdas */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    transition: box-shadow 0.3s ease; /* Efecto de transición en la sombra */
+  }
+  
+  .materia:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada al pasar el cursor */
+  }
+  
+  
+  
