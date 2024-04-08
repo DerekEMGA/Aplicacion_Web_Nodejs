@@ -282,19 +282,41 @@ table[name="tabla"] tr:nth-child(even) {
     background-color: #f2f2f2;
 }
 
+/* Estilos para la tabla */
+table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  /* Estilos para las celdas de la tabla */
+  td {
+    border: 1px solid black;
+    padding: 8px;
+    word-wrap: break-word; /* Permitir que el texto pase de renglón */
+  }
+
+  
 #materias {
     display: grid;
     padding-left: 200px;
-    grid-template-columns: repeat(5, 1fr); /* Define 5 columnas */
+    grid-template-columns: repeat(4, 1fr); /* Define 4 columnas */
     gap: 10px; /* Espacio entre elementos */
+    border-collapse: collapse; /* Asegurar que los bordes se unan */
   }
+
+#materias div {
+    border: 1px solid black; /* Agregar contorno a cada celda */
+    font-size: 12px; /* Tamaño de fuente más grande */
+
+}
+
   
   .materia {
     border: 1px solid #dee2e6;
     border-radius: .25rem;
     background-color: #fff;
-    padding: 20px; /* Aumenta el relleno para dar más espacio al contenido */
-    font-size: 16px; /* Tamaño de fuente más grande */
+    padding: 5px; /* Aumenta el relleno para dar más espacio al contenido */
+    font-size: 8px; /* Tamaño de fuente más grande */
     text-align: center; /* Alineación del texto */
     width: 180px; /* Ancho de cada celda */
     height: 180px; /* Altura de cada celda */
@@ -313,5 +335,20 @@ table[name="tabla"] tr:nth-child(even) {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada al pasar el cursor */
   }
   
-  
-  
+  #horario {
+    display: grid;
+    padding-left: 200px;
+    grid-template-columns: repeat(5, 1fr); /* Define 5 columnas */
+    grid-template-rows: repeat(7, minmax(50px, auto)); /* Define 7 filas con un tamaño mínimo de 50px */
+    gap: 10px; /* Espacio entre elementos */
+    border-collapse: collapse; /* Asegurar que los bordes se unan */
+    font-size: 12px; /* Tamaño de fuente más grande */
+
+  }
+
+  #horario div {
+    border: 1px solid black; /* Agregar contorno a cada celda */
+    padding: 10px; /* Añadir relleno para evitar que las celdas se colapsen completamente */
+  }
+
+
