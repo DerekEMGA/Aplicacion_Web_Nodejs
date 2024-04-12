@@ -11,6 +11,7 @@ const docenteRoutes = require("../src/routes/docenteRoutes.js");
 const administradorRoutes = require("../src/routes/administradorRoutes.js");
 const alumnoRoutes = require("../src/routes/alumnoRoutes.js");
 const connection = require("./db.js");
+const { Console } = require("console");
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -446,7 +447,6 @@ app.post("/insertarProfesor", function (req, res) {
             if (error) {
               throw error;
             }
-
             // Si hay resultados, significa que el profesor ya existe en la tabla profesor
             if (profesorResults.length > 0) {
               console.log("Numero de empleado y/o nombres duplicados");
@@ -797,11 +797,12 @@ app.post("/insertarMateria", function (req, res) {
   let hora = datosMateria.hora;
   let diaSemana = datosMateria.dias;
   let semestre = datosMateria.semestre;
-
+  let salon = datosMateria.salon;
+  let periodo = datosMateria.periodo;
   // Verificar si ya existe una materia con los mismos datos
   connection.query(
-    "SELECT * FROM materias WHERE NOMBRE = ? AND ID_MAESTRO = ? AND HORA = ? AND DIA_SEMANA = ?",
-    [nombre, docente, hora, diaSemana],
+    "SELECT * FROM materias WHERE NOMBRE = ? AND ID_MAESTRO = ? AND HORA = ? AND DIA_SEMANA = ? AND SALON = ?",
+    [nombre, docente, hora, diaSemana,salon],
     function (error, results, fields) {
       if (error) {
         throw error;
@@ -838,8 +839,8 @@ app.post("/insertarMateria", function (req, res) {
 
                 // Insertar en la tabla Materias
                 connection.query(
-                  "INSERT INTO materias (NOMBRE, ID_MAESTRO, HORA, DIA_SEMANA, SEMESTRE) VALUES (?, ?, ?, ?, ?)",
-                  [nombre, docente, hora, diaSemana, semestre],
+                  "INSERT INTO materias (NOMBRE, ID_MAESTRO, HORA, DIA_SEMANA, SEMESTRE,SALON,PERIODO) VALUES (?, ?, ?, ?, ?,?,?)",
+                  [nombre, docente, hora, diaSemana, semestre,salon,periodo],
                   function (error, results, fields) {
                     if (error) {
                       return connection.rollback(function () {
@@ -885,9 +886,11 @@ app.post("/modificarMateria", function (req, res) {
   let semestre = datosMateria.semestre;
   const idMaestro_Viejo = datosMateria.docente_antiguo;
   const hora_antigua = datosMateria.hora_antigua;
-  
+  const salon = datosMateria.salon;
+  const periodo = datosMateria.periodo;
+
   // Check if any field is empty
-  if (!nombre || !idMaestro || !hora || !diaSemana || !semestre) {
+  if (!nombre || !idMaestro || !hora || !diaSemana || !semestre || !salon || ! periodo) {
     return res.redirect(
       "/personal/agregarMateria?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario."
     );
@@ -927,13 +930,15 @@ app.post("/modificarMateria", function (req, res) {
         } else {
           // Continuar con el código de actualización
           connection.query(
-            "UPDATE materias SET NOMBRE = ?, DIA_SEMANA = ?, SEMESTRE = ? WHERE  ID_MAESTRO = ? AND HORA = ? ",
+            "UPDATE materias SET NOMBRE = ?, DIA_SEMANA = ?, SEMESTRE = ?, SALON = ? , PERIODO = ? WHERE  ID_MAESTRO = ? AND HORA = ? ",
             [
               nombre,
               diaSemana,
               semestre,
+              salon,
+              periodo,
               idMaestro,
-              hora,
+              hora
             ],
             function (error, results, fields) {
               if (error) {
@@ -1037,6 +1042,7 @@ app.post("/eliminarMateria", function (req, res) {
 app.post("/buscarMateria", function (req, res) {
   const docente = req.body.docente;
   const hora = req.body.hora;
+
   console.log("Recibiendo solicitud para buscar la materia con docente:");
   console.log(docente);
   console.log("y hora:");
@@ -1063,7 +1069,8 @@ app.post("/buscarMateria", function (req, res) {
 
       // Obtener datos de la materia y construir la URL de redireccionamiento
       const materia = results[0];
-      const redirectURL = `/personal/agregarMateria?nombre=${materia.NOMBRE}&idMaestro=${materia.ID_MAESTRO}&hora=${materia.HORA}&diaSemana=${materia.DIA_SEMANA}&semestre=${materia.SEMESTRE}`;
+      console.log(materia);
+      const redirectURL = `/personal/agregarMateria?nombre=${materia.NOMBRE}&idMaestro=${materia.ID_MAESTRO}&hora=${materia.HORA}&diaSemana=${materia.DIA_SEMANA}&semestre=${materia.SEMESTRE}&salon=${materia.SALON}&periodo=${materia.PERIODO}`;
 
       // Redirigir al usuario con los datos en la URL
       res.redirect(redirectURL);
@@ -1076,7 +1083,7 @@ app.get("/personal/agregarMateria/tabla", function (req, res) {
   const filtroIdMaestro = req.query.filtroIdMaestro || ""; // Obtener el filtro de id_maestro
 
   // Construir la consulta SQL basada en los filtros
-  let sqlQuery = 'SELECT materias.NOMBRE AS NOMBRE_MATERIA, CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, materias.SEMESTRE, CASE WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" END AS HORA, materias.DIA_SEMANA FROM materias INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id';
+  let sqlQuery = 'SELECT materias.NOMBRE AS NOMBRE_MATERIA, CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, materias.SEMESTRE, CASE WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" END AS HORA, materias.DIA_SEMANA, materias.SALON ,materias.PERIODO FROM materias INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id';
 
   if (filtroNombreMateria || filtroIdMaestro) {
     // Si hay filtros, agregar condiciones WHERE a la consulta SQL

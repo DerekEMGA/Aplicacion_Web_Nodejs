@@ -338,7 +338,7 @@ table {
   #horario {
     display: grid;
     padding-left: 200px;
-    grid-template-columns: repeat(5, 1fr); /* Define 5 columnas */
+    grid-template-columns: repeat(7, 1fr); /* Define 5 columnas */
     grid-template-rows: repeat(7, minmax(50px, auto)); /* Define 7 filas con un tamaño mínimo de 50px */
     gap: 10px; /* Espacio entre elementos */
     border-collapse: collapse; /* Asegurar que los bordes se unan */

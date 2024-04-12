@@ -39,7 +39,17 @@
                 <option value="Lunes-Jueves">Lunes-Jueves</option>
                 <option value="Miercoles-Jueves">Miercoles-Jueves</option>
             </select>
-            
+
+            <label for="salon">Aula</label>
+            <input type="text" id="salon" name="salon" placeholder="Ingresa el aula" maxlength="30"
+             onkeydown="validateInput(event)" required>
+
+             <label for="perido">Periodo</label>
+             <select id="periodo" name="periodo" class="year">
+                <option value="Enero-Junio-">Enero-Junio</option>
+                <option value="Agosto-Diciembre-">Agosto-Diciembre</option>
+            </select>
+ 
         </div>
 
         <div class="campo" id="campos-derecha">

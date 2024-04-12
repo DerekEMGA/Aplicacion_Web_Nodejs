@@ -1,18 +1,41 @@
 document.addEventListener("DOMContentLoaded", function() {
   const horarioContainer = document.getElementById("horario");
+  const materiasContainer = document.getElementById("materias");
 
+  // Inicializar el contenedor de "horario" como sortable
   Sortable.create(horarioContainer, {
     group: {
       name: "materias",
-      pull: false
+      pull: false,
+      put: true // Permitir soltar elementos aquí
     },
     animation: 600,
     chosenClass: "active",
-   
+    onAdd: function(evt) {
+      const item = evt.item;
+      const uniqueID = `horario-${item.id}`; // Agregar un sufijo único al id
+
+      // Verificar si la hora ya está presente en el contenedor de "horario"
+      const existingHour = Array.from(horarioContainer.children).find(child => {
+        return child.querySelector('.hora').textContent === item.querySelector('.hora').textContent;
+      });
+
+      if (existingHour) {
+        //item.style.display = 'none';
+        return;
+      }
+
+      // Clonar el elemento y agregarlo al contenedor de "horario"
+      const clonedItem = item.cloneNode(true);
+      clonedItem.setAttribute('id', uniqueID);
+      horarioContainer.appendChild(clonedItem);
+
+      // Ocultar el elemento clonado en el contenedor de "materias"
+      item.style.display = 'none';
+    }
   });
 
-  const materiasContainer = document.getElementById("materias");
-
+  // Inicializar el contenedor de "materias" como sortable
   Sortable.create(materiasContainer, {
     group: {
       name: "materias",
@@ -23,6 +46,7 @@ document.addEventListener("DOMContentLoaded", function() {
     chosenClass: "active"
   });
 
+  // Obtener datos al hacer clic en el botón "aplicarFiltrosBtn"
   const filtroSemestreInput = document.getElementById("filtroSemestre");
   const aplicarFiltrosBtn = document.getElementById("aplicarFiltrosBtn");
 
@@ -43,23 +67,16 @@ document.addEventListener("DOMContentLoaded", function() {
         // Crear elementos de lista para cada elemento en los datos
         data.forEach((item) => {
           const listItem = document.createElement('div');
-          listItem.classList.add('list-group-item'); // Agrega la clase 'list-group-item' al div creado
+          listItem.classList.add('list-group-item');
           listItem.innerHTML = `
-            <p class="mb-0" style="color:blue;">${item.HORA}</p>
+            <p class="mb-0 hora" style="color:blue;">${item.HORA}</p>
             <p class="mb-0">Materia: ${item.NOMBRE_MATERIA}</p>
             <p class="mb-0">Docente: ${item.NOMBRE_PROFESOR}</p>
             <p class="mb-0">Semestre:${item.SEMESTRE}</p>
             <p class="mb-0">${item.DIA_SEMANA}</p>
           `;
 
-          // Agregar evento de clic para clonar elementos al contenedor de horario
-          listItem.addEventListener("click", function() {
-            const hora = item.HORA;
-            const horaContainer = document.getElementById(hora.replace('-', '_')); // Reemplazar "-" con "_" en la hora para crear el ID del contenedor
-            const clonedItem = listItem.cloneNode(true); // Clonar el elemento
-            horaContainer.appendChild(clonedItem); // Agregar el elemento clonado al contenedor de horario
-          });
-
+          // Agregar el elemento al contenedor de "materias"
           materiasContainer.appendChild(listItem);
         });
       })
@@ -69,9 +86,6 @@ document.addEventListener("DOMContentLoaded", function() {
       });
   });
 });
-
-
-
 
   const mensaje = obtenerParametroConsulta("mensaje");
   if (mensaje) {

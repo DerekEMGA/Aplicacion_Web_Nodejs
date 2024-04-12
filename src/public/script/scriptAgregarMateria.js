@@ -6,7 +6,8 @@ function validateForm(action) {
     var hora = document.getElementById("hora").value;
     var dias = document.getElementById("dias").value;
     var semestre = document.getElementById("semestre").value;
-    
+    var salon = document.getElementById("salon").value;
+    var periodo = document.getElementById("periodo").value;
     //alert("Nombre: " + nombre);
     //alert("Docente: " + docente);
     //alert("Hora: " + hora);
@@ -21,7 +22,10 @@ function validateForm(action) {
           docente === "" ||
           hora === "" ||
           dias === "" ||
-          semestre === "" 
+          semestre === "" ||
+          salon === "" ||
+          periodo === " "
+
         ) {
           alert(
             "Por favor, complete todos los campos antes de enviar el formulario."
@@ -72,12 +76,34 @@ function validateForm(action) {
     const dias = urlParams.get("diaSemana") || "";
     const docente = urlParams.get("idMaestro") || "";
     const semestre = urlParams.get("semestre") || "";
-  
+    const salon = urlParams.get("salon") || "";
+    const periodo = urlParams.get("periodo") || "";
+    const year = new Date().getFullYear();
+    console.log(periodo)
     document.getElementById("nombre").value = nombre;
     document.getElementById("hora").value = hora;
     document.getElementById("dias").value = dias;
     document.getElementById("docente").value = docente;
     document.getElementById("semestre").value = semestre;
+    document.getElementById("salon").value=salon;
+    
+    document.querySelectorAll('.year').forEach(function(select) {
+      // Obtener todas las opciones dentro del select
+      const options = select.querySelectorAll('option');
+    
+      // Iterar sobre cada opción y agregar el año al valor
+      options.forEach(function(option) {
+          option.value += year;
+          option.innerText += ` ${year}`;
+    
+      });
+    
+    });
+    
+    document.getElementById("periodo").value=periodo;
+
+// Insertar el año actual en los elementos relevantes
+
 
     const id_maestro = urlParams.get("idMaestro") || ""
     const hora_antigua1 = urlParams.get("hora") || ""
@@ -100,7 +126,9 @@ function validateForm(action) {
     localStorage.removeItem("hora");
     localStorage.removeItem("dias");
     localStorage.removeItem("semestre");
-  }
+    localStorage.removeItem("salon");
+    localStorage.removeItem("periodo");
+    }
 
 document.addEventListener("DOMContentLoaded", function() {
   // Obtener referencia a los elementos del DOM
