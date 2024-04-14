@@ -1,5 +1,6 @@
 function validateForm(action) {
-    //alert(`Validando formulario para la acción: ${action}`);
+  //alert(`Validando formulario para la acción: ${action}`);
+
   
     var nombre = document.getElementById("nombre").value;
     var docente = document.getElementById("docente").value;
@@ -8,34 +9,21 @@ function validateForm(action) {
     var semestre = document.getElementById("semestre").value;
     var salon = document.getElementById("salon").value;
     var periodo = document.getElementById("periodo").value;
+
     //alert("Nombre: " + nombre);
     //alert("Docente: " + docente);
     //alert("Hora: " + hora);
     //alert("Días: " + dias);
     //alert("Semestre: " + semestre);
-    
+
         
     switch (action) {
       case "/insertarMateria":
-        if (
-          nombre === "" ||
-          docente === "" ||
-          hora === "" ||
-          dias === "" ||
-          semestre === "" ||
-          salon === "" ||
-          periodo === " "
-
-        ) {
-          alert(
-            "Por favor, complete todos los campos antes de enviar el formulario."
-          );
-          return false;
-        }
+       
 
         document.getElementById("formularioMateria").action = action;
         document.getElementById("formularioMateria").submit();
-        return true;
+       return true;
   
       case "/eliminarMateria":
 
@@ -49,15 +37,14 @@ function validateForm(action) {
         return true; // Evitar envío automático del formulario
   
       case "/modificarMateria":
-  
         document.getElementById("formularioMateria").action = action
         document.getElementById("formularioMateria").submit()
         break;
   
       case "/buscarMateria":
         // Validar que la clave no esté vacía
-        if (docente === "" || hora === "") {
-          alert("Ingrese un nombre de profesor y hora de la materia antes de buscar");
+        if (docente === "" || hora === "" || periodo === "") {
+          alert("Ingrese un nombre de profesor , hora y periodo de la materia antes de buscar");
           document.preventDefault();
         } else {
           clearLocalStorage();
@@ -79,7 +66,9 @@ function validateForm(action) {
     const salon = urlParams.get("salon") || "";
     const periodo = urlParams.get("periodo") || "";
     const year = new Date().getFullYear();
+
     console.log(periodo)
+
     document.getElementById("nombre").value = nombre;
     document.getElementById("hora").value = hora;
     document.getElementById("dias").value = dias;
@@ -134,6 +123,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // Obtener referencia a los elementos del DOM
   const filtroNombreMateriaInput = document.getElementById("filtroNombreMateria");
   const filtroIdMaestroInput = document.getElementById("filtroIdMaestro");
+  const filtroPeriodoInput = document.getElementById("filtroPeriodo")
   const aplicarFiltrosBtn = document.getElementById("aplicarFiltrosBtn");
   const tablaContainer = document.getElementById("tabla");
 
@@ -142,9 +132,9 @@ document.addEventListener("DOMContentLoaded", function() {
     // Obtener los valores de los filtros
     const filtroNombreMateria = filtroNombreMateriaInput.value.trim();
     const filtroIdMaestro = filtroIdMaestroInput.value.trim();
-
+    const filtroPeriodo = filtroPeriodoInput.value.trim();
     // Realizar una solicitud al servidor con los filtros
-    fetch(`/personal/agregarMateria/tabla?filtroNombreMateria=${filtroNombreMateria}&filtroIdMaestro=${filtroIdMaestro}`)
+    fetch(`/personal/agregarMateria/tabla?filtroNombreMateria=${filtroNombreMateria}&filtroIdMaestro=${filtroIdMaestro}&filtroPeriodo=${filtroPeriodo}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Error al obtener la tabla");

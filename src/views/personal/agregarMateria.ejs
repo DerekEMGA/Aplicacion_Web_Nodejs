@@ -15,7 +15,8 @@
  
 
     <div id="contenido">
-        <form id="formularioMateria" method="post" onsubmit="return validateForm(action)" >
+        <form id="formularioMateria" method="post" 
+        onsubmit="return validateForm(action)" >
 
         <div class="campo" id="campos-izquierda">
             <label for="nombre">Nombre de la materia</label>
@@ -98,8 +99,13 @@
 </form>
     
 <div style="margin-top: 200px; margin-right: 30px; display: flex; justify-content: flex-end;">
-    <input type="text" id="filtroNombreMateria" name="filtroNombreMateria" placeholder="Nombre de materia" style="margin-right: 10px;">
     <select id="filtroIdMaestro" name="filtroIdMaestro" style="margin-right: 10px;" ></select>
+    <select id="filtroPeriodo" name="filtroPeriodo" style="margin-right: 20px;" class="year">
+
+        <option value="Enero-Junio-">Enero-Junio</option>
+        <option value="Agosto-Diciembre-">Agosto-Diciembre</option>
+    </select>
+    <input type="text" id="filtroNombreMateria" name="filtroNombreMateria" placeholder="Nombre de materia" style="margin-right: 10px;">
 
     <button id="aplicarFiltrosBtn" class="ov-btn-slide-right" style=" 
     color: white; 

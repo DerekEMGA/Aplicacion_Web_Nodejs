@@ -550,7 +550,7 @@ app.post("/modificarProfesor", function (req, res) {
       // Check if there's a professor with the provided clave
       if (results.length === 0) {
         return res.redirect(
-          "/personal/agregarDocente?mensaje=Profesor%20no%20encontrado"
+          "/personal/agregarDocente?mensaje=Docente%20no%20encontrado"
         );
       }
 
@@ -568,7 +568,7 @@ app.post("/modificarProfesor", function (req, res) {
 
           if (results.length > 0) {
             return res.redirect(
-              "/personal/agregarDocente?mensaje=Ya%20existe%20un%20profesor%20con%20el%20mismo%20nombre%20y%20apellidos%20y/o%20clave"
+              "/personal/agregarDocente?mensaje=Ya%20existe%20un%20Docente%20con%20el%20mismo%20nombre%20y%20apellidos%20y/o%20clave"
             );
           }
 
@@ -609,7 +609,7 @@ app.post("/modificarProfesor", function (req, res) {
                       }
                       console.log("Registro de profesor modificado correctamente");
                       res.redirect(
-                        "/personal/agregarDocente?mensaje=Profesor%20modificado%20correctamente"
+                        "/personal/agregarDocente?mensaje=Docente%20modificado%20correctamente"
                       );
                     });
                   }
@@ -711,7 +711,7 @@ app.post("/eliminarProfesor", function (req, res) {
                       }
                       console.log("Registro de profesor eliminado correctamente");
                       res.redirect(
-                        "/personal/agregarDocente?mensaje=Profesor%20eliminado%20correctamente"
+                        "/personal/agregarDocente?mensaje=Docente%20eliminado%20correctamente"
                       );
                     });
                   }
@@ -752,12 +752,13 @@ app.post("/buscarProfesor", function (req, res) {
       // Comprobar si se encontraron resultados
       if (results.length === 0) {
         return res.redirect(
-          "/personal/agregarDocente?mensaje=Profesor%20no%20encontrado"
+          "/personal/agregarDocente?mensaje=Docente%20no%20encontrado"
         );
       }
 
       // Obtener datos del profesor y construir la URL de redireccionamiento
       const profesor = results[0];
+
       const redirectURL = `/personal/agregarDocente?nombre=${profesor.nombre}&apellidoPaterno=${profesor.apellido_paterno}&apellidoMaterno=${profesor.apellido_materno}&profesion=${profesor.profesion}&clave=${profesor.clave}&contrasena=${profesor.contrasena}`;
 
       // Redirigir al usuario con los datos en la URL
@@ -800,9 +801,16 @@ app.post("/insertarMateria", function (req, res) {
   let salon = datosMateria.salon;
   let periodo = datosMateria.periodo;
   // Verificar si ya existe una materia con los mismos datos
+
+  if (!nombre || !docente || !hora || !diaSemana || !semestre || !salon || !periodo) {
+    return res.redirect(
+      "/personal/agregarMateria?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario."
+    );
+  }
+
   connection.query(
-    "SELECT * FROM materias WHERE NOMBRE = ? AND ID_MAESTRO = ? AND HORA = ? AND DIA_SEMANA = ? AND SALON = ?",
-    [nombre, docente, hora, diaSemana,salon],
+    "SELECT * FROM materias WHERE NOMBRE = ? AND ID_MAESTRO = ? AND HORA = ? AND DIA_SEMANA = ? AND SALON = ? AND PERIODO = ? ",
+    [nombre, docente, hora, diaSemana,salon,periodo],
     function (error, results, fields) {
       if (error) {
         throw error;
@@ -812,13 +820,13 @@ app.post("/insertarMateria", function (req, res) {
         // Si ya existe una materia con los mismos datos, enviar mensaje de error
         console.log("Ya existe una materia con los mismos datos.");
         res.redirect(
-          "/personal/agregarMateria?mensaje=Error:%20Ya%20existe%20una%20materia%20con%20los%20mismos%20datos"
+          "/personal/agregarMateria?mensaje=Ya%20existe%20una%20materia%20con%20los%20mismos%20datos"
         );
       } else {
         // Verificar si el docente tiene otro registro a la misma hora
         connection.query(
-          "SELECT * FROM materias WHERE ID_MAESTRO = ? AND HORA = ?",
-          [docente, hora],
+          "SELECT * FROM materias WHERE ID_MAESTRO = ? AND HORA = ? AND PERIODO = ? ",
+          [docente, hora,periodo],
           function (error, results, fields) {
             if (error) {
               throw error;
@@ -828,7 +836,7 @@ app.post("/insertarMateria", function (req, res) {
               // Si el docente ya tiene otro registro a la misma hora, enviar mensaje de error
               console.log("El docente ya tiene otro registro a la misma hora.");
               res.redirect(
-                "/personal/agregarMateria?mensaje=Error:%20El%20docente%20ya%20tiene%20otro%20registro%20a%20la%20misma%20hora"
+                "/personal/agregarMateria?mensaje=El%20docente%20ya%20tiene%20otro%20registro%20a%20la%20misma%20hora"
               );
             } else {
               // Comenzar una transacción
@@ -912,8 +920,8 @@ app.post("/modificarMateria", function (req, res) {
 
     // Verificar si el docente tiene otro registro a la misma hora excluyendo la materia que se está modificando
     connection.query(
-      "SELECT * FROM materias WHERE ID_MAESTRO = ? AND HORA = ? AND NOT ( HORA = ? AND ID_MAESTRO = ?)",
-      [idMaestro, hora, hora, idMaestro],
+      "SELECT * FROM materias WHERE ID_MAESTRO = ? AND HORA = ? AND PERIODO = ?  AND NOT ( HORA = ? AND ID_MAESTRO = ? AND PERIODO = ?)",
+      [idMaestro, hora,periodo, hora, idMaestro,periodo],
       function (error, results, fields) {
         if (error) {
           return connection.rollback(function () {
@@ -1042,16 +1050,18 @@ app.post("/eliminarMateria", function (req, res) {
 app.post("/buscarMateria", function (req, res) {
   const docente = req.body.docente;
   const hora = req.body.hora;
+  const periodo = req.body.periodo;
 
   console.log("Recibiendo solicitud para buscar la materia con docente:");
   console.log(docente);
   console.log("y hora:");
   console.log(hora);
+  console.log(periodo);
 
   // Realizar la consulta para obtener los datos de la materia
   connection.query(
-    "SELECT * FROM materias WHERE ID_MAESTRO = ? AND HORA = ?",
-    [docente, hora],
+    "SELECT * FROM materias WHERE ID_MAESTRO = ? AND HORA = ? AND PERIODO = ? ",
+    [docente, hora,periodo],
     function (error, results, fields) {
       if (error) {
         console.error("Error en la consulta a la base de datos:", error);
@@ -1059,7 +1069,7 @@ app.post("/buscarMateria", function (req, res) {
           "/personal/agregarMateria?mensaje=Error%20en%20la%20consulta%20a%20la%20base%20de%20datos"
         );
       }
-
+ 
       // Comprobar si se encontraron resultados
       if (results.length === 0) {
         return res.redirect(
@@ -1081,21 +1091,28 @@ app.post("/buscarMateria", function (req, res) {
 app.get("/personal/agregarMateria/tabla", function (req, res) {
   const filtroNombreMateria = req.query.filtroNombreMateria || ""; // Obtener el filtro de nombre de materia
   const filtroIdMaestro = req.query.filtroIdMaestro || ""; // Obtener el filtro de id_maestro
+  const filtroPeriodo = req.query.filtroPeriodo || ""; // Obtener el filtro de período
 
   // Construir la consulta SQL basada en los filtros
   let sqlQuery = 'SELECT materias.NOMBRE AS NOMBRE_MATERIA, CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, materias.SEMESTRE, CASE WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" END AS HORA, materias.DIA_SEMANA, materias.SALON ,materias.PERIODO FROM materias INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id';
 
-  if (filtroNombreMateria || filtroIdMaestro) {
+  if (filtroNombreMateria || filtroIdMaestro || filtroPeriodo) {
     // Si hay filtros, agregar condiciones WHERE a la consulta SQL
     sqlQuery += " WHERE ";
     if (filtroNombreMateria) {
       sqlQuery += `materias.NOMBRE LIKE '%${filtroNombreMateria}%'`;
-      if (filtroIdMaestro) {
+      if (filtroIdMaestro || filtroPeriodo) {
         sqlQuery += " AND ";
       }
     }
     if (filtroIdMaestro) {
       sqlQuery += `profesor.id = ${filtroIdMaestro}`;
+      if (filtroPeriodo) {
+        sqlQuery += " AND ";
+      }
+    }
+    if (filtroPeriodo) {
+      sqlQuery += `materias.PERIODO = '${filtroPeriodo}'`;
     }
   }
 
@@ -1103,7 +1120,7 @@ app.get("/personal/agregarMateria/tabla", function (req, res) {
   sqlQuery += ' ORDER BY materias.id DESC';
 
   // Si los filtros están vacíos, establecer el límite en 7, de lo contrario, no hay límite
-  if (!(filtroNombreMateria || filtroIdMaestro)) {
+  if (!(filtroNombreMateria || filtroIdMaestro )) {
     sqlQuery += ' LIMIT 7';
   }
 
@@ -1121,6 +1138,7 @@ app.get("/personal/agregarMateria/tabla", function (req, res) {
     res.status(200).send(tableHtml);
   });
 });
+
 
 
 app.get("/profesores", (req, res) => {
@@ -1310,7 +1328,7 @@ app.post("/insertarAlumnos", function (req, res) {
                 }
 
                 if (results.length > 0) {
-                  return res.redirect("/personal/agregarAlumnos?mensaje=Ya%20existe%20un%20alumno%20con%20el%20mismo%20nombre%20y%20apellidos%20O%20se%20intentó%20cambiar%20la%20matrícula");
+                  return res.redirect("/personal/agregarAlumnos?mensaje=Ya%20existe%20un%20alumno%20con%20el%20mismo%20nombre%20y%20apellidos%20y/o%20intentó%20cambiar%20la%20matrícula");
                 }
 
                 // Continuar con el código de actualización
@@ -1340,7 +1358,7 @@ app.post("/insertarAlumnos", function (req, res) {
                                         });
                                     }
                                     console.log("Registro de Alumno modificado correctamente");
-                                    res.redirect("/personal/agregarAlumnos?mensaje=Alumnos%20modificado%20correctamente");
+                                    res.redirect("/personal/agregarAlumnos?mensaje=Alumno%20modificado%20correctamente");
                                 });
                             });
                     });
@@ -1377,7 +1395,7 @@ app.post("/eliminarAlumnos", function (req, res) {
         if (results.affectedRows === 0) {
           // El Alumnos no existe, enviar una alerta
           res.redirect(
-            "/personal/agregarAlumnos?mensaje=Alumnos%20no%20encontrado"
+            "/personal/agregarAlumnos?mensaje=Alumno%20no%20encontrado"
           );
           return;
         }
@@ -1402,7 +1420,7 @@ app.post("/eliminarAlumnos", function (req, res) {
               }
               console.log("Registro de Alumnos eliminado correctamente");
               res.redirect(
-                "/personal/agregarAlumnos?mensaje=Alumnos%20eliminado%20correctamente"
+                "/personal/agregarAlumnos?mensaje=Alumno%20eliminado%20correctamente"
               );
             });
           }

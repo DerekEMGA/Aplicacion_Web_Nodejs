@@ -45,7 +45,7 @@ function validateForm(action) {
       case "/buscarProfesor":
         // Validar que la clave no esté vacía
         if (clave === "") {
-          alert("Ingresa un numero de empleado antes de continuar.");
+          alert("Ingrese un numero de empleado antes de continuar.");
           document.preventDefault();
         } else {
           clearLocalStorage();
