@@ -45,6 +45,7 @@ function validateForm(action) {
         return true; // Evitar envío automático del formulario
   
       case "/modificarAlumnos":
+        
         document.getElementById("formularioAlumnos").action = action;
         document.getElementById("formularioAlumnos").submit();
         break;

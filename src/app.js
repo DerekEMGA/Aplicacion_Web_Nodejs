@@ -1289,7 +1289,14 @@ app.post("/insertarAlumnos", function (req, res) {
     let Fecha_Nacimiento = datosAlumnos.Fecha_Nacimiento;
     let semestre = datosAlumnos.semestre;
 
-    let fechaFormateada = new Date(Fecha_Nacimiento).toISOString().split("T")[0];
+// Verificar si Fecha_Nacimiento es una fecha válida
+if (Fecha_Nacimiento && !isNaN(Date.parse(Fecha_Nacimiento))) {
+  // Crear un objeto Date con la fecha de nacimiento
+  let fechaFormateada = new Date(Fecha_Nacimiento).toISOString().split("T")[0];
+  console.log("Fecha formateada:", fechaFormateada);
+} else {
+  console.error("La fecha de nacimiento no es válida.");
+}
 
     console.log(nombre)
     console.log(apellidoPaterno)
@@ -1302,7 +1309,7 @@ app.post("/insertarAlumnos", function (req, res) {
         !apellidoMaterno ||
         !genero ||
         !Domicilio ||
-        !fechaFormateada ||
+        !Fecha_Nacimiento ||
         !semestre ||
         !contrasena
     ) {
@@ -1503,7 +1510,7 @@ app.get("/personal/agregarAlumnos/tabla", function (req, res) {
 app.get("/personal/crearHorario/tabla", function (req, res) {
   const filtroSemestre = req.query.filtroSemestre || ""; // Obtener el filtro de semestre
 
-  let sqlQuery = 'SELECT materias.NOMBRE AS NOMBRE_MATERIA, CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, materias.SEMESTRE, CASE WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" END AS HORA, materias.DIA_SEMANA FROM materias INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id';
+  let sqlQuery = 'SELECT materias.NOMBRE AS NOMBRE_MATERIA, CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, materias.SEMESTRE, CASE WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" END AS HORA, materias.DIA_SEMANA, materias.PERIODO, materias.SALON FROM materias INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id';
 
   if (filtroSemestre) {
     // Si hay filtros, agregar condiciones WHERE a la consulta SQL

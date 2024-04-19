@@ -72,8 +72,10 @@ document.addEventListener("DOMContentLoaded", function() {
             <p class="mb-0 hora" style="color:blue;">${item.HORA}</p>
             <p class="mb-0">Materia: ${item.NOMBRE_MATERIA}</p>
             <p class="mb-0">Docente: ${item.NOMBRE_PROFESOR}</p>
-            <p class="mb-0">Semestre:${item.SEMESTRE}</p>
-            <p class="mb-0">${item.DIA_SEMANA}</p>
+            <p class="mb-0">Semestre: ${item.SEMESTRE}</p>
+            <p class="mb-0">Periodo: ${item.PERIODO}</p>
+            <p class="mb-0">Dias: ${item.DIA_SEMANA}</p>
+            <p class="mb-0">Salon: ${item.SALON}</p>
           `;
 
           // Agregar el elemento al contenedor de "materias"
