@@ -1291,7 +1291,6 @@ app.post("/insertarAlumnos", function (req, res) {
 
 // Verificar si Fecha_Nacimiento es una fecha válida
 if (Fecha_Nacimiento && !isNaN(Date.parse(Fecha_Nacimiento))) {
-  // Crear un objeto Date con la fecha de nacimiento
   let fechaFormateada = new Date(Fecha_Nacimiento).toISOString().split("T")[0];
   console.log("Fecha formateada:", fechaFormateada);
 } else {
