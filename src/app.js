@@ -1508,20 +1508,34 @@ app.get("/personal/agregarAlumnos/tabla", function (req, res) {
 
 app.get("/personal/crearHorario/tabla", function (req, res) {
   const filtroSemestre = req.query.filtroSemestre || ""; // Obtener el filtro de semestre
+  const filtroPeriodo = req.query.filtroPeriodo || ""; // Obtener el filtro de período
 
+  // Consulta SQL base
   let sqlQuery = 'SELECT materias.NOMBRE AS NOMBRE_MATERIA, CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, materias.SEMESTRE, CASE WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" END AS HORA, materias.DIA_SEMANA, materias.PERIODO, materias.SALON FROM materias INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id';
 
+  // Lista de condiciones de filtro
+  const condicionesFiltro = [];
+
+  // Si hay filtro de semestre, agregar la condición correspondiente
   if (filtroSemestre) {
-    // Si hay filtros, agregar condiciones WHERE a la consulta SQL
-    sqlQuery += " WHERE ";
-    sqlQuery += `materias.SEMESTRE = '${filtroSemestre}'`;
+    condicionesFiltro.push(`materias.SEMESTRE = '${filtroSemestre}'`);
+  }
+
+  // Si hay filtro de período, agregar la condición correspondiente
+  if (filtroPeriodo) {
+    condicionesFiltro.push(`materias.PERIODO = '${filtroPeriodo}'`);
+  }
+
+  // Si hay condiciones de filtro, agregar la cláusula WHERE a la consulta SQL
+  if (condicionesFiltro.length > 0) {
+    sqlQuery += " WHERE " + condicionesFiltro.join(" AND ");
   }
   
-  // Ordenar los resultados por hora descendente
+  // Ordenar los resultados por hora ascendente
   sqlQuery += ' ORDER BY HOUR(materias.HORA) ASC';
 
-  // Si los filtros están vacíos, establecer el límite en 7, de lo contrario, no hay límite
-  if (!(filtroSemestre)) {
+  // Si no hay filtros de semestre ni de período, establecer el límite en 7, de lo contrario, no hay límite
+  if (!filtroSemestre && !filtroPeriodo) {
     sqlQuery += ' LIMIT 7';
   }
 

@@ -298,16 +298,23 @@ table {
   
 #materias {
     display: grid;
-    padding-left: 200px;
-    grid-template-columns: repeat(4, 1fr); /* Define 4 columnas */
+    grid-template-columns: repeat(4,230px); /* Define 4 columnas */
     gap: 10px; /* Espacio entre elementos */
     border-collapse: collapse; /* Asegurar que los bordes se unan */
+    width: 1040px; /* Ancho total de la cuadrícula (4 columnas de 100px + 3 espacios de 10px) */
+    margin: 0 auto; /* Centrar horizontalmente */
+    padding-left: 100px;
   }
 
-#materias div {
-    border: 1px solid black; /* Agregar contorno a cada celda */
+#materias li {
+    border: 1px solid rgb(8, 140, 223); /* Agregar contorno a cada celda */
     font-size: 12px; /* Tamaño de fuente más grande */
-
+}
+.materias-container {
+    overflow-x: auto;
+    white-space: nowrap;
+    margin-right: -80px;
+    max-height: 320px; /* Altura máxima del contenedor para mantener los botones visibles */
 }
 
   
@@ -318,8 +325,8 @@ table {
     padding: 5px; /* Aumenta el relleno para dar más espacio al contenido */
     font-size: 8px; /* Tamaño de fuente más grande */
     text-align: center; /* Alineación del texto */
-    width: 180px; /* Ancho de cada celda */
-    height: 180px; /* Altura de cada celda */
+    width: 100px; /* Ancho de cada celda */
+    height: 100px; /* Altura de cada celda */
     margin: 20px; /* Margen entre celdas */
     display: flex;
     align-items: center;
@@ -327,28 +334,47 @@ table {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    box-shadow: 0 0 5px rgba(148, 102, 102, 0.1); /* Sombra suave */
     transition: box-shadow 0.3s ease; /* Efecto de transición en la sombra */
   }
   
-  .materia:hover {
+  .materia {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada al pasar el cursor */
   }
   
   #horario {
+    border: 1px solid rgb(19, 19, 20); /* Agregar contorno a cada celda */
     display: grid;
-    padding-left: 200px;
-    grid-template-columns: repeat(7, 1fr); /* Define 5 columnas */
-    grid-template-rows: repeat(7, minmax(50px, auto)); /* Define 7 filas con un tamaño mínimo de 50px */
+    grid-template-columns: repeat(7, 1fr); /* Define 7 columnas */
+    grid-template-rows: repeat(7, minmax(100px, auto)); /* Define 7 filas con un tamaño mínimo de 50px */
     gap: 10px; /* Espacio entre elementos */
     border-collapse: collapse; /* Asegurar que los bordes se unan */
     font-size: 12px; /* Tamaño de fuente más grande */
+    max-height: 190px; /* Altura máxima del contenedor para mantener los botones visibles */
+    max-width: 1180px; /* Altura máxima del contenedor para mantener los botones visibles */
+    min-width: 250px;
+    margin-right: -800px;
+    margin-left: 150px;
+  } 
 
-  }
-
-  #horario div {
-    border: 1px solid black; /* Agregar contorno a cada celda */
+  #horario li {
+    border: 1px solid rgb(8, 140, 223); /* Agregar contorno a cada celda */
     padding: 10px; /* Añadir relleno para evitar que las celdas se colapsen completamente */
   }
+
+
+  #nombreHorario {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+#guardarHorario {
+    color: white;
+    padding: 10px 25px;
+    cursor: pointer;
+    min-width: 150px;
+    border: none; /* Sin borde */
+    margin-bottom: 10px;
+}
 
 
