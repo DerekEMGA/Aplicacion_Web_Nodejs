@@ -149,28 +149,116 @@ function validateForm(action) {
     const fieldName = event.target.name;
   
     if (fieldName === "nombre") {
-      const regex = /^[A-Za-z\s]+$/;
-      const inputValue = event.key;
-  
-      if (!regex.test(inputValue)) {
-        event.preventDefault();
+      const regex = /^(?!.*\s{3,})(?!^\s|\S\s{2})(?![A-Za-z]*\d)[A-Za-z\s]*$/;
+      const inputValue = event.target.value;
+      // Permitir borrar si la tecla presionada es backspace o delete
+      if (event.key === 'Backspace' || event.key === 'Delete') {
+          return;
       }
-    }
-    if (fieldName === "apellidoPaterno") {
-      const regex = /^[A-Za-z\s]+$/;
-      const inputValue = event.key;
-  
-      if (!regex.test(inputValue)) {
+      // Si el primer carácter es un espacio, prevenir la acción
+      if (inputValue.length === 0 && event.key === ' ') {
         event.preventDefault();
+        return;
+      }
+      // Si se ingresa un número en cualquier parte de la cadena, prevenir la acción
+      if (/\d/.test(event.key)) {
+        event.preventDefault();
+        return;
+      }
+      // Si se ingresa un número o un símbolo en cualquier parte de la cadena, prevenir la acción
+      if (/[\d!@#$%^&*(),.?":{}|<>]/.test(event.key)) {
+        event.preventDefault();
+        return;
+      }
+      if (!regex.test(inputValue)) {
+          event.preventDefault();
+      }
+  }
+  
+  
+  
+    if (fieldName === "apellidoPaterno") {
+      const regex = /^(?!.*\s{3,})(?!^\s|\S\s{2})(?![A-Za-z]*\d)[A-Za-z\s]*$/;
+      const inputValue = event.target.value;
+      // Permitir borrar si la tecla presionada es backspace o delete
+      if (event.key === 'Backspace' || event.key === 'Delete') {
+          return;
+      }
+      // Si el primer carácter es un espacio, prevenir la acción
+      if (inputValue.length === 0 && event.key === ' ') {
+        event.preventDefault();
+        return;
+      }
+      // Si se ingresa un número en cualquier parte de la cadena, prevenir la acción
+      if (/\d/.test(event.key)) {
+        event.preventDefault();
+        return;
+      }
+      // Si se ingresa un número o un símbolo en cualquier parte de la cadena, prevenir la acción
+      if (/[\d!@#$%^&*(),.?":{}|<>]/.test(event.key)) {
+        event.preventDefault();
+        return;
+      }
+      if (!regex.test(inputValue)) {
+          event.preventDefault();
       }
     }
     if (fieldName === "apellidoMaterno") {
-      const regex = /^[A-Za-z\s]+$/;
-      const inputValue = event.key;
-  
-      if (!regex.test(inputValue)) {
-        event.preventDefault();
+      const regex = /^(?!.*\s{3,})(?!^\s|\S\s{2})(?![A-Za-z]*\d)[A-Za-z\s]*$/;
+      const inputValue = event.target.value;
+      // Permitir borrar si la tecla presionada es backspace o delete
+      if (event.key === 'Backspace' || event.key === 'Delete') {
+          return;
       }
+      // Si el primer carácter es un espacio, prevenir la acción
+      if (inputValue.length === 0 && event.key === ' ') {
+        event.preventDefault();
+        return;
+      }
+      // Si se ingresa un número en cualquier parte de la cadena, prevenir la acción
+      if (/\d/.test(event.key)) {
+        event.preventDefault();
+        return;
+      }
+      // Si se ingresa un número o un símbolo en cualquier parte de la cadena, prevenir la acción
+      if (/[\d!@#$%^&*(),.?":{}|<>]/.test(event.key)) {
+        event.preventDefault();
+        return;
+      }
+      if (!regex.test(inputValue)) {
+          event.preventDefault();
+      }
+    }
+    if(fieldName === "Domicilio")
+    {
+      //const regex = /^(?!.*\s{3,})(?!^\s|\S\s{2})(?![A-Za-z]*\d)[A-Za-z0-9#][A-Za-z0-9#\s]*$/;
+
+      const regex = /^(?!.*\s{3,})(?![A-Za-z]*\d)[A-Za-z0-9#\s]*$/;
+      const inputValue = event.target.value;
+      
+      // Permitir borrar si la tecla presionada es backspace o delete
+      if (event.key === 'Backspace' || event.key === 'Delete') {
+          return;
+      }
+      
+      // Si el primer carácter es un espacio, un número o el símbolo '#', prevenir la acción
+        if (inputValue.length === 0 && (event.key === ' ' || /\d/.test(event.key) || event.key === '#')) {
+          event.preventDefault();
+          return;
+        }
+
+
+      
+      // Si se ingresa un número o un símbolo en cualquier parte de la cadena, prevenir la acción
+      if (/[^A-Za-z0-9#\s]/.test(event.key)) {
+          event.preventDefault();
+          return;
+      }
+      
+      if (!regex.test(inputValue)) {
+          event.preventDefault();
+      }
+      
     }
   }
   

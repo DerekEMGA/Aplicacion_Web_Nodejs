@@ -76,18 +76,24 @@ function validateForm(action) {
     document.getElementById("semestre").value = semestre;
     document.getElementById("salon").value=salon;
     
-    document.querySelectorAll('.year').forEach(function(select) {
-      // Obtener todas las opciones dentro del select
-      const options = select.querySelectorAll('option');
-    
-      // Iterar sobre cada opción y agregar el año al valor
-      options.forEach(function(option) {
-          option.value += year;
-          option.innerText += ` ${year}`;
-    
-      });
-    
+   // Obtener el año actual
+const currentYear = new Date().getFullYear();
+
+// Seleccionar todos los elementos select con la clase .year y actualizar sus opciones
+document.querySelectorAll('.year').forEach(function(select) {
+    // Obtener todas las opciones dentro del select
+    const options = select.querySelectorAll('option');
+
+    // Iterar sobre cada opción y agregar el año al valor y texto de la opción
+    options.forEach(function(option) {
+        // Verificar si el texto de la opción es "Selecciona Periodo"
+        if (option.innerText.trim() !== "Selecciona Periodo") {
+            option.value += currentYear;
+            option.innerText += ` ${currentYear}`;
+        }
     });
+});
+
     
     document.getElementById("periodo").value=periodo;
 
@@ -133,6 +139,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const filtroNombreMateria = filtroNombreMateriaInput.value.trim();
     const filtroIdMaestro = filtroIdMaestroInput.value.trim();
     const filtroPeriodo = filtroPeriodoInput.value.trim();
+
     // Realizar una solicitud al servidor con los filtros
     fetch(`/personal/agregarMateria/tabla?filtroNombreMateria=${filtroNombreMateria}&filtroIdMaestro=${filtroIdMaestro}&filtroPeriodo=${filtroPeriodo}`)
       .then((response) => {
@@ -150,6 +157,22 @@ document.addEventListener("DOMContentLoaded", function() {
         // Mostrar un mensaje de error al usuario
       });
   });
+  fetch(`/personal/agregarMateria/tabla`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error al obtener la tabla");
+        }
+        return response.text();
+      })
+      .then((html) => {
+        // Insertar la tabla HTML en el contenedor
+        tablaContainer.innerHTML = html;
+      })
+      .catch((error) => {
+        console.error("Error al obtener la tabla:", error);
+        // Mostrar un mensaje de error al usuario
+      });
+
 });
 
 fetch('/profesores')
@@ -168,9 +191,9 @@ fetch('/profesores')
 
     // Agregar la opción en blanco solo al segundo select (filtroIdMaestro)
     const optionBlanco = document.createElement('option');
-    optionBlanco.value = '';
-    optionBlanco.textContent = ""; // Deja el texto en blanco
-    selectFiltro.appendChild(optionBlanco);
+    //optionBlanco.value = '';
+    //optionBlanco.textContent = ""; // Deja el texto en blanco
+    //selectFiltro.appendChild(optionBlanco);
 
     // Agregar las opciones de los profesores al segundo select (filtroIdMaestro)
     profesores.forEach(profesor => {
@@ -197,16 +220,33 @@ fetch('/profesores')
     const fieldName = event.target.name;
   
    if (fieldName === "nombre") {
-  const regex = /^[A-Za-z0-9\s]+$/;
-  const inputValue = event.key;
 
-  // Excluir los símbolos ', ´, y `
-  if (inputValue === "'" || inputValue === "´" || inputValue === "`" || !regex.test(inputValue)) {
-    event.preventDefault();
-  }
+    const regex = /^(?!.*\s{3,})(?![A-Za-z]*\d)[A-Za-z0-9\s]*$/;
+    const inputValue = event.target.value;
+    
+    // Permitir borrar si la tecla presionada es backspace o delete
+    if (event.key === 'Backspace' || event.key === 'Delete') {
+        return;
+    }
+    
+    // Si el primer carácter es un espacio, un número o el símbolo '#', prevenir la acción
+      if (inputValue.length === 0 && (event.key === ' ' || /\d/.test(event.key) || event.key === '#')) {
+        event.preventDefault();
+        return;
+      }
+
+    // Si se ingresa un número o un símbolo en cualquier parte de la cadena, prevenir la acción
+    if (/[^A-Za-z0-9\s]/.test(event.key)) {
+        event.preventDefault();
+        return;
+    }
+    
+    if (!regex.test(inputValue)) {
+        event.preventDefault();
+    }
 }
 
-    
+   
   }
 
   function cancelarFormulario() {

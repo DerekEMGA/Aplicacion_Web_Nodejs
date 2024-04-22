@@ -423,6 +423,21 @@ app.post("/insertarProfesor", function (req, res) {
   let clave = datosProfesor.clave;
   let contrasena = datosProfesor.contrasena;
 
+
+  if (
+    !nombre.trim() ||
+    !apellidoPaterno.trim() ||
+    !apellidoMaterno.trim() ||
+    !profesion.trim() ||
+    !clave.trim() ||
+    !contrasena.trim()
+) {
+    return res.redirect(
+        "/personal/agregarDocente?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario."
+    );
+}
+
+
   // Verificar si el profesor ya existe en la tabla usuario
   connection.query(
     "SELECT * FROM usuario WHERE matricula_clave = ?",
@@ -521,19 +536,19 @@ app.post("/modificarProfesor", function (req, res) {
   const clave = datosProfesor.clave; // Usamos la clave como referencia
   let contrasena = datosProfesor.contrasena;
 
-  // Check if any field is empty
   if (
-    !nombre ||
-    !apellidoPaterno ||
-    !apellidoMaterno ||
-    !profesion ||
-    !clave ||
-    !contrasena
-  ) {
+    !nombre.trim() ||
+    !apellidoPaterno.trim() ||
+    !apellidoMaterno.trim() ||
+    !profesion.trim() ||
+    !clave.trim() ||
+    !contrasena.trim()
+) {
     return res.redirect(
-      "/personal/agregarDocente?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario."
+        "/personal/agregarDocente?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario."
     );
-  }
+}
+
 
   // Check if the professor with the given clave exists
   connection.query(
@@ -651,7 +666,7 @@ app.post("/eliminarProfesor", function (req, res) {
         if (results.length === 0) {
           // El profesor no existe, enviar una alerta
           res.redirect(
-            "/personal/agregarDocente?mensaje=Profesor%20no%20encontrado"
+            "/personal/agregarDocente?mensaje=Docente%20no%20encontrado"
           );
           return;
         }
@@ -802,11 +817,20 @@ app.post("/insertarMateria", function (req, res) {
   let periodo = datosMateria.periodo;
   // Verificar si ya existe una materia con los mismos datos
 
-  if (!nombre || !docente || !hora || !diaSemana || !semestre || !salon || !periodo) {
+  if (
+    !nombre.trim() ||
+    !docente.trim() ||
+    !hora.trim() ||
+    !diaSemana.trim() ||
+    !semestre.trim() ||
+    !salon.trim() ||
+    !periodo.trim()
+) {
     return res.redirect(
-      "/personal/agregarMateria?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario."
+        "/personal/agregarMateria?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario."
     );
-  }
+}
+
 
   connection.query(
     "SELECT * FROM materias WHERE NOMBRE = ? AND ID_MAESTRO = ? AND HORA = ? AND DIA_SEMANA = ? AND SALON = ? AND PERIODO = ? ",
@@ -897,12 +921,20 @@ app.post("/modificarMateria", function (req, res) {
   const salon = datosMateria.salon;
   const periodo = datosMateria.periodo;
 
-  // Check if any field is empty
-  if (!nombre || !idMaestro || !hora || !diaSemana || !semestre || !salon || ! periodo) {
+  if (
+    !nombre.trim() ||
+    !docente.trim() ||
+    !hora.trim() ||
+    !diaSemana.trim() ||
+    !semestre.trim() ||
+    !salon.trim() ||
+    !periodo.trim()
+) {
     return res.redirect(
-      "/personal/agregarMateria?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario."
+        "/personal/agregarMateria?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario."
     );
-  }
+}
+
 
   // Continuar con el código de verificación
   connection.beginTransaction(function (err) {
@@ -1170,15 +1202,31 @@ app.post("/insertarAlumnos", function (req, res) {
     // Convertir la fecha de entrada en un objeto de fecha
     let fechaNacimientoObj = new Date(Fecha_Nacimiento);
   
-    // Formatear la fecha de nacimiento al formato deseado (año-mes-día)
-    let fechaFormateada = `${fechaNacimientoObj.getFullYear()}-${(
-      fechaNacimientoObj.getMonth() + 1
-    )
-      .toString()
-      .padStart(2, "0")}-${fechaNacimientoObj
-      .getDate()
-      .toString()
-      .padStart(2, "0")}`;
+    fechaNacimientoObj.setDate(fechaNacimientoObj.getDate() + 1);
+
+    // Obtener los componentes de la fecha de nacimiento modificada
+    const year = fechaNacimientoObj.getFullYear();
+    const month = (fechaNacimientoObj.getMonth() + 1).toString().padStart(2, "0");
+    const day = fechaNacimientoObj.getDate().toString().padStart(2, "0");
+    
+    // Formatear la nueva fecha
+    const fechaFormateada = `${year}-${month}-${day}`;
+    
+    if (
+      !nombre.trim() ||
+      !apellidoPaterno.trim() ||
+      !apellidoMaterno.trim() ||
+      !genero.trim() ||
+      !Domicilio.trim() ||
+      !Fecha_Nacimiento.trim() ||
+      !semestre.trim() ||
+      !contrasena.trim()
+  ) {
+      return res.redirect(
+          "/personal/agregarAlumnos?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario."
+      );
+  }
+
   
     // Verificar si el Alumno ya existe en la tabla usuario
     connection.query(
@@ -1289,13 +1337,20 @@ app.post("/insertarAlumnos", function (req, res) {
     let Fecha_Nacimiento = datosAlumnos.Fecha_Nacimiento;
     let semestre = datosAlumnos.semestre;
 
-// Verificar si Fecha_Nacimiento es una fecha válida
-if (Fecha_Nacimiento && !isNaN(Date.parse(Fecha_Nacimiento))) {
-  let fechaFormateada = new Date(Fecha_Nacimiento).toISOString().split("T")[0];
-  console.log("Fecha formateada:", fechaFormateada);
-} else {
-  console.error("La fecha de nacimiento no es válida.");
-}
+    let fechaNacimientoObj = new Date(Fecha_Nacimiento);
+
+    
+// Sumar un día a la fecha de nacimiento
+fechaNacimientoObj.setDate(fechaNacimientoObj.getDate() + 1);
+
+// Obtener los componentes de la fecha de nacimiento modificada
+const year = fechaNacimientoObj.getFullYear();
+const month = (fechaNacimientoObj.getMonth() + 1).toString().padStart(2, "0");
+const day = fechaNacimientoObj.getDate().toString().padStart(2, "0");
+
+// Formatear la nueva fecha
+const fechaFormateada = `${year}-${month}-${day}`;
+
 
     console.log(nombre)
     console.log(apellidoPaterno)
@@ -1303,19 +1358,20 @@ if (Fecha_Nacimiento && !isNaN(Date.parse(Fecha_Nacimiento))) {
     console.log(matricula)
 
     if (
-        !nombre ||
-        !apellidoPaterno ||
-        !apellidoMaterno ||
-        !genero ||
-        !Domicilio ||
-        !Fecha_Nacimiento ||
-        !semestre ||
-        !contrasena
-    ) {
-        return res.redirect(
-            "/personal/agregarAlumnos?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario."
-        );
-    }
+      !nombre.trim() ||
+      !apellidoPaterno.trim() ||
+      !apellidoMaterno.trim() ||
+      !genero.trim() ||
+      !Domicilio.trim() ||
+      !Fecha_Nacimiento.trim() ||
+      !semestre.trim() ||
+      !contrasena.trim()
+  ) {
+      return res.redirect(
+          "/personal/agregarAlumnos?mensaje=Por%20favor,%20complete%20todos%20los%20campos%20antes%20de%20enviar%20el%20formulario."
+      );
+  }
+  
 
     connection.beginTransaction(function (err) {
         if (err) {

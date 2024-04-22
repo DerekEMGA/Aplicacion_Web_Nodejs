@@ -46,9 +46,20 @@
       <div id="campos-derecha">
         <div class="campo">
              <label for="profesion">Profesión:</label>
-            <input type="text" name="profesion" id="profesion"  maxlength="80"
-            onkeydown="validateInput(event)" required
-            placeholder="Selecciona la profesión">
+             <select id="profesion" name="profesion" required>
+                <option value="">Selecciona Profesión</option>
+                <option value="Docente">Docente</option>
+                <option value="Fisico">Fisico</option>
+                <option value="Ciencias">Ciencias</option>
+                <option value="Matematico">Matematico</option>
+                <option value="Idiomas">Idiomas</option>
+                <option value="Historia">Historia</option>
+                <option value="Musica">Musica</option>
+                <option value="Geografia">Geografia</option>
+                <option value="Arte">Arte</option>
+                <option value="Tutor">Tutor</option>
+                <option value="Lenguas y Literatura">Lenguas y Literatura</option>      
+            </select>
         </div>
         <div class="campo">
             <label for="clave">Clave:</label>

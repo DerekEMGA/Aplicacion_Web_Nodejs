@@ -153,6 +153,23 @@ h1 {
 }
 
 
+.campo select {
+    display: block;
+    margin-bottom: 5px;
+    background-color: #F7F7F7;
+    border: 1px solid #ccc;
+    font-size: 18px;
+    padding: 3px;
+    width: 40%;
+    box-sizing: border-box;
+}
+
+.campo select:focus {
+    outline: none;
+    border-color: #3D8BD2; /* Cambia el color del borde cuando el campo está enfocado */
+}
+
+
 #botones {
     position: absolute;
     top: -10px;
