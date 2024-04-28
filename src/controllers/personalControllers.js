@@ -21,11 +21,16 @@ const mostrarCrearHorario=(req,res)=>
 {
     res.render("personal/crearHorario.ejs")
 }
+const mostrarAsignarHorario=(req,res)=>
+{
+    res.render("personal/asignarHorario.ejs")
+}
 module.exports={
     mostrarPersonal,
     mostrarAgregarDocente,
     mostrarAgregarMateria,
     mostrarAgregarAlumnos,
-    mostrarCrearHorario
+    mostrarCrearHorario,
+    mostrarAsignarHorario
 }
 

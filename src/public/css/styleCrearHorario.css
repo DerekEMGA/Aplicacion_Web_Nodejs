@@ -306,7 +306,7 @@ table {
     padding-left: 100px;
   }
 
-#materias li {
+#materias div {
     border: 1px solid rgb(8, 140, 223); /* Agregar contorno a cada celda */
     font-size: 12px; /* Tamaño de fuente más grande */
 }
@@ -350,16 +350,20 @@ table {
     gap: 10px; /* Espacio entre elementos */
     border-collapse: collapse; /* Asegurar que los bordes se unan */
     font-size: 12px; /* Tamaño de fuente más grande */
-    max-height: 190px; /* Altura máxima del contenedor para mantener los botones visibles */
-    max-width: 1180px; /* Altura máxima del contenedor para mantener los botones visibles */
+    max-height: 220px; /* Altura máxima del contenedor para mantener los botones visibles */
+    max-width: 1180px; 
     min-width: 250px;
     margin-right: -800px;
     margin-left: 150px;
+    align-items: center;
   } 
 
-  #horario li {
+  #horario div {
     border: 1px solid rgb(8, 140, 223); /* Agregar contorno a cada celda */
     padding: 10px; /* Añadir relleno para evitar que las celdas se colapsen completamente */
+    margin-top: 7px;
+    margin-left: 5px;
+    margin-right: 5px;
   }
 
 

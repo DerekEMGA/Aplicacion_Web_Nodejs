@@ -38,6 +38,7 @@ app.use("/alumno", alumnoRoutes);
 app.use("/personal/agregarDocente", personalRoutes);
 app.use("/personal/agregarMateria", personalRoutes);
 app.use("/personal/agregarAlumnos", personalRoutes);
+app.use("/personal/asignarHorario",personalRoutes)
 
 //CRUD routes
 app.get("/administrador/modificarPersonal", function (req, res) {
@@ -689,7 +690,7 @@ app.post("/eliminarProfesor", function (req, res) {
             if (count > 0) {
               // El profesor tiene materias asignadas, enviar un mensaje de error
               res.redirect(
-                "/personal/agregarDocente?mensaje=El%20profesor%20tiene%20materias%20asignadas%20y%20no%20se%20puede%20eliminar"
+                "/personal/agregarDocente?mensaje=El%20docente%20tiene%20materias%20asignadas%20y%20no%20se%20puede%20eliminar"
               );
               return;
             }
@@ -923,7 +924,7 @@ app.post("/modificarMateria", function (req, res) {
 
   if (
     !nombre.trim() ||
-    !docente.trim() ||
+    !idMaestro.trim() ||
     !hora.trim() ||
     !diaSemana.trim() ||
     !semestre.trim() ||
@@ -1153,7 +1154,7 @@ app.get("/personal/agregarMateria/tabla", function (req, res) {
 
   // Si los filtros están vacíos, establecer el límite en 7, de lo contrario, no hay límite
   if (!(filtroNombreMateria || filtroIdMaestro )) {
-    sqlQuery += ' LIMIT 7';
+    sqlQuery += ' LIMIT 5';
   }
 
   // Realizar la consulta a la base de datos
@@ -1567,7 +1568,7 @@ app.get("/personal/crearHorario/tabla", function (req, res) {
   const filtroPeriodo = req.query.filtroPeriodo || ""; // Obtener el filtro de período
 
   // Consulta SQL base
-  let sqlQuery = 'SELECT materias.NOMBRE AS NOMBRE_MATERIA, CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, materias.SEMESTRE, CASE WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" END AS HORA, materias.DIA_SEMANA, materias.PERIODO, materias.SALON FROM materias INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id';
+  let sqlQuery = 'SELECT materias.ID AS ID_MATERIA, materias.NOMBRE AS NOMBRE_MATERIA, CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, materias.SEMESTRE, CASE WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" END AS HORA, materias.DIA_SEMANA, materias.PERIODO, materias.SALON FROM materias INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id';
 
   // Lista de condiciones de filtro
   const condicionesFiltro = [];
@@ -1604,5 +1605,66 @@ app.get("/personal/crearHorario/tabla", function (req, res) {
 
     // Enviar los resultados como JSON al cliente
     res.status(200).json(results);
+  });
+});
+
+
+
+
+// Sección de insertarHorario
+app.post("/insertarHorario", function (req, res) {
+  const datosHorario2 = req.body.elementosHorario
+  const datosHorario = req.body
+  const elementosHorario = req.body.elementosHorario;
+  console.log("Elementos del horario:");
+    for (const key in elementosHorario) {
+        if (Object.hasOwnProperty.call(elementosHorario, key)) {
+            console.log(`${key}:`, elementosHorario[key]);
+        }
+    }
+
+
+  console.log(datosHorario)
+  console.log(datosHorario2)
+  // Verifica que los datos del horario no estén vacíos
+  if (!datosHorario || !Array.isArray(datosHorario) || datosHorario.length === 0) {
+    return res.redirect(
+      "/personal/crearHorario?mensaje=Datos%20del%20horario%20vacios"
+    );
+    
+  }
+
+  // Comenzar una transacción
+  connection.beginTransaction(function (err) {
+      if (err) {
+          throw err;
+      }
+
+      // Itera sobre los datos del horario y los inserta en la base de datos
+      datosHorario.forEach(horario => {
+          const { hora, materia } = horario;
+          connection.query(
+              "INSERT INTO horario (hora, materia) VALUES (?, ?)",
+              [hora, materia],
+              function (error, results, fields) {
+                  if (error) {
+                      return connection.rollback(function () {
+                          throw error;
+                      });
+                  }
+              }
+          );
+      });
+
+      // Commit si todo está bien
+      connection.commit(function (err) {
+          if (err) {
+              return connection.rollback(function () {
+                  throw err;
+              });
+          }
+          console.log("Datos del horario almacenados correctamente");
+          res.status(200).send("Datos del horario almacenados correctamente");
+      });
   });
 });

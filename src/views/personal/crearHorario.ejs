@@ -13,6 +13,7 @@
 
     <%- include('../partials/menuPersonal') %>
  
+
     <div class="container">
         <div class="row">
             <div class="col-12 my-5">
@@ -58,12 +59,14 @@
 
 </div>
 
+<form id="formularioHorario" method="post" onsubmit="return validateForm(action)" > 
+
 <div class="container" style="margin-top: -50px;">
     <div class="row">
         <div class="col-12 my-5">
             <h2 class="mb-3" style="text-align: center;">Plantilla de horario</h2>
             <ul class="horario-container">
-                <div class="list-group" id="horario">
+                <div class="list-group" id="horario" name="horario">
                     
                 </div>
             </ul>
@@ -80,9 +83,34 @@
     color: white; 
     padding: 10px 25px; 
     cursor: pointer; 
-    min-width: 150px; ">Guardar Horario</button>
+    min-width: 150px;
+    margin-right: 10px; " type="submit" name="accion" value="insertar" onclick="validateForm('/insertarHorario')">Crear Horario</button>
+
+    <button id="guardarHorario" class="ov-btn-slide-right" style=" 
+    color: white; 
+    padding: 10px 25px; 
+    cursor: pointer; 
+    min-width: 150px;
+    margin-right: 10px; " type="submit" name="accion" value="insertar" onclick="validateForm('/modificarHorario')">Guardar Horario</button>
+    
+    <button id="guardarHorario" class="ov-btn-slide-right" style=" 
+    color: white; 
+    padding: 10px 25px; 
+    cursor: pointer; 
+    min-width: 150px;
+    margin-right: 10px; " type="submit" name="accion" value="insertar" onclick="validateForm('/buscarHorario')">Buscar Horario</button>
+
+    <button id="guardarHorario" class="ov-btn-slide-right" style=" 
+    color: white; 
+    padding: 10px 25px; 
+    cursor: pointer; 
+    min-width: 150px; " type="submit" name="accion" value="insertar" onclick="validateForm('/eliminarHorario')">Eliminar Horario</button>
+   
+
 </div>
 
+
+</form>
 
 <script src="/script/sortable.min.js"></script>
 <script src="/script/scriptCrearHorario.js"></script>
