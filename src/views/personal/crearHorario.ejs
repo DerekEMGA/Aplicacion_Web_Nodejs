@@ -88,7 +88,8 @@
 
 <div style="margin-top: -40px; margin-right: 200px; display: flex; justify-content: flex-end;">
        
-    <input type="text" id="nombreHorario" name="nombreHorario" placeholder="Nombre del horario" style="margin-right: 10px;">
+    <input type="text" id="nombreHorario" name="nombreHorario" placeholder="Nombre del horario" style="margin-right: 10px;"
+    maxlength="30" onkeydown="validateInput(event)" required>
 
     <button id="crearHorario" class="ov-btn-slide-right" style=" 
     color: white; 

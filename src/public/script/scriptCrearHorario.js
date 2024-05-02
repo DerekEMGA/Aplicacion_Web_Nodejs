@@ -320,29 +320,55 @@ aplicarFiltrosBtnHorario.addEventListener("click", function() {
   });
   
 
+//Funcion para la comprobacion de los datos en los input
+
+function validateInput(event) {
+  const fieldName = event.target.name;
+
+ if (fieldName === "nombreHorario") {
+
+  const regex = /^(?!.*\s{3,})(?![A-Za-z]*\d)[A-Za-z0-9\s]*$/;
+  const inputValue = event.target.value;
+  
+  // Permitir borrar si la tecla presionada es backspace o delete
+  if (event.key === 'Backspace' || event.key === 'Delete') {
+      return;
+  }
+  
+  // Si el primer carácter es un espacio, un número o el símbolo '#', prevenir la acción
+    if (inputValue.length === 0 && (event.key === ' ' || /\d/.test(event.key) || event.key === '#')) {
+      event.preventDefault();
+      return;
+    }
+
+  // Si se ingresa un número o un símbolo en cualquier parte de la cadena, prevenir la acción
+  if (/[^A-Za-z0-9\s]/.test(event.key)) {
+      event.preventDefault();
+      return;
+  }
+  
+  if (!regex.test(inputValue)) {
+      event.preventDefault();
+  }
+}
+}
 
 
-
-
-
+//Funcion para recibir las acciones de los botones y agregar el arreglo del contendor horario como hijo del formulario para el servidor
 function validateForm(action) {
 
-  const elementosHorarioString = JSON.stringify(elementosHorario);
-  // Crear un campo oculto para la cadena de texto elementosHorario
-
-  const elementosHorarioInput = document.createElement('input');
-
-  const elementosHorarioStringN = JSON.stringify(elementosHorarioN);
-  // Crear un campo oculto para la cadena de texto elementosHorario
-
-  const elementosHorarioInputN = document.createElement('input');
   
+
+ 
       switch (action) {
 
         case "/insertarHorario":
         document.getElementById("formularioHorario").action = action;
           // Convertir el arreglo de objetos a una cadena de texto en formato JSON
-
+          const elementosHorarioString = JSON.stringify(elementosHorario);
+          // Crear un campo oculto para la cadena de texto elementosHorario
+        
+          const elementosHorarioInput = document.createElement('input');
         elementosHorarioInput.type = 'hidden';
         elementosHorarioInput.name = 'elementosHorario'; // Nombre del campo en el formulario
         elementosHorarioInput.value = elementosHorarioString; // Asignar la cadena de texto como valor
@@ -364,7 +390,11 @@ function validateForm(action) {
 
       
          document.getElementById("formularioHorario").action = action;
-        
+         const elementosHorarioStringN = JSON.stringify(elementosHorarioN);
+          // Crear un campo oculto para la cadena de texto elementosHorario
+
+          const elementosHorarioInputN = document.createElement('input');
+  
            // Convertir el arreglo de objetos a una cadena de texto en formato JSON
            elementosHorarioInputN.type = 'hidden';
            elementosHorarioInputN.name = 'elementosHorarioN'; // Nombre del campo en el formulario
