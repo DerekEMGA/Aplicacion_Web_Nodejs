@@ -1,6 +1,8 @@
-const elementosHorario = [];
 
+const elementosHorario = [];
 document.addEventListener("DOMContentLoaded", function() {
+
+  
   const horarioContainer = document.getElementById("horario");
   const materiasContainer = document.getElementById("materias");
 // Crear el Sortable y definir las funciones onAdd y onRemove
@@ -15,6 +17,7 @@ Sortable.create(horarioContainer, {
   chosenClass: "active",
   removeOnSpill: true,
   onAdd: function(evt) {
+    
       const newItem = evt.item;
       const newItemHoraElement = newItem.querySelector('.hora');
       const newItemHora = newItemHoraElement ? newItemHoraElement.textContent.trim() : '';
@@ -76,6 +79,127 @@ Sortable.create(horarioContainer, {
       }
   }
 });
+const elementosHorarioN = [];
+
+function addToHorarioArray() {
+  const horasDelItem = [];
+  const idsDelItem = [];
+
+  // Obtener todos los elementos dentro del contenedor
+  const items = horarioContainer.querySelectorAll('.list-group-item');
+
+  // Iterar sobre cada elemento del contenedor
+  items.forEach(item => {
+      // Obtener la hora y el ID del elemento actual
+      const horaElement = item.querySelector('.hora');
+      const idElement = item.querySelector('.id');
+
+      // Verificar si se encontraron la hora y el ID en el elemento actual
+      if (horaElement && idElement) {
+          const hora = horaElement.textContent.trim();
+          const id = idElement.textContent.trim();
+
+          // Verificar si la hora y el ID son válidos
+          if (hora && id) {
+              horasDelItem.push(hora);
+              idsDelItem.push(id);
+          }
+      }
+  });
+
+  // Verificar si se encontraron elementos válidos antes de agregar al arreglo
+  if (horasDelItem.length > 0 && horasDelItem.length === idsDelItem.length) {
+      // Iterar sobre los elementos encontrados y agregarlos al arreglo elementosHorario
+      for (let i = 0; i < horasDelItem.length; i++) {
+          const nuevaHora = horasDelItem[i];
+          const nuevoId = idsDelItem[i];
+          const existingItemIndex = elementosHorarioN.findIndex(item => {
+              return item.hora === nuevaHora && item.id === nuevoId;
+          });
+
+          if (existingItemIndex === -1) {
+              // Guardar tanto la hora como el ID en un objeto y agregarlo al arreglo elementosHorario
+              const nuevoElementoHorario = {
+                  hora: nuevaHora,
+                  id: nuevoId
+              };
+
+              elementosHorarioN.push(nuevoElementoHorario);
+              console.log("Arreglo elementosHorario:", elementosHorarioN);
+          } else {
+              console.error("La hora ya está ocupada.");
+          }
+      }
+  } else {
+      console.error("No se encontraron elementos válidos o la longitud de los arreglos no coincide.");
+  }
+}
+
+const llenar_arreglo = document.getElementById("modificarHorario");
+llenar_arreglo.addEventListener("click", function() {
+    addToHorarioArray(); // Llama a addToHorarioArray() para actualizar el arreglo elementosHorario
+    alert("Arreglo elementosHorario: " + JSON.stringify(elementosHorarioN));
+    validateForm("/modificarHorario"); // Llama a la función validateForm con la acción "/modificarHorario"
+});
+
+
+// Obtener datos al hacer clic en el botón "aplicarFiltrosBtn"
+const filtroNombreInput = document.getElementById("nombreHorario");
+const aplicarFiltrosBtnHorario = document.getElementById("buscarHorario");
+
+aplicarFiltrosBtnHorario.addEventListener("click", function() {
+  const filtroNombre = filtroNombreInput.value.trim();
+
+  fetch(`/personal/crearHorario/tablaHorario?filtroNombre=${filtroNombre}`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Error al obtener los datos");
+      }
+      return response.json();
+    })
+
+    .then((data) => {
+      // Limpiar el contenedor antes de agregar nuevos elementos
+
+      horarioContainer.innerHTML = '';
+
+      // Crear elementos de lista para cada elemento en los datos
+      data.forEach((item) => {
+        const listItem = document.createElement('div');
+        listItem.classList.add('list-group-item');
+        listItem.innerHTML = `
+          <p class="mb-0 hora" style="color:blue;">${item.HORA}</p>
+          <p class="mb-0">Materia: ${item.NOMBRE_MATERIA}</p>
+          <p class="mb-0">Docente: ${item.NOMBRE_PROFESOR}</p>
+          <p class="mb-0">Semestre: ${item.SEMESTRE}</p>
+          <p class="mb-0">Periodo: ${item.PERIODO}</p>
+          <p class="mb-0">Dias: ${item.DIA_SEMANA}</p>
+          <p class="mb-0">Salon: ${item.SALON}</p>
+          <p class="mb-0 id">${item.ID_MATERIA}</p> `;
+        // Agregar el elemento al contenedor de "materias"
+        horarioContainer.appendChild(listItem);
+        const id_horario = item.ID_HORARIO;
+       // addToHorarioArray();
+
+        // Crear un nuevo elemento input para almacenar el ID del horario
+        const idHorarioInput = document.createElement('input');
+        idHorarioInput.type = 'hidden'; // Establecer el tipo de input como 'hidden'
+        idHorarioInput.name = 'idHorario'; // Establecer el nombre del campo en el formulario
+        idHorarioInput.value = id_horario; // Asignar el valor del ID del horario al campo oculto
+        
+        // Agregar el campo oculto al formulario
+        document.getElementById("formularioHorario").appendChild(idHorarioInput);
+
+      });
+    })
+
+
+    .catch((error) => {
+      console.error("Error al obtener los datos:", error);
+      // Mostrar un mensaje de error al usuario
+    });
+});
+
 
   // Manejar el evento 'sort' para ordenar los elementos si se detecta un cambio en el orden
   horarioContainer.addEventListener('sort', function(evt) {
@@ -196,73 +320,135 @@ Sortable.create(horarioContainer, {
   });
   
 
- 
 
 
-  function validateForm(action) {
-    //alert(`Validando formulario para la acción: ${action}`);
+
+
+
+function validateForm(action) {
+
+  const elementosHorarioString = JSON.stringify(elementosHorario);
+  // Crear un campo oculto para la cadena de texto elementosHorario
+
+  const elementosHorarioInput = document.createElement('input');
+
+  const elementosHorarioStringN = JSON.stringify(elementosHorarioN);
+  // Crear un campo oculto para la cadena de texto elementosHorario
+
+  const elementosHorarioInputN = document.createElement('input');
   
-
       switch (action) {
+
         case "/insertarHorario":
-          document.getElementById("formularioHorario").action = action;
+        document.getElementById("formularioHorario").action = action;
+          // Convertir el arreglo de objetos a una cadena de texto en formato JSON
 
-// Iterar sobre cada objeto en elementosHorario y mostrar sus valores en la consola
-//elementosHorario.forEach(elemento => {
-  //console.log("Hora:", elemento.hora);
-  //console.log("ID:", elemento.id);
-//});
+        elementosHorarioInput.type = 'hidden';
+        elementosHorarioInput.name = 'elementosHorario'; // Nombre del campo en el formulario
+        elementosHorarioInput.value = elementosHorarioString; // Asignar la cadena de texto como valor
+        // Agregar el campo oculto al formulario
+        document.getElementById("formularioHorario").appendChild(elementosHorarioInput);
 
-// Convertir el arreglo de objetos a una cadena de texto en formato JSON
-const elementosHorarioString = JSON.stringify(elementosHorario);
-
-// Crear un campo oculto para la cadena de texto elementosHorario
-const elementosHorarioInput = document.createElement('input');
-elementosHorarioInput.type = 'hidden';
-elementosHorarioInput.name = 'elementosHorario'; // Nombre del campo en el formulario
-elementosHorarioInput.value = elementosHorarioString; // Asignar la cadena de texto como valor
-
-// Agregar el campo oculto al formulario
-document.getElementById("formularioHorario").appendChild(elementosHorarioInput);
-
-// Enviar el formulario
-document.getElementById("formularioHorario").submit();
-
- 
- 
- return true;
+        // Enviar el formulario
+        document.getElementById("formularioHorario").submit();
+        return true;
   
         case "/eliminarHorario":
          
-          document.getElementById("formularioHorario").action = action;
-          document.getElementById("formularioHorario").submit();
+        document.getElementById("formularioHorario").action = action;
+        document.getElementById("formularioHorario").submit();
     
-          return true; 
+        return true; 
     
         case "/modificarHorario":
-          document.getElementById("formularioHorario").action = action
-          document.getElementById("formularioHorario").submit()
-          break;
-    
-        case "/buscarHorario":
-            clearLocalStorage();
-            document.getElementById("formularioHorario").action = action;
-            document.getElementById("formularioHorario").submit();
-          
-          break;
+
+      
+         document.getElementById("formularioHorario").action = action;
+        
+           // Convertir el arreglo de objetos a una cadena de texto en formato JSON
+           elementosHorarioInputN.type = 'hidden';
+           elementosHorarioInputN.name = 'elementosHorarioN'; // Nombre del campo en el formulario
+           elementosHorarioInputN.value = elementosHorarioStringN; // Asignar la cadena de texto como valor
+        document.getElementById("formularioHorario").appendChild(elementosHorarioInputN);
+        document.getElementById("formularioHorario").submit();
+
+         break
+       
       }
     }
 
-
-    function clearLocalStorage() {
-      localStorage.removeItem("nombre");
-      localStorage.removeItem("docente");
-      localStorage.removeItem("hora");
-      localStorage.removeItem("dias");
-      localStorage.removeItem("semestre");
-      localStorage.removeItem("salon");
-      localStorage.removeItem("periodo");
+    $(function(){
+      var textos = ["Consulta de materias ", "Mostrara todas las materias disponibles ", "Arrastre el contenedor a la plantilla "];
+      var index = 0;
+      var intervalo = 100;
+      var espera = 2000; // 2 segundos de espera antes de borrar
+  
+      mostrarTexto(textos[index]);
+  
+      function mostrarTexto(texto) {
+          maquina("typer", texto, intervalo, function() {
+              // Una vez que se muestra un texto, esperamos antes de comenzar el borrado
+              setTimeout(function() {
+                  // Comienza el borrado gradual
+                  var i = texto.length;
+                  var borradoTimer = setInterval(function() {
+                      if (i >= 0) {
+                          $("#" + "typer").html(texto.substr(0, i--) + "_");
+                      } else {
+                          clearInterval(borradoTimer);
+                          // Pasamos al siguiente texto
+                          index = (index + 1) % textos.length; // Esto garantiza que index esté entre 0 y textos.length - 1
+                          setTimeout(function() {
+                              mostrarTexto(textos[index]);
+                          }, 1000); // Espera 1 segundo antes de mostrar el próximo texto
+                      }
+                  }, intervalo);
+              }, espera);
+          });
       }
-
-
- 
+  });
+  
+  function maquina(contenedor, texto, intervalo, callback) {
+      var i = 0;
+      var timer = setInterval(function() {
+          if (i < texto.length) {
+              $("#" + contenedor).html(texto.substr(0, i++) + "_");
+          } else {
+              clearInterval(timer);
+              // Una vez que se ha mostrado todo el texto, llamamos al callback
+              if (callback) {
+                  callback();
+              }
+          }
+      }, intervalo);
+  };
+  
+  
+      
+    $(function(){
+      var texto = "Plantilla de horario";
+      maquina1("typer1",texto,100,0);
+     });
+     
+     function maquina1(contenedor,texto,intervalo,n){
+      var i=0,
+       // Creamos el timer
+       timer = setInterval(function() {
+       if ( i<texto.length ) {
+        // Si NO hemos llegado al final del texto..
+        // Vamos añadiendo letra por letra y la _ al final.
+        $("#"+contenedor).html(texto.substr(0,i++) + "_");
+       } else {
+        // En caso contrario..
+        // Salimos del Timer y quitamos la barra baja (_)
+        clearInterval(timer);
+        $("#"+contenedor).html(texto);
+        // Auto invocamos la rutina n veces (0 para infinito)
+        if ( --n!=0 ) {
+         setTimeout(function() {
+          maquina1(contenedor,texto,intervalo,n);
+         },21000);
+        }
+       }
+      },intervalo);
+     };

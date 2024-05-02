@@ -38,7 +38,10 @@ app.use("/alumno", alumnoRoutes);
 app.use("/personal/agregarDocente", personalRoutes);
 app.use("/personal/agregarMateria", personalRoutes);
 app.use("/personal/agregarAlumnos", personalRoutes);
-app.use("/personal/asignarHorario",personalRoutes)
+app.use("/personal/asignarHorario",personalRoutes);
+app.use("/personal/crearHorario", personalRoutes);
+
+
 
 //CRUD routes
 app.get("/administrador/modificarPersonal", function (req, res) {
@@ -1609,62 +1612,216 @@ app.get("/personal/crearHorario/tabla", function (req, res) {
 });
 
 
-
-
 // Sección de insertarHorario
 app.post("/insertarHorario", function (req, res) {
-  const datosHorario2 = req.body.elementosHorario
-  const datosHorario = req.body
-  const elementosHorario = req.body.elementosHorario;
-  console.log("Elementos del horario:");
-    for (const key in elementosHorario) {
-        if (Object.hasOwnProperty.call(elementosHorario, key)) {
-            console.log(`${key}:`, elementosHorario[key]);
-        }
+  const { nombreHorario, elementosHorario } = req.body;
+
+  // Verificar que el nombre no esté vacío y que haya al menos un elemento en elementosHorario
+if (!nombreHorario || !elementosHorario || JSON.parse(elementosHorario).length === 0) {
+  return res.redirect(
+    "/personal/crearHorario?mensaje=Nombre%20del%20horario%20vacío%20o%20sin%20elementos"
+  );
+}
+
+  // Convertir elementosHorario a un objeto JavaScript si es una cadena JSON
+  const parsedElementosHorario = JSON.parse(elementosHorario);
+
+  // Definir las horas de 7:00am a 2:00pm
+  const horasDelDia = [
+    "07:00 - 08:00",
+    "08:00 - 09:00",
+    "09:00 - 10:00",
+    "10:00 - 11:00",
+    "11:00 - 12:00",
+    "12:00 - 13:00",
+    "13:00 - 14:00"
+  ];
+
+  // Iniciar el query para la inserción de los datos
+  let sql = "INSERT INTO horarios (nombre, ";
+  for (let i = 1; i <= horasDelDia.length; i++) {
+    sql += `ID_MATERIA_${i}, `;
+  }
+  sql = sql.slice(0, -2); // Eliminar la última coma y espacio
+  sql += ") VALUES (?, ";
+
+  // Crear un array con los valores a insertar
+  const values = [nombreHorario];
+  
+  // Asignar los IDs de las materias a los campos correspondientes según la hora
+  horasDelDia.forEach(hora => {
+    const elemento = parsedElementosHorario.find(el => el.hora === hora);
+    if (elemento) {
+      values.push(elemento.id);
+    } else {
+      values.push(null);
+    }
+  });
+
+  // Agregar placeholders para los valores
+  const placeholders = horasDelDia.map(() => "?").join(", ");
+  sql += placeholders + ")";
+
+  // Ejecutar el query
+  connection.beginTransaction(function (err) {
+    if (err) {
+      throw err;
     }
 
-
-  console.log(datosHorario)
-  console.log(datosHorario2)
-  // Verifica que los datos del horario no estén vacíos
-  if (!datosHorario || !Array.isArray(datosHorario) || datosHorario.length === 0) {
-    return res.redirect(
-      "/personal/crearHorario?mensaje=Datos%20del%20horario%20vacios"
-    );
-    
-  }
-
-  // Comenzar una transacción
-  connection.beginTransaction(function (err) {
-      if (err) {
-          throw err;
+    connection.query(sql, values, function (error, results, fields) {
+      if (error) {
+        return connection.rollback(function () {
+          throw error;
+        });
       }
-
-      // Itera sobre los datos del horario y los inserta en la base de datos
-      datosHorario.forEach(horario => {
-          const { hora, materia } = horario;
-          connection.query(
-              "INSERT INTO horario (hora, materia) VALUES (?, ?)",
-              [hora, materia],
-              function (error, results, fields) {
-                  if (error) {
-                      return connection.rollback(function () {
-                          throw error;
-                      });
-                  }
-              }
-          );
-      });
 
       // Commit si todo está bien
       connection.commit(function (err) {
-          if (err) {
-              return connection.rollback(function () {
-                  throw err;
-              });
-          }
-          console.log("Datos del horario almacenados correctamente");
-          res.status(200).send("Datos del horario almacenados correctamente");
+        if (err) {
+          return connection.rollback(function () {
+            throw err;
+          });
+        }
+        return res.redirect(
+          "/personal/crearHorario?mensaje=Datos%20almacenados%20correcto"
+        );
       });
+    });
   });
 });
+
+app.get("/personal/crearHorario/tablaHorario", function (req, res) {
+  const filtroNombre = req.query.filtroNombre || ""; // Obtener el filtro de nombre de materia
+
+  if (!filtroNombre) {
+    return res.redirect(
+      "/personal/crearHorario?mensaje=Inserte%20nombre%20de%20plantilla%20de%20horario"
+    );
+  }
+
+  // Consulta SQL base para obtener los datos de la tabla de horarios con las materias y nombres de profesores
+  let sqlQuery = `SELECT horarios.id AS ID_HORARIO, horarios.nombre AS NOMBRE_HORARIO, 
+                  materias.ID AS ID_MATERIA, materias.NOMBRE AS NOMBRE_MATERIA, 
+                  CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, 
+                  materias.SEMESTRE, 
+                  CASE 
+                    WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" 
+                    WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" 
+                    WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" 
+                    WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" 
+                    WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" 
+                    WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" 
+                    WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" 
+                  END AS HORA, 
+                  materias.DIA_SEMANA, materias.PERIODO, materias.SALON 
+                FROM horarios 
+                INNER JOIN materias ON horarios.id_materia_1 = materias.ID OR horarios.id_materia_2 = materias.ID 
+                                   OR horarios.id_materia_3 = materias.ID OR horarios.id_materia_4 = materias.ID 
+                                   OR horarios.id_materia_5 = materias.ID OR horarios.id_materia_6 = materias.ID 
+                                   OR horarios.id_materia_7 = materias.ID 
+                INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id`;
+
+  // Si hay filtro de nombre de materia, agregar la condición correspondiente
+  if (filtroNombre) {
+    sqlQuery += ` WHERE horarios.nombre LIKE '%${filtroNombre}%'`;
+  }
+
+  // Ordenar los resultados por hora ascendente
+  sqlQuery += ' ORDER BY HOUR(materias.HORA) ASC';
+
+  // Realizar la consulta a la base de datos para obtener los datos de la tabla de horarios y materias
+  connection.query(sqlQuery, function (error, results, fields) {
+    if (error) {
+      console.error("Error en la consulta a la base de datos:", error);
+      return res.status(500).send("Error en la consulta a la base de datos");
+    }
+
+    // Agregar el idHorario a cada resultado
+    results.forEach(result => {
+      result.idHorario = result.ID_HORARIO;
+    });
+    console.log(results)
+    // Enviar los resultados como JSON al cliente
+    res.status(200).json(results);
+  });
+});
+
+
+
+// Sección de actualizarHorario
+app.post("/modificarHorario", function (req, res) {
+  const { idHorario, nombreHorario, elementosHorarioN } = req.body;
+  console.log(req.body)
+  // Verificar que el nombre y el ID no estén vacíos y que haya al menos un elemento en elementosHorario
+  if (!idHorario || !nombreHorario || !elementosHorarioN || JSON.parse(elementosHorarioN).length === 0) {
+    return res.redirect(
+      "/personal/crearHorario?mensaje=ID%20o%20nombre%20del%20horario%20vacío%20o%20sin%20elementos"
+    );
+  }
+
+  // Convertir elementosHorario a un objeto JavaScript si es una cadena JSON
+  const parsedElementosHorario = JSON.parse(elementosHorario);
+
+  // Definir las horas de 7:00am a 2:00pm
+  const horasDelDia = [
+    "07:00 - 08:00",
+    "08:00 - 09:00",
+    "09:00 - 10:00",
+    "10:00 - 11:00",
+    "11:00 - 12:00",
+    "12:00 - 13:00",
+    "13:00 - 14:00"
+  ];
+
+  // Iniciar el query para la actualización de los datos
+  let sql = "UPDATE horarios SET nombre = ?, ";
+  const values = [nombreHorario];
+
+  // Construir la parte del query para actualizar las materias según la hora
+  horasDelDia.forEach((hora, index) => {
+    const elemento = parsedElementosHorario.find(el => el.hora === hora);
+    if (elemento) {
+      sql += `ID_MATERIA_${index + 1} = ?, `;
+      values.push(elemento.id);
+    } else {
+      sql += `ID_MATERIA_${index + 1} = NULL, `;
+    }
+  });
+
+  // Eliminar la última coma y espacio
+  sql = sql.slice(0, -2);
+
+  // Agregar la condición WHERE para actualizar el horario correcto
+  sql += " WHERE id = ?";
+
+  // Agregar el ID del horario al array de valores
+  values.push(idHorario);
+
+  // Ejecutar el query
+  connection.beginTransaction(function (err) {
+    if (err) {
+      throw err;
+    }
+
+    connection.query(sql, values, function (error, results, fields) {
+      if (error) {
+        return connection.rollback(function () {
+          throw error;
+        });
+      }
+
+      // Commit si todo está bien
+      connection.commit(function (err) {
+        if (err) {
+          return connection.rollback(function () {
+            throw err;
+          });
+        }
+        return res.redirect(
+          "/personal/crearHorario?mensaje=Datos%20actualizados%20correctamente"
+        );
+      });
+    });
+  });
+});
+
