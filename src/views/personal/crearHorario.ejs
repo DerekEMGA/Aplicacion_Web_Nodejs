@@ -88,7 +88,7 @@
 
 <div style="margin-top: -40px; margin-right: 200px; display: flex; justify-content: flex-end;">
        
-    <input type="text" id="nombreHorario" name="nombreHorario" placeholder="Nombre del horario" style="margin-right: 10px;"
+    <input type="text" id="nombreHorario" name="nombreHorario" placeholder="Nombre del horario" style="margin-right: 380px;"
     maxlength="30" onkeydown="validateInput(event)" required>
 
     <button id="crearHorario" class="ov-btn-slide-right" style=" 
@@ -98,23 +98,6 @@
     min-width: 150px;
     margin-right: 10px; " type="submit" name="accion" value="insertar" onclick="validateForm('/insertarHorario')">Crear Horario</button>
 
-    <button id="modificarHorario" class="ov-btn-slide-right" style=" 
-    color: white; 
-    padding: 10px 25px; 
-    cursor: pointer; 
-    min-width: 150px;
-    margin-right: 10px; " type="submit" name="accion" value="modificar" onclick="validateForm('/modificarHorario')">Guardar Horario</button>
-    
-   
-
-    <button id="eliminarHorario" class="ov-btn-slide-right" style=" 
-    color: white; 
-    padding: 10px 25px; 
-    cursor: pointer; 
-    min-width: 150px; " type="submit" name="accion" value="eliminar" onclick="validateForm('/eliminarHorario')">Eliminar Horario</button>
-   
-
-
 
 </form>
 
@@ -123,6 +106,24 @@
 
 </div>
 <div style="margin-top: -46px; margin-right: 30px; display: flex; justify-content: flex-end;">
+
+    <button id="modificarHorario" class="ov-btn-slide-right" style=" 
+    color: white; 
+    padding: 10px 25px; 
+    cursor: pointer; 
+    min-width: 150px;
+    margin-right: 20px; " type="submit" name="modificarHorario" value="modificar" >Guardar Horario</button>
+    
+   
+
+    <button id="eliminarHorario" class="ov-btn-slide-right" style=" 
+    color: white; 
+    padding: 10px 25px; 
+    cursor: pointer; 
+    min-width: 150px; 
+    margin-right: 180px;" type="submit" name="eliminarHorario" value="eliminar" >Eliminar Horario</button>
+   
+
 
 <button id="buscarHorario" class="ov-btn-slide-right" style=" 
 color: white; 

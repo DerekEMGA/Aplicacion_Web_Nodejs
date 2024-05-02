@@ -1706,13 +1706,13 @@ app.post("/insertarHorario", function (req, res) {
 
 
 app.get("/personal/crearHorario/tablaHorario", function (req, res) {
-  const filtroNombre = req.query.filtroNombre || ""; // Obtener el filtro de nombre de materia
+  const filtroNombre = req.query.filtroNombre; // Obtener el filtro de nombre de materia
 
   if (!filtroNombre) {
     return res.redirect(
-      "/personal/crearHorario?mensaje=Inserte%20nombre%20de%20plantilla%20de%20horario"
+      "/personal/crearHorario?mensaje=Ingrese%20nombre%20de%20plantilla%20de%20horario%20antes%20de%20buscar"
     );
-  }
+  } 
 
   // Consulta SQL base para obtener los datos de la tabla de horarios con las materias y nombres de profesores
   let sqlQuery = `SELECT horarios.id AS ID_HORARIO, horarios.nombre AS NOMBRE_HORARIO, 
@@ -1751,22 +1751,31 @@ app.get("/personal/crearHorario/tablaHorario", function (req, res) {
       return res.status(500).send("Error en la consulta a la base de datos");
     }
 
+    // Si no se encontraron resultados, enviar un mensaje indicando que no se encontraron horarios
+    if (results.length === 1) {
+      return res.redirect(
+        "/personal/crearHorario?mensaje=Horario%20no%20encontrado"
+      ); 
+        }
+
     // Agregar el idHorario a cada resultado
     results.forEach(result => {
       result.idHorario = result.ID_HORARIO;
     });
-    console.log(results)
+
     // Enviar los resultados como JSON al cliente
     res.status(200).json(results);
   });
 });
 
 
+
 // Sección de actualizarHorario
 app.post("/modificarHorario", function (req, res) {
   const { nombreHorario, elementosHorarioN } = req.body;
   const [idHorario] = req.body.idHorario;
-
+  
+  console.log(req.body)
   // Verificar que el nombre, el ID y los elementos no estén vacíos
   if (!idHorario || !nombreHorario || !elementosHorarioN || JSON.parse(elementosHorarioN).length === 0) {
     return res.redirect(
@@ -1858,6 +1867,8 @@ app.post("/modificarHorario", function (req, res) {
 // Sección de eliminarHorario
 app.post("/eliminarHorario", function (req, res) {
   const [idHorario] = req.body.idHorario;
+  console.log(req.body)
+
   // Verificar que el ID no esté vacío
   if (!idHorario) {
     return res.redirect(

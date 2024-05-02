@@ -1,5 +1,7 @@
 
 const elementosHorario = [];
+const elementosHorarioN = [];
+
 document.addEventListener("DOMContentLoaded", function() {
 
   
@@ -79,7 +81,7 @@ Sortable.create(horarioContainer, {
       }
   }
 });
-const elementosHorarioN = [];
+
 
 function addToHorarioArray() {
   const horasDelItem = [];
@@ -138,41 +140,56 @@ function addToHorarioArray() {
 //boton para insertar el arreglo para guardar 
 const llenar_arreglo_guardar = document.getElementById("modificarHorario");
 llenar_arreglo_guardar.addEventListener("click", function() {
-    addToHorarioArray(); // Llama a addToHorarioArray() para actualizar el arreglo elementosHorario
 
-    const elementosHorarioStringN = JSON.stringify(elementosHorarioN);
-          // Crear un campo oculto para la cadena de texto elementosHorario
+   // Llama a addToHorarioArray() para actualizar el arreglo elementosHorario
+    addToHorarioArray();
+     //   alert("Arreglo elementosHorario: " + JSON.stringify(elementosHorarioN));
 
-          const elementosHorarioInputN = document.createElement('input');
+    if (elementosHorarioN == undefined || elementosHorarioN.length == 0) {
+      alert("Nombre de horario vacio o sin elementos")
+  } 
   
-           // Convertir el arreglo de objetos a una cadena de texto en formato JSON
-           elementosHorarioInputN.type = 'hidden';
-           elementosHorarioInputN.name = 'elementosHorarioN'; // Nombre del campo en el formulario
-           elementosHorarioInputN.value = elementosHorarioStringN; // Asignar la cadena de texto como valor
-        document.getElementById("formularioHorario").appendChild(elementosHorarioInputN);
-        //alert("Arreglo elementosHorario: " + JSON.stringify(elementosHorarioN));
-
-    validateForm("/modificarHorario"); // Llama a la función validateForm con la acción "/modificarHorario"
+  if (elementosHorarioN !== undefined && elementosHorarioN.length !== 0) {
+    // Crear un campo oculto para la cadena de texto elementosHorario
+    const elementosHorarioStringN = JSON.stringify(elementosHorarioN);
+    const elementosHorarioInputN = document.createElement('input');
+    elementosHorarioInputN.type = 'hidden';
+    elementosHorarioInputN.name = 'elementosHorarioN'; // Nombre del campo en el formulario
+    elementosHorarioInputN.value = elementosHorarioStringN; // Asignar la cadena de texto como valor
+    document.getElementById("formularioHorario").appendChild(elementosHorarioInputN);
+    validateForm("/modificarHorario"); // Llama a la función validateForm con la acción "/eliminarHorario"
+  }
+  
+  
+  
 });
 
 //boton para insertar el arreglo para eliminar
 const llenar_arreglo_eliminar = document.getElementById("eliminarHorario");
 llenar_arreglo_eliminar.addEventListener("click", function() {
     addToHorarioArray(); // Llama a addToHorarioArray() para actualizar el arreglo elementosHorario
+    //const elementosHorarioStringN = JSON.stringify(elementosHorarioN);
+   // alert("Arreglo elementosHorario: " + JSON.stringify(elementosHorarioN));
 
-    const elementosHorarioStringN = JSON.stringify(elementosHorarioN);
-          // Crear un campo oculto para la cadena de texto elementosHorario
+if (elementosHorarioN == undefined || elementosHorarioN.length == 0) {
+  alert("Nombre de horario vacio o sin elementos")
+} 
 
-          const elementosHorarioInputN = document.createElement('input');
-  
-           // Convertir el arreglo de objetos a una cadena de texto en formato JSON
-           elementosHorarioInputN.type = 'hidden';
-           elementosHorarioInputN.name = 'elementosHorarioN'; // Nombre del campo en el formulario
-           elementosHorarioInputN.value = elementosHorarioStringN; // Asignar la cadena de texto como valor
-        document.getElementById("formularioHorario").appendChild(elementosHorarioInputN);
+if (elementosHorarioN !== undefined && elementosHorarioN.length !== 0) {
+// Crear un campo oculto para la cadena de texto elementosHorario
+const elementosHorarioStringN = JSON.stringify(elementosHorarioN);
+const elementosHorarioInputN = document.createElement('input');
+elementosHorarioInputN.type = 'hidden';
+elementosHorarioInputN.name = 'elementosHorarioN'; // Nombre del campo en el formulario
+elementosHorarioInputN.value = elementosHorarioStringN; // Asignar la cadena de texto como valor
+document.getElementById("formularioHorario").appendChild(elementosHorarioInputN);
+validateForm("/eliminarHorario"); // Llama a la función validateForm con la acción "/eliminarHorario"
+}
+
+
+    
         //alert("Arreglo elementosHorario: " + JSON.stringify(elementosHorarioN));
 
-    validateForm("/eliminarHorario"); // Llama a la función validateForm con la acción "/eliminarHorario"
 });
 
 
@@ -186,7 +203,12 @@ const aplicarFiltrosBtnHorario = document.getElementById("buscarHorario");
 aplicarFiltrosBtnHorario.addEventListener("click", function() {
   const filtroNombre = filtroNombreInput.value.trim();
 
+  if (!filtroNombre) {
+    alert("Ingrese un nombre de horario antes de buscar")
+  }
+
   fetch(`/personal/crearHorario/tablaHorario?filtroNombre=${filtroNombre}`)
+  
     .then((response) => {
       if (!response.ok) {
         throw new Error("Error al obtener los datos");
@@ -196,9 +218,11 @@ aplicarFiltrosBtnHorario.addEventListener("click", function() {
 
     .then((data) => {
       // Limpiar el contenedor antes de agregar nuevos elementos
-
+      if (data.length === 0) {
+        alert("Horario no encontrado");
+      } 
       horarioContainer.innerHTML = '';
-
+     
       // Crear elementos de lista para cada elemento en los datos
       data.forEach((item) => {
         const listItem = document.createElement('div');
@@ -410,14 +434,18 @@ function validateForm(action) {
         case "/eliminarHorario":   
 
         document.getElementById("formularioHorario").action = action;
+       // alert("Acción del formulario (eliminarHorario): " + document.getElementById("formularioHorario").action);
+
         document.getElementById("formularioHorario").submit();
 
         return true; 
         case "/modificarHorario":
+   
+        document.getElementById("formularioHorario").action = action;
+        -// alert("Acción del formulario (modificarHorario): " + document.getElementById("formularioHorario").action);
 
-         document.getElementById("formularioHorario").action = action;        
         document.getElementById("formularioHorario").submit();
-        
+
         return true
       }
     }
