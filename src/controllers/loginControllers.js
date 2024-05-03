@@ -42,8 +42,11 @@ const login= (req, res) => {
             // Lógica para otros tipos de usuario
             switch (tipo) {
               case 'Alumno':
-                  res.status(200).send('/alumno'); // Enviar solo la ruta
-                  break;
+                             
+
+                const url = `/alumno?matricula=${encodeURIComponent(matricula)}`;
+                res.status(200).send(url); // Enviar solo la ruta con el query parameter                  
+                break;
                 case 'Profesor':
                   res.status(200).send('/docente'); // Enviar solo la ruta
                   break;
@@ -70,7 +73,9 @@ const login= (req, res) => {
               // Lógica para otros tipos de usuario
               switch (tipo) {
                 case 'Alumno':
-                  res.status(200).send('/alumno'); // Enviar solo la ruta
+                  const url = `/alumno?matricula=${encodeURIComponent(matricula)}`;
+
+                  res.status(200).send(url); // Enviar solo la ruta con el query parameter                  
                   break;
                 case 'Profesor':
                   res.status(200).send('/docente'); // Enviar solo la ruta

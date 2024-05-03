@@ -58,6 +58,10 @@ app.listen(app.get("port"), () => {
   console.log("server on port 3000");
 });
 
+
+
+
+
 // Aquí se insertan los registros en la tabla personal y usuario
 app.post("/insertar", function (req, res) {
   const datosPersonal = req.body;
@@ -1906,3 +1910,57 @@ app.post("/eliminarHorario", function (req, res) {
     });
   });
 });
+
+
+
+
+app.get("/alumno/horario/tabla", function (req, res) {
+  const matricula = req.query.matricula; // Obtener la matrícula del alumno desde la URL
+
+  console.log(matricula);
+  if (!matricula) {
+    return res.redirect("/alumno/horario?mensaje=Ingrese%20la%20matrícula%20del%20alumno");
+  }
+
+  // Consulta SQL para obtener el horario asociado a la matrícula del alumno
+  let sqlQuery = `SELECT horarios.id AS ID_HORARIO, horarios.nombre AS NOMBRE_HORARIO, 
+                  materias.ID AS ID_MATERIA, materias.NOMBRE AS NOMBRE_MATERIA, 
+                  CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, 
+                  materias.SEMESTRE, 
+                  CASE 
+                    WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" 
+                    WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" 
+                    WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" 
+                    WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" 
+                    WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" 
+                    WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" 
+                    WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" 
+                  END AS HORA, 
+                  materias.DIA_SEMANA, materias.PERIODO, materias.SALON 
+                FROM  horarios
+                INNER JOIN materias ON horarios.id_materia_1 = materias.ID OR horarios.id_materia_2 = materias.ID 
+                                   OR horarios.id_materia_3 = materias.ID OR horarios.id_materia_4 = materias.ID 
+                                   OR horarios.id_materia_5 = materias.ID OR horarios.id_materia_6 = materias.ID 
+                                   OR horarios.id_materia_7 = materias.ID 
+                INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id 
+                INNER JOIN asignacion_horario ON asignacion_horario.id_horario = horarios.id
+                WHERE asignacion_horario.matricula_alumno = ${matricula}
+                ORDER BY HOUR(materias.HORA) ASC`;
+
+  // Realizar la consulta para obtener los detalles del horario asociado a la matrícula
+  connection.query(sqlQuery, function (error, results, fields) {
+    if (error) {
+      console.error("Error en la consulta a la base de datos:", error);
+      return res.status(500).send("Error en la consulta a la base de datos");
+    }
+
+    // Si se encontraron detalles del horario, enviar los resultados como JSON al cliente
+    if (results.length > 0) {
+      res.status(200).json(results);
+    } else {
+      // Si no se encontraron detalles del horario, enviar un mensaje de error
+      return res.redirect("/alumno/horario?mensaje=No%20se%20encontraron%20detalles%20del%20horario%20asociado%20a%20esta%20matrícula");
+    }
+  });
+});
+

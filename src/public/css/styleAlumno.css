@@ -2,25 +2,22 @@ body {
     margin: 0;
     padding: 0;
     font-family: Candara, Arial, sans-serif;
-    background-image: url('image/fondo.png');
+    background-image: url('/image/fondo.png');
     background-size: cover;
     background-repeat: no-repeat;
 }
-
-#franjaSuperior {
+ #franjaSuperior {
     position: fixed;
     top: 0;
-    left: 0px;
-    width: calc(100%);
+    left: 0;
+    width: 100%;
     height: 35px;
     background-color: #ACC5EE;
     z-index: 9999;
 }
-
 h1 {
     text-align: center;
 }
-
 #menu {
     position: fixed;
     margin-top: 35px;
@@ -35,7 +32,20 @@ h1 {
     background-size: cover;
     opacity: 100;
 }
-
+#BARRA {
+    margin-top: 35px;
+    position: fixed;
+    right: 0;
+    top: 0px;
+    bottom: 0;
+    width: 200px;
+    font-family: Courier New, sans-serif;
+    color: #FFF;
+    padding: 30px;
+    background-image: url('/image/hi.png');
+    background-size: cover;
+    opacity: 100;
+}
 
 #menu h2 {
     margin-top: 10px;
@@ -48,14 +58,12 @@ h1 {
     padding: 0;
     margin: 0;
 }
-
 #menu ul li {
     margin-bottom: 20px;
     display: grid;
     grid-template-columns: auto;
     align-items: center;
 }
-
 #menu ul li button {
     padding: 20px;
     margin: 10px 0;
@@ -69,11 +77,9 @@ h1 {
     background-repeat: no-repeat;
     background-position: center;
 }
-
 #menu ul li button:hover {
-    background-color:#E9F0FB;
+    background-color: #3D8BD2;
 }
-
 #contenido {
     margin-left: 270px;
     margin-right: 300px;
@@ -81,6 +87,9 @@ h1 {
     padding: 0px;
     text-align: center;
     text-align: justify;
+}
+#imagen {
+    float: left;
 }
 
 .titulo {
@@ -92,53 +101,46 @@ h1 {
 }
 
 .imagen-container {
-    margin-bottom: 0px; 
+    margin-bottom: 0px;
 }
 
 .imagen-container img {
-    width: 50px; 
-    height: auto;         
+    width: 50px;
+    height: auto;
 }
 
-/* Estilos para la tabla */
-#tabla {
-    margin: 35px 0 0 0; /* Margen superior para evitar que se superponga con la franja superior */
-    width: calc(92% - 200px); /* El ancho de la tabla es el ancho total menos el ancho del menú */
-    margin-left: 280px; /* Para alinearla con el menú */
-    margin-right: 40px;
-    table-layout: fixed;
-    border-collapse: collapse;
-}
-
-#tabla th, #tabla td {
-    border: 1px solid black;
-    padding: 10px;
+.dashboard-systemLine {
+    background-color: #f1f1f1;
+    padding: 20px;
+    margin-top: 30px;
     text-align: center;
 }
 
-/* encabezados */
-#tabla th {
-    background-color: #45659B; 
-    color: white; 
-}
-/*celdas*/
-#tabla td {
-    background-color: #E9F0FB;
-}
-
-/* Ajuste para el campo de selección */
-label {
-    display: block;
-    margin-top: 20px; /* Ajuste el margen según sea necesario */
-}
-
-select {
-    width: 20%;
-    padding: 8px;
+.dashboard-systemLine .tile {
+    background-color: #ffffff;
     border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    margin-left:  280px;
-    background-color: #E9F0FB;
+    padding: 20px;
+    margin: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: inline-block;
 }
 
+.dashboard-systemLine .tile-title {
+    font-size: 7px;
+    color: #162030;
+}
+
+.dashboard-systemLine .tile-number {
+    font-size: 20px;
+    color: #3D8BD2;
+    margin-top: 10px;
+}
+
+#inicio-btn {
+    position: relative; /* Agrega posicionamiento relativo para utilizar top */
+     margin-top: 100px; /* Mueve el botón hacia abajo */
+     right: -113px; /* Mueve el botón hacia la izquierda */
+     width: 98px; /* Ancho del botón */
+     height: 20px; /* Altura del botón */
+ }
+ 
