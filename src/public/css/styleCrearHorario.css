@@ -336,6 +336,7 @@ table {
     text-overflow: ellipsis;
     box-shadow: 0 0 5px rgba(148, 102, 102, 0.1); /* Sombra suave */
     transition: box-shadow 0.3s ease; /* Efecto de transición en la sombra */
+
   }
   
   .materia {
@@ -356,6 +357,8 @@ table {
     margin-right: -800px;
     margin-left: 150px;
     align-items: center;
+    margin-top: -70px;
+    
   } 
 
   #horario div {
@@ -424,3 +427,29 @@ table {
     width: 35px;
     height: 35px;
   }
+
+  @import url("https://fonts.googleapis.com/css2?family=Russo+One&display=swap");
+
+svg {
+	font-family: "Russo One", sans-serif;
+	width: 115%; height: 115%;
+}
+svg text {
+	animation: stroke 8s infinite alternate;
+	stroke-width: 0;
+	stroke: #000;
+	font-size: 50px;
+}
+@keyframes stroke {
+	0%   {
+		fill: rgb(148, 133, 133, 0.652); stroke: rgb(0, 0, 0);
+		stroke-dashoffset: 25%; stroke-dasharray: 0 50%; stroke-width: 0;
+	}
+	70%  {fill: rgba(90, 14, 144, 0.859); stroke: rgba(134, 11, 222, 0.308);stroke-width: 3; }
+	80%  {fill: rgba(0, 0, 0, 0.323); stroke: rgba(148, 133, 133, 0.652); stroke-width: 3; }
+	100% {
+		fill: rgb(0, 0, 0); stroke: rgba(54,95,160,0);
+		stroke-dashoffset: -25%; stroke-dasharray: 50% 0; stroke-width: 0;
+	}
+}
+

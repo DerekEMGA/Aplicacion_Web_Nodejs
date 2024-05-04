@@ -219,35 +219,39 @@ fetch('/profesores')
   function validateInput(event) {
     const fieldName = event.target.name;
   
-   if (fieldName === "nombre") {
+    if (fieldName === "nombre") {
 
-    const regex = /^(?!.*\s{3,})(?![A-Za-z]*\d)[A-Za-z0-9\s]*$/;
-    const inputValue = event.target.value;
-    
-    // Permitir borrar si la tecla presionada es backspace o delete
-    if (event.key === 'Backspace' || event.key === 'Delete') {
-        return;
-    }
-    
-    // Si el primer carácter es un espacio, un número o el símbolo '#', prevenir la acción
-      if (inputValue.length === 0 && (event.key === ' ' || /\d/.test(event.key) || event.key === '#')) {
-        event.preventDefault();
-        return;
-      }
+        const regex = /^(?!.*\s{3,})(?![A-Za-z]*\d)[A-Za-z0-9\s]*$/;
+        let inputValue = event.target.value;
+        
+        // Convertir el primer carácter a mayúscula si no lo es
+        if (inputValue.length === 0) {
+            inputValue = inputValue.charAt(0).toUpperCase() + inputValue.slice(1);
+        }
+        
+        // Permitir borrar si la tecla presionada es backspace o delete
+        if (event.key === 'Backspace' || event.key === 'Delete') {
+            return;
+        }
+        
+        // Si el primer carácter es un espacio, un número o el símbolo '#', prevenir la acción
+        if (inputValue.length === 0 && (event.key === ' ' || /\d/.test(event.key) || event.key === '#')) {
+            event.preventDefault();
+            return;
+        }
 
-    // Si se ingresa un número o un símbolo en cualquier parte de la cadena, prevenir la acción
-    if (/[^A-Za-z0-9\s]/.test(event.key)) {
-        event.preventDefault();
-        return;
-    }
-    
-    if (!regex.test(inputValue)) {
-        event.preventDefault();
+        // Si se ingresa un número o un símbolo en cualquier parte de la cadena, prevenir la acción
+        if (/[^A-Za-z0-9\s]/.test(event.key)) {
+            event.preventDefault();
+            return;
+        }
+        
+        if (!regex.test(inputValue)) {
+            event.preventDefault();
+        }
     }
 }
 
-   
-  }
 
   function cancelarFormulario() {
     // Obtener todos los campos del formulario (input y select)
