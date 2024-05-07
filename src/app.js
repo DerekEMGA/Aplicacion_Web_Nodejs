@@ -1575,7 +1575,24 @@ app.get("/personal/crearHorario/tabla", function (req, res) {
   const filtroPeriodo = req.query.filtroPeriodo || ""; // Obtener el filtro de período
 
   // Consulta SQL base
-  let sqlQuery = 'SELECT materias.ID AS ID_MATERIA, materias.NOMBRE AS NOMBRE_MATERIA, CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, materias.SEMESTRE, CASE WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" END AS HORA, materias.DIA_SEMANA, materias.PERIODO, materias.SALON FROM materias INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id';
+  let sqlQuery = `SELECT materias.ID AS ID_MATERIA, 
+                        materias.NOMBRE AS NOMBRE_MATERIA, 
+                        CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, 
+                        materias.SEMESTRE, 
+                        CASE 
+                          WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" 
+                          WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" 
+                          WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" 
+                          WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" 
+                          WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" 
+                          WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" 
+                          WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" 
+                        END AS HORA, 
+                        materias.DIA_SEMANA, 
+                        materias.PERIODO, 
+                        materias.SALON 
+                  FROM materias 
+                  INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id`;
 
   // Lista de condiciones de filtro
   const condicionesFiltro = [];
@@ -1595,6 +1612,11 @@ app.get("/personal/crearHorario/tabla", function (req, res) {
     sqlQuery += " WHERE " + condicionesFiltro.join(" AND ");
   }
   
+  // Agregar la condición para evitar seleccionar las materias que ya están en el horario
+  for (let i = 1; i <= 7; i++) {
+    sqlQuery += ` AND materias.ID NOT IN (SELECT id_materia_${i} FROM horarios WHERE id_materia_${i} IS NOT NULL)`;
+  }
+
   // Ordenar los resultados por hora ascendente
   sqlQuery += ' ORDER BY HOUR(materias.HORA) ASC';
 
@@ -1614,6 +1636,8 @@ app.get("/personal/crearHorario/tabla", function (req, res) {
     res.status(200).json(results);
   });
 });
+
+
 
 
 // Sección de insertarHorario
@@ -1779,7 +1803,7 @@ app.post("/modificarHorario", function (req, res) {
   const { nombreHorario, elementosHorarioN } = req.body;
   const [idHorario] = req.body.idHorario;
   
-  console.log(req.body)
+  console.log(idHorario)
   // Verificar que el nombre, el ID y los elementos no estén vacíos
   if (!idHorario || !nombreHorario || !elementosHorarioN || JSON.parse(elementosHorarioN).length === 0) {
     return res.redirect(
@@ -1867,11 +1891,9 @@ app.post("/modificarHorario", function (req, res) {
   });
 });
 
-
-// Sección de eliminarHorario
 app.post("/eliminarHorario", function (req, res) {
   const [idHorario] = req.body.idHorario;
-  console.log(req.body)
+  console.log(req.body);
 
   // Verificar que el ID no esté vacío
   if (!idHorario) {
@@ -1880,32 +1902,44 @@ app.post("/eliminarHorario", function (req, res) {
     );
   }
 
-  // Iniciar el query para la eliminación del horario
-  let sql = "DELETE FROM horarios WHERE id = ?";
+  // Iniciar el query para eliminar los registros relacionados en asignacion_horario
+  let sqlDeleteAsignacion = "DELETE FROM asignacion_horario WHERE id_horario = ?";
 
-  // Ejecutar el query
+  // Iniciar el query para la eliminación del horario en la tabla horarios
+  let sqlDeleteHorario = "DELETE FROM horarios WHERE id = ?";
+
+  // Ejecutar la eliminación de los registros relacionados en asignacion_horario y luego el horario en horarios
   connection.beginTransaction(function (err) {
     if (err) {
       throw err;
     }
 
-    connection.query(sql, [idHorario], function (error, results, fields) {
+    connection.query(sqlDeleteAsignacion, [idHorario], function (error, results, fields) {
       if (error) {
         return connection.rollback(function () {
           throw error;
         });
       }
 
-      // Commit si todo está bien
-      connection.commit(function (err) {
-        if (err) {
+      // Eliminar el horario de la tabla horarios
+      connection.query(sqlDeleteHorario, [idHorario], function (error, results, fields) {
+        if (error) {
           return connection.rollback(function () {
-            throw err;
+            throw error;
           });
         }
-        return res.redirect(
-          "/personal/crearHorario?mensaje=Horario%20eliminado%20correctamente"
-        );
+
+        // Commit si todo está bien
+        connection.commit(function (err) {
+          if (err) {
+            return connection.rollback(function () {
+              throw err;
+            });
+          }
+          return res.redirect(
+            "/personal/crearHorario?mensaje=Horario%20eliminado%20correctamente"
+          );
+        });
       });
     });
   });

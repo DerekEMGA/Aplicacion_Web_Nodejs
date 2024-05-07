@@ -166,6 +166,7 @@ llenar_arreglo_guardar.addEventListener("click", function() {
 
 //boton para insertar el arreglo para eliminar
 const llenar_arreglo_eliminar = document.getElementById("eliminarHorario");
+
 llenar_arreglo_eliminar.addEventListener("click", function() {
     addToHorarioArray(); // Llama a addToHorarioArray() para actualizar el arreglo elementosHorario
     //const elementosHorarioStringN = JSON.stringify(elementosHorarioN);
@@ -184,10 +185,13 @@ elementosHorarioInputN.name = 'elementosHorarioN'; // Nombre del campo en el for
 elementosHorarioInputN.value = elementosHorarioStringN; // Asignar la cadena de texto como valor
 document.getElementById("formularioHorario").appendChild(elementosHorarioInputN);
 validateForm("/eliminarHorario"); // Llama a la función validateForm con la acción "/eliminarHorario"
+
+llenar_arreglo_eliminar.setAttribute("disable");
+
 }
 
 
-    
+
         //alert("Arreglo elementosHorario: " + JSON.stringify(elementosHorarioN));
 
 });
@@ -203,12 +207,13 @@ const aplicarFiltrosBtnHorario = document.getElementById("buscarHorario");
 aplicarFiltrosBtnHorario.addEventListener("click", function() {
   const filtroNombre = filtroNombreInput.value.trim();
 
+
   if (!filtroNombre) {
     alert("Ingrese un nombre de horario antes de buscar")
   }
 
   fetch(`/personal/crearHorario/tablaHorario?filtroNombre=${filtroNombre}`)
-  
+    
     .then((response) => {
       if (!response.ok) {
         throw new Error("Error al obtener los datos");
@@ -222,7 +227,7 @@ aplicarFiltrosBtnHorario.addEventListener("click", function() {
         alert("Horario no encontrado");
       } 
       horarioContainer.innerHTML = '';
-     
+
       // Crear elementos de lista para cada elemento en los datos
       data.forEach((item) => {
         const listItem = document.createElement('div');
@@ -249,16 +254,20 @@ aplicarFiltrosBtnHorario.addEventListener("click", function() {
         
         // Agregar el campo oculto al formulario
         document.getElementById("formularioHorario").appendChild(idHorarioInput);
+        llenar_arreglo_eliminar.removeAttribute("disabled");
 
       });
+
     })
-
-
+    
     .catch((error) => {
       console.error("Error al obtener los datos:", error);
       // Mostrar un mensaje de error al usuario
     });
+
+
 });
+
 
 
   // Manejar el evento 'sort' para ordenar los elementos si se detecta un cambio en el orden
@@ -433,10 +442,15 @@ function validateForm(action) {
         return true;
         case "/eliminarHorario":   
 
-        document.getElementById("formularioHorario").action = action;
-       // alert("Acción del formulario (eliminarHorario): " + document.getElementById("formularioHorario").action);
+        if (confirm("¿Estás seguro de que deseas eliminar este horario(Se eliminaran todas las asignaciones del horario)?")) {
+          // Si el usuario hace clic en "Aceptar", enviar el formulario
+          document.getElementById("formularioHorario").action = action;
+          document.getElementById("formularioHorario").submit();
+      } else {
+          // Si el usuario hace clic en "Cancelar", no hacer nada
+          alert("Operación cancelada.");
+      }
 
-        document.getElementById("formularioHorario").submit();
 
         return true; 
         case "/modificarHorario":

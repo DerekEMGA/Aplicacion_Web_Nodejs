@@ -20,8 +20,25 @@
 
         <div class="campo" id="campos-izquierda">
             <label for="nombre">Nombre de la materia</label>
-            <input type="text" id="nombre" name="nombre" placeholder="Ingresa el nombre" maxlength="30"
-             onkeydown="validateInput(event)" required>
+            <select id="nombre" name="nombre" required>
+                <option value="">Selecciona una materia</option>
+                <option value="Matemáticas">Matemáticas</option>
+                <option value="Ciencias">Ciencias</option>
+                <option value="Historia">Historia</option>
+                <option value="Literatura">Literatura</option>
+                <option value="Inglés">Inglés</option>
+                <option value="Arte">Arte</option>
+                <option value="Educación Física">Educación Física</option>
+                <option value="Programación">Programación</option>
+                <option value="Biología">Biología</option>
+                <option value="Química">Química</option>
+                <option value="Física">Física</option>
+                <option value="Geografía">Geografía</option>
+                <option value="Economía">Economía</option>
+                <option value="Psicología">Psicología</option>
+                <option value="Cálculo">Cálculo</option>
+            </select>
+            
 
              <label for="hora">Hora</label>
             <select id="hora" name="hora">

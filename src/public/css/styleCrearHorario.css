@@ -357,8 +357,8 @@ table {
     margin-right: -800px;
     margin-left: 150px;
     align-items: center;
-    margin-top: -70px;
-    
+    margin-top: 20px;
+
   } 
 
   #horario div {
@@ -453,3 +453,13 @@ svg text {
 	}
 }
 
+
+#eliminarHorario[disabled] {
+    background-color: #322c2c; /* Color de fondo cuando el botón está deshabilitado */
+    color: #666; /* Color de texto cuando el botón está deshabilitado */
+    cursor: not-allowed; /* Cambiar el cursor cuando el botón está deshabilitado */
+ 
+  }
+  
+
+  
