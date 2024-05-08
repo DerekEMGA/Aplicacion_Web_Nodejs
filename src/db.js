@@ -19,7 +19,7 @@ connection.connect(err => {
   } else {
     console.log('Conexión exitosa a la base de datos');
   }
-});
+}); 
 
 // Consulta para reiniciar el autoincremento en personal y usuario
 const resetAutoIncrementQuery = "ALTER TABLE personal AUTO_INCREMENT = 1; ALTER TABLE usuario AUTO_INCREMENT = 1;";

@@ -3,5 +3,9 @@ const router=express.Router();
 const personalControllers=require('../controllers/personalControllers.js')
 
 router.get('/',personalControllers.mostrarPersonal)
-
+router.get('/agregarDocente',personalControllers.mostrarAgregarDocente)
+router.get('/agregarMateria',personalControllers.mostrarAgregarMateria)
+router.get('/agregarAlumnos',personalControllers.mostrarAgregarAlumnos)
+router.get('/crearHorario',personalControllers.mostrarCrearHorario)
+router.get('/asignarHorario',personalControllers.mostrarAsignarHorario)
 module.exports=router

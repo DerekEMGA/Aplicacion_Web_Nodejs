@@ -45,7 +45,7 @@ function validateForm(action) {
     case "/buscar":
       // Validar que la clave no esté vacía
       if (clave === "") {
-        alert("Ingrese una clave antes de buscar.");
+        alert("Ingresa un numero de empleado antes de continuar.");
         document.preventDefault();
       } else {
         clearLocalStorage();
@@ -159,11 +159,7 @@ function validateAntiguedad(event) {
   const maxDigits = 2;
   const inputValue = parseInt(event.target.value); // Convertir el valor a número entero
 
-  if (isNaN(inputValue) || inputValue < 1 || inputValue > 99) {
-    // Si el valor no es un número o es menor que 1 o mayor que 99
-    event.target.value = ''; // Limpiar el campo
-    return; // Salir de la función sin hacer más validaciones
-  }
+ 
 
   if (inputValue.toString().length > maxDigits) {
     event.target.value = inputValue.toString().slice(0, maxDigits); // Limitar la longitud
@@ -190,7 +186,7 @@ function validateNumeroEmpleado(event) {
 }
 
 function validateContrasena(event) {
-  const maxChars = 13;
+  const maxChars = 12;
   const inputValue = event.target.value;
 
   if (/\s/.test(inputValue)) {
