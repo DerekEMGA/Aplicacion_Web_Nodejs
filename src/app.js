@@ -1780,7 +1780,7 @@ app.get("/personal/crearHorario/tablaHorario", function (req, res) {
     }
 
     // Si no se encontraron resultados, enviar un mensaje indicando que no se encontraron horarios
-    if (results.length === 1) {
+    if (results.length === 0) {
       return res.redirect(
         "/personal/crearHorario?mensaje=Horario%20no%20encontrado"
       ); 
@@ -1803,11 +1803,13 @@ app.post("/modificarHorario", function (req, res) {
   const { nombreHorario, elementosHorarioN } = req.body;
   const [idHorario] = req.body.idHorario;
   
-  console.log(idHorario)
+  console.log(req.bo)
+
+
   // Verificar que el nombre, el ID y los elementos no estén vacíos
   if (!idHorario || !nombreHorario || !elementosHorarioN || JSON.parse(elementosHorarioN).length === 0) {
     return res.redirect(
-      "/personal/crearHorario?mensaje=ID%20o%20nombre%20del%20horario%20vacío%20o%20sin%20elementos"
+      "/personal/crearHorario?mensaje=Nombre%20del%20horario%20vacío%20o%20sin%20elementos"
     );
   }
 
@@ -1993,7 +1995,7 @@ app.get("/alumno/horario/tabla", function (req, res) {
       res.status(200).json(results);
     } else {
       // Si no se encontraron detalles del horario, enviar un mensaje de error
-      return res.redirect("/alumno/horario?mensaje=No%20se%20encontraron%20detalles%20del%20horario%20asociado%20a%20esta%20matrícula");
+      res.status(200).json(results);
     }
   });
 });

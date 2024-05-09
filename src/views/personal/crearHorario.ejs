@@ -88,28 +88,35 @@
 
 <div style="margin-top: -40px; margin-right: 200px; display: flex; justify-content: flex-end;">
        
-    <input type="text" id="nombreHorario" name="nombreHorario" placeholder="Nombre del horario" style="margin-right: 380px;"
-    maxlength="20" onkeydown="validateInput(event)" required>
+    <input type="text" id="nombreHorario" name="nombreHorario" placeholder="Nombre del horario" style="margin-right: 550px;"
+    maxlength="30" onkeydown="validateInput(event)" required>
 
     <button id="crearHorario" class="ov-btn-slide-right" style=" 
     color: white; 
     padding: 10px 25px; 
     cursor: pointer; 
     min-width: 150px;
-    margin-right: 10px; " type="submit" name="accion" value="insertar" onclick="validateForm('/insertarHorario')">Crear Horario</button>
+    margin-right: 0px; " type="submit" name="accion" value="insertar" onclick="validateForm('/insertarHorario')">Crear Horario</button>
 
 
 </form>
 </div>
 
-<div style="margin-top: -46px; margin-right: 30px; display: flex; justify-content: flex-end;">
+<div style="margin-top: -46px;  display: flex; justify-content: flex-end;">
+
+    <button id="buscarHorario" class="ov-btn-slide-right" style=" 
+color: white; 
+padding: 10px 25px; 
+cursor: pointer; 
+min-width: 150px;
+margin-right: 10px; "  >Buscar Horario</button>
 
     <button id="modificarHorario" class="ov-btn-slide-right" style=" 
     color: white; 
     padding: 10px 25px; 
     cursor: pointer; 
     min-width: 150px;
-    margin-right: 20px; " type="submit" name="modificarHorario" value="modificar" >Guardar Horario</button>
+    margin-right: 10px; " type="submit" name="modificarHorario" value="modificar" disabled>Guardar Horario</button>
     
    
 
@@ -118,19 +125,19 @@
     padding: 10px 25px; 
     cursor: pointer; 
     min-width: 150px; 
-    margin-right: 180px;" type="submit" name="eliminarHorario" value="eliminar"  disabled >Eliminar Horario</button>
+    margin-right: 170px;" type="submit" name="eliminarHorario" value="eliminar"  disabled >Eliminar Horario</button>
    
-
-
-<button id="buscarHorario" class="ov-btn-slide-right" style=" 
-color: white; 
-padding: 10px 25px; 
-cursor: pointer; 
-min-width: 150px;
-margin-right: 10px; "  >Buscar Horario</button>
-
+        <button id="cancelar" class="ov-btn-slide-right" style=" 
+        color: white; 
+        padding: 10px 25px; 
+        cursor: pointer; 
+        min-width: 150px;
+        margin-right: 40px; 
+        margin-top: auto;" 
+         >Cancelar</button>
 
 </div>
+
 <script src="/script/sortable.min.js"></script>
 <script src="/script/scriptCrearHorario.js"></script>
 </body>

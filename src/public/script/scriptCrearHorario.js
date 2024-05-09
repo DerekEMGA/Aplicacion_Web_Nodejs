@@ -1,6 +1,7 @@
 
 const elementosHorario = [];
 const elementosHorarioN = [];
+const elementosDeBusqueda=[]
 
 document.addEventListener("DOMContentLoaded", function() {
 
@@ -26,44 +27,83 @@ Sortable.create(horarioContainer, {
       
       const newItemIdElement = newItem.querySelector('.id'); // Ajusta el selector según donde esté el id
       const newItemId = newItemIdElement ? newItemIdElement.textContent.trim() : ''; // Ajusta el selector según donde esté el id
-  
-      if (!newItemHora || !newItemId) {
-          console.error("No se pudo encontrar la hora o el id en el nuevo elemento.");
-          return;
-      }
+      
+      const newItemNombreElement = newItem.querySelector('.nombre');
+      const newItemNombre = newItemNombreElement ? newItemNombreElement.textContent.trim() : '';
 
-      // Verificar si la hora del nuevo elemento ya está presente en el contenedor
-      const existingItem = Array.from(horarioContainer.children).find(item => {
-          return item !== newItem && item.querySelector('.hora').textContent.trim() === newItemHora;
-      });
+        
+      const newItemPeriodoElement = newItem.querySelector('.periodo');
+      const newItemPeriodo = newItemPeriodoElement ? newItemPeriodoElement.textContent.trim() : '';
 
-      if (existingItem) {
-          // Mostrar una notificación o mensaje de error indicando que la hora ya está ocupada
-          console.error("La hora ya está ocupada.");
-          // Eliminar el nuevo elemento que se intentó agregar
-          newItem.parentNode.removeChild(newItem);
-          return;
-      }
-  
-      const existingItemIndex = elementosHorario.findIndex(item => {
-          return item.hora === newItemHora && item.id === newItemId;
-      });
-  
-      if (existingItemIndex !== -1) {
-          console.error("La hora ya está ocupada.");
-          newItem.parentNode.removeChild(newItem);
-          return;
-      }
-  
-      // Guardar tanto la hora como el id en un objeto
-      const nuevoElementoHorario = {
-          hora: newItemHora,
-          id: newItemId
-      };
-  
-      elementosHorario.push(nuevoElementoHorario);
-  
-      console.log("Arreglo elementosHorario:", elementosHorario);
+      if (!newItemHora || !newItemId || !newItemNombre || !newItemPeriodo) {
+        console.error("No se pudo encontrar la hora, el ID, el nombre o el periodo en el nuevo elemento.");
+        // Eliminar el nuevo elemento que no cumple con los requisitos
+        newItem.parentNode.removeChild(newItem);
+        return;
+    }
+    
+    // Verificar si el nombre del nuevo elemento ya está presente en el contenedor
+    const existingItemNombre = Array.from(horarioContainer.children).find(item => {
+        return item !== newItem && item.querySelector('.nombre').textContent.trim() === newItemNombre;
+    });
+    
+    if (existingItemNombre) {
+        // Mostrar una notificación o mensaje de error indicando que el nombre ya está ocupado
+        console.error("El nombre ya está ocupado.");
+        // Eliminar el nuevo elemento que se intentó agregar
+        newItem.parentNode.removeChild(newItem);
+        return;
+    }
+    
+    // Verificar si el periodo del nuevo elemento es igual al periodo de los elementos existentes
+    const isPeriodoEqual = Array.from(horarioContainer.children).every(item => {
+        return item.querySelector('.periodo').textContent.trim() === newItemPeriodo;
+    });
+    
+    if (!isPeriodoEqual) {
+        // Mostrar una notificación o mensaje de error indicando que el período no coincide
+        console.error("El período no coincide con los elementos existentes.");
+        // Eliminar el nuevo elemento que se intentó agregar
+        newItem.parentNode.removeChild(newItem);
+        return;
+    }
+    
+    // Verificar si la hora del nuevo elemento ya está presente en el contenedor
+    const existingItem = Array.from(horarioContainer.children).find(item => {
+        return item !== newItem && item.querySelector('.hora').textContent.trim() === newItemHora;
+    });
+    
+    if (existingItem) {
+        // Mostrar una notificación o mensaje de error indicando que la hora ya está ocupada
+        console.error("La hora ya está ocupada.");
+        // Eliminar el nuevo elemento que se intentó agregar
+        newItem.parentNode.removeChild(newItem);
+        return;
+    }
+    
+    // Verificar si el nuevo elemento está duplicado en el arreglo elementosHorario
+    const existingItemIndex = elementosHorario.findIndex(item => {
+        return item.hora === newItemHora && item.id === newItemId;
+    });
+    
+    if (existingItemIndex !== -1) {
+        console.error("El elemento ya está duplicado en el horario.");
+        // Eliminar el nuevo elemento que se intentó agregar
+        newItem.parentNode.removeChild(newItem);
+        return;
+    }
+    
+    // Si pasa todas las comprobaciones, agregar el nuevo elemento al arreglo elementosHorario
+    const nuevoElementoHorario = {
+        hora: newItemHora,
+        id: newItemId,
+        nombre: newItemNombre,
+        periodo: newItemPeriodo
+    };
+    
+    elementosHorario.push(nuevoElementoHorario);
+    
+    console.log("Arreglo elementosHorario:", elementosHorario);
   },
   
   onRemove: function(evt) {
@@ -164,6 +204,8 @@ llenar_arreglo_guardar.addEventListener("click", function() {
   
 });
 
+
+
 //boton para insertar el arreglo para eliminar
 const llenar_arreglo_eliminar = document.getElementById("eliminarHorario");
 
@@ -176,24 +218,19 @@ if (elementosHorarioN == undefined || elementosHorarioN.length == 0) {
   alert("Nombre de horario vacio o sin elementos")
 } 
 
+
 if (elementosHorarioN !== undefined && elementosHorarioN.length !== 0) {
-// Crear un campo oculto para la cadena de texto elementosHorario
-const elementosHorarioStringN = JSON.stringify(elementosHorarioN);
-const elementosHorarioInputN = document.createElement('input');
-elementosHorarioInputN.type = 'hidden';
-elementosHorarioInputN.name = 'elementosHorarioN'; // Nombre del campo en el formulario
-elementosHorarioInputN.value = elementosHorarioStringN; // Asignar la cadena de texto como valor
-document.getElementById("formularioHorario").appendChild(elementosHorarioInputN);
-validateForm("/eliminarHorario"); // Llama a la función validateForm con la acción "/eliminarHorario"
-
-llenar_arreglo_eliminar.setAttribute("disable");
-
-}
-
-
-
-        //alert("Arreglo elementosHorario: " + JSON.stringify(elementosHorarioN));
-
+  // Crear un campo oculto para la cadena de texto elementosHorario
+  const elementosHorarioStringN = JSON.stringify(elementosHorarioN);
+  const elementosHorarioInputN = document.createElement('input');
+  elementosHorarioInputN.type = 'hidden';
+  elementosHorarioInputN.name = 'elementosHorarioN'; // Nombre del campo en el formulario
+  elementosHorarioInputN.value = elementosHorarioStringN; // Asignar la cadena de texto como valor
+  document.getElementById("formularioHorario").appendChild(elementosHorarioInputN);
+  validateForm("/eliminarHorario"); // Llama a la función validateForm con la acción "/eliminarHorario"
+  llenar_arreglo_eliminar.setAttribute("disabled");
+  }
+  
 });
 
 
@@ -203,6 +240,7 @@ llenar_arreglo_eliminar.setAttribute("disable");
 // Obtener datos al hacer clic en el botón "aplicarFiltrosBtn"
 const filtroNombreInput = document.getElementById("nombreHorario");
 const aplicarFiltrosBtnHorario = document.getElementById("buscarHorario");
+
 
 aplicarFiltrosBtnHorario.addEventListener("click", function() {
   const filtroNombre = filtroNombreInput.value.trim();
@@ -223,6 +261,8 @@ aplicarFiltrosBtnHorario.addEventListener("click", function() {
 
     .then((data) => {
       // Limpiar el contenedor antes de agregar nuevos elementos
+      
+      
       if (data.length === 0) {
         alert("Horario no encontrado");
       } 
@@ -234,16 +274,18 @@ aplicarFiltrosBtnHorario.addEventListener("click", function() {
         listItem.classList.add('list-group-item');
         listItem.innerHTML = `
           <p class="mb-0 hora" style="color:blue;">${item.HORA}</p>
-          <p class="mb-0">Materia: ${item.NOMBRE_MATERIA}</p>
+          <p class="mb-0 nombre">Materia: ${item.NOMBRE_MATERIA}</p>
           <p class="mb-0">Docente: ${item.NOMBRE_PROFESOR}</p>
           <p class="mb-0">Semestre: ${item.SEMESTRE}</p>
-          <p class="mb-0">Periodo: ${item.PERIODO}</p>
+          <p class="mb-0 periodo">Periodo: ${item.PERIODO}</p>
           <p class="mb-0">Dias: ${item.DIA_SEMANA}</p>
           <p class="mb-0">Salon: ${item.SALON}</p>
           <p class="mb-0 id">${item.ID_MATERIA}</p> `;
         // Agregar el elemento al contenedor de "materias"
         horarioContainer.appendChild(listItem);
         const id_horario = item.ID_HORARIO;
+       
+
        // addToHorarioArray();
 
         // Crear un nuevo elemento input para almacenar el ID del horario
@@ -251,10 +293,12 @@ aplicarFiltrosBtnHorario.addEventListener("click", function() {
         idHorarioInput.type = 'hidden'; // Establecer el tipo de input como 'hidden'
         idHorarioInput.name = 'idHorario'; // Establecer el nombre del campo en el formulario
         idHorarioInput.value = id_horario; // Asignar el valor del ID del horario al campo oculto
-        
+
         // Agregar el campo oculto al formulario
         document.getElementById("formularioHorario").appendChild(idHorarioInput);
+
         llenar_arreglo_eliminar.removeAttribute("disabled");
+        llenar_arreglo_guardar.removeAttribute("disabled");
 
       });
 
@@ -264,8 +308,8 @@ aplicarFiltrosBtnHorario.addEventListener("click", function() {
       console.error("Error al obtener los datos:", error);
       // Mostrar un mensaje de error al usuario
     });
-
-
+  
+  
 });
 
 
@@ -330,10 +374,10 @@ aplicarFiltrosBtnHorario.addEventListener("click", function() {
           listItem.classList.add('list-group-item');
           listItem.innerHTML = `
             <p class="mb-0 hora" style="color:blue;">${item.HORA}</p>
-            <p class="mb-0">Materia: ${item.NOMBRE_MATERIA}</p>
+            <p class="mb-0 nombre">Materia: ${item.NOMBRE_MATERIA}</p>
             <p class="mb-0">Docente: ${item.NOMBRE_PROFESOR}</p>
             <p class="mb-0">Semestre: ${item.SEMESTRE}</p>
-            <p class="mb-0">Periodo: ${item.PERIODO}</p>
+            <p class="mb-0 periodo">Periodo: ${item.PERIODO}</p>
             <p class="mb-0">Dias: ${item.DIA_SEMANA}</p>
             <p class="mb-0">Salon: ${item.SALON}</p>
             <p class="mb-0 id">${item.ID_MATERIA}</p>
@@ -423,6 +467,23 @@ function validateInput(event) {
 }
 
 
+function sonArreglosDistintos(arr1, arr2) {
+  // Verificar si las longitudes son diferentes
+  if (arr1.length !== arr2.length) {
+      return true;
+  }
+
+  // Verificar si algún elemento es diferente
+  for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) {
+          return true;
+      }
+  }
+
+  // Si no hay diferencias, los arreglos son iguales
+  return false;
+}
+
 //Funcion para recibir las acciones de los botones y agregar el arreglo del contendor horario como hijo del formulario para el servidor
 function validateForm(action) {
       switch (action) {
@@ -442,14 +503,16 @@ function validateForm(action) {
         return true;
         case "/eliminarHorario":   
 
-        if (confirm("¿Estás seguro de que deseas eliminar este horario(Se eliminaran todas las asignaciones del horario)?")) {
+        
+        if (confirm("¿Estás seguro de que deseas eliminar este horario (Se eliminaran todas las asignaciones del horario)?")) {
           // Si el usuario hace clic en "Aceptar", enviar el formulario
           document.getElementById("formularioHorario").action = action;
           document.getElementById("formularioHorario").submit();
       } else {
           // Si el usuario hace clic en "Cancelar", no hacer nada
           alert("Operación cancelada.");
-      }
+      }      
+        
 
 
         return true; 
@@ -539,3 +602,11 @@ function validateForm(action) {
        }
       },intervalo);
      };
+
+
+     const btnCancelar = document.getElementById("cancelar");
+
+btnCancelar.addEventListener("click", function() {
+    // Recarga la página para limpiarla
+    location.reload();
+});

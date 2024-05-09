@@ -214,7 +214,7 @@ box-sizing: border-box; /* Incluye el padding en el cálculo del ancho */
 /*** ESTILOS BOTÓN SLIDE RIGHT ***/
 .ov-btn-slide-right {
     background:#162030; /* color de fondo */
-    color: #4741d7; /* color de fuente */
+    color: #417ad7; /* color de fuente */
     border: 2px solid #162030; /* tamaño y color de borde */
     padding: 16px 20px;
     position: relative;
@@ -455,11 +455,56 @@ svg text {
 
 
 #eliminarHorario[disabled] {
-    background-color: #322c2c; /* Color de fondo cuando el botón está deshabilitado */
-    color: #666; /* Color de texto cuando el botón está deshabilitado */
-    cursor: not-allowed; /* Cambiar el cursor cuando el botón está deshabilitado */
- 
-  }
-  
+  background-color: #322c2c; /* Color de fondo cuando el botón está deshabilitado */
+  color: #666; /* Color de texto cuando el botón está deshabilitado */
+  cursor: not-allowed; /* Cambiar el cursor cuando el botón está deshabilitado */
+}
 
-  
+#eliminarHorario[disabled]:hover::after {
+  content: "";
+  background: #b41919; /* color de fondo hover */
+  position: absolute;
+  z-index: -1;
+  padding: 16px 20px;
+  display: block;
+  top: 0;
+  bottom: 0;
+  left: 100%;
+  right: -100%;
+  transition: all 0.35s;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  -webkit-transition: all 0.35s;
+  transition: all 0.35s;
+}
+
+
+#modificarHorario[disabled] {
+  background-color: #322c2c; /* Color de fondo cuando el botón está deshabilitado */
+  color: #666; /* Color de texto cuando el botón está deshabilitado */
+  cursor: not-allowed; /* Cambiar el cursor cuando el botón está deshabilitado */
+}
+
+#modificarHorario[disabled]:hover::after {
+  content: "";
+  background: #b41919; /* color de fondo hover */
+  position: absolute;
+  z-index: -1;
+  padding: 16px 20px;
+  display: block;
+  top: 0;
+  bottom: 0;
+  left: 100%;
+  right: -100%;
+  transition: all 0.35s;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  -webkit-transition: all 0.35s;
+  transition: all 0.35s;
+}
+
+
