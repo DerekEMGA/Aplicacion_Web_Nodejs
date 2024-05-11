@@ -42,14 +42,17 @@ const login= (req, res) => {
             // Lógica para otros tipos de usuario
             switch (tipo) {
               case 'Alumno':
-                res.redirect('/alumno');
+                             
+
+                const url = `/alumno?matricula=${encodeURIComponent(matricula)}`;
+                res.status(200).send(url); // Enviar solo la ruta con el query parameter                  
                 break;
-              case 'Profesor':
-                res.redirect('/docente');
-                break;
-              case 'Personal':
-                res.redirect('/personal');
-                break;
+                case 'Profesor':
+                  res.status(200).send('/docente'); // Enviar solo la ruta
+                  break;
+                case 'Personal':
+                  res.status(200).send('/personal'); // Enviar solo la ruta
+                  break;
               default:
                 res.status(500).json({ error: 'Error en el servidor' });
               }
@@ -70,7 +73,9 @@ const login= (req, res) => {
               // Lógica para otros tipos de usuario
               switch (tipo) {
                 case 'Alumno':
-                  res.redirect('/alumno');
+                  const url = `/alumno?matricula=${encodeURIComponent(matricula)}`;
+
+                  res.status(200).send(url); // Enviar solo la ruta con el query parameter                  
                   break;
                 case 'Profesor':
                   res.status(200).send('/docente'); // Enviar solo la ruta
