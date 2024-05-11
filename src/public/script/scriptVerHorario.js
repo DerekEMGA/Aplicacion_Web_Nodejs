@@ -16,10 +16,9 @@ window.addEventListener("load", function () {
 
   // Asignar la matrícula al contenido del elemento HTML
   //alert(matriculaGuardada)
-  const periodo = obtenerPeriodo();
 
 
-  fetch(`/alumno/horario/tabla?matricula=${matriculaGuardada}&periodo=${periodo}`)
+  fetch(`/alumno/horario/tabla?matricula=${matriculaGuardada}`)
   .then((response) => {
     if (!response.ok) {
       throw new Error("Error al obtener la tabla");
@@ -93,14 +92,10 @@ window.addEventListener("load", function () {
   })
   .catch((error) => {
     console.error("Error al obtener la tabla:", error);
-    document.getElementById('mensajeTablaVacia').style.display = 'block';
-document.getElementById('tabla').style.display = 'none';
-
+    // Manejar el error si es necesario
   });
 
   document.getElementById("matriculaMostrada").textContent = matriculaGuardada || matricula;
-  document.getElementById("periodo").textContent = periodo;
-
 });
 
 
@@ -113,26 +108,4 @@ if (mensaje) {
 function obtenerParametroConsulta(nombre) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(nombre);
-}
-
-function obtenerPeriodo() {
-  // Obtener la fecha actual del sistema
-  const fechaActual = new Date();
-
-  // Obtener el año actual
-  const añoActual = fechaActual.getFullYear();
-
-  // Obtener el mes actual (los meses en JavaScript van de 0 a 11)
-  const mesActual = fechaActual.getMonth();
-
-  // Determinar el período basado en el mes actual
-  let periodo;
-  if (mesActual >= 0 && mesActual <= 5) { // Si el mes es de enero a junio (0 a 5)
-      periodo = `Enero-Junio-${añoActual}`;
-  } else { // Si el mes es de agosto a diciembre (6 a 11)
-      periodo = `Agosto-Diciembre-${añoActual}`;
-  }
-
-  // Retornar el período calculado
-  return periodo;
 }

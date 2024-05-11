@@ -10,30 +10,12 @@
 </head>
 
 <%- include('../partials/headerAlumno') %>
-<h1><img src="/image/LOGO2.png"  class="logo" ></h1>
 
 <div id="contenido">
-    <table class="custom-table">
-        <tr>
-          <td>Matrícula:</td>
-          <td>Nombre del Horario:</td>
-          <td>Semestre:</td>
-          <td>Periodo:</td>
-
-        </tr>
-        <tr>
-            <td><span id="matriculaMostrada"></span></td>
-            <td><span id="nombre_Horario"></span></td>
-            <td><span id="semestre"></span></td>
-            <td><span id="periodo"></span></td>
-
-        </tr>
-      </table>
-      <br><br>
-
-    <p id="mensajeTablaVacia" class="mensaje" style="display: none;">Usted no tiene un horario asignado, favor de acudir con su coordinador </p>
-    
-    <br><br>
+    <p>Matrícula: <span id="matriculaMostrada"></span></p>
+    <p>nombre_Horario: <span id="nombre_Horario"></span></p>
+    <p>semestre: <span id="semestre"></span></p>
+    <p id="mensajeTablaVacia" style="display: none;">La tabla está vacía</p>
 
     <table id="tabla" name="tabla" class="customTable"></table>
 

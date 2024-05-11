@@ -1952,14 +1952,13 @@ app.post("/eliminarHorario", function (req, res) {
 
 app.get("/alumno/horario/tabla", function (req, res) {
   const matricula = req.query.matricula; // Obtener la matrícula del alumno desde la URL
-  const periodo = req.query.periodo; // Obtener el período del alumno desde la URL
 
   console.log(matricula);
-  if (!matricula || !periodo) {
-    return res.redirect("/alumno/horario?mensaje=Ingrese%20la%20matrícula%20y%20el%20período%20del%20alumno");
+  if (!matricula) {
+    return res.redirect("/alumno/horario?mensaje=Ingrese%20la%20matrícula%20del%20alumno");
   }
 
-  // Consulta SQL para obtener el horario asociado a la matrícula del alumno y al período especificado
+  // Consulta SQL para obtener el horario asociado a la matrícula del alumno
   let sqlQuery = `SELECT horarios.id AS ID_HORARIO, horarios.nombre AS NOMBRE_HORARIO, 
                   materias.ID AS ID_MATERIA, materias.NOMBRE AS NOMBRE_MATERIA, 
                   CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, 
@@ -1982,10 +1981,9 @@ app.get("/alumno/horario/tabla", function (req, res) {
                 INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id 
                 INNER JOIN asignacion_horario ON asignacion_horario.id_horario = horarios.id
                 WHERE asignacion_horario.matricula_alumno = ${matricula}
-                AND materias.PERIODO = '${periodo}' 
                 ORDER BY HOUR(materias.HORA) ASC`;
 
-  // Realizar la consulta para obtener los detalles del horario asociado a la matrícula y al período proporcionado
+  // Realizar la consulta para obtener los detalles del horario asociado a la matrícula
   connection.query(sqlQuery, function (error, results, fields) {
     if (error) {
       console.error("Error en la consulta a la base de datos:", error);
@@ -1996,8 +1994,9 @@ app.get("/alumno/horario/tabla", function (req, res) {
     if (results.length > 0) {
       res.status(200).json(results);
     } else {
-      // Si no se encontraron detalles del horario para el período proporcionado, enviar un mensaje de error
-      res.status(200).json({ mensaje: "No se encontraron detalles de horario para el período proporcionado" });
+      // Si no se encontraron detalles del horario, enviar un mensaje de error
+      res.status(200).json(results);
     }
   });
 });
+

@@ -256,72 +256,31 @@ box-sizing: border-box; /* Incluye el padding en el cálculo del ancho */
      width: 98px; /* Ancho del botón */
      height: 20px; /* Altura del botón */
  }
-
-/* Estilos base */
-.customTable {
-    border-collapse: collapse;
+ 
+ table.customTable {
     width: 100%;
-}
-
-/* Estilos para el encabezado de la tabla */
-.customTable thead {
-    background-color: #147bc4; /* Azul */
-    color: #FFFFFF; /* Texto blanco */
-}
-
-/* Estilos para las celdas de la tabla */
-.customTable td, .customTable th {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-}
-
-/* Estilos para las filas pares */
-.customTable tr:nth-child(even) {
-    background-color: #f2f2f2; /* Gris */
-}
-
+    background-color: #FFFFFF;
+    border-collapse: collapse;
+    border-width: 2px;
+    border-color: #7EA8F8;
+    border-style: solid;
+    color: #000000;
+  }
+  
+  table.customTable td, table.customTable th {
+    border-width: 2px;
+    border-color: #7EA8F8;
+    border-style: solid;
+    padding: 5px;
+  }
+  
+  table.customTable thead {
+    background-color: #7EA8F8;
+  }
 
 /* Estilos para resaltar al pasar el ratón */
-.customTable tbody td:hover, .customTable tbody th:hover {
-    background-color: #1b0505;
+table.customTable tbody td:hover, table.table tbody th:hover {
+    background-color: #4A4A4A;
     color: #FFFFFF;
     cursor: pointer;
 }
-
-
-
-.custom-table {
-    border-collapse: collapse;
-    width: 100%;
-    background-color: #147bc4;
-    color: #F7F7F7;
-  }
-  
-  .custom-table td, th {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-  }
-  
-  .custom-table tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
-  
-  .custom-table span {
-    font-weight: bold;
-    color: #000000; /* Azul */
-  }
-
-  .mensaje{
-    color: #000000;
-    font-size: 25px;
-    text-shadow: 0 0 black;
-  }
-  .logo {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    align-self: flex-end; /* Para disposición flexbox */
-    float: right; /* Para disposición tradicional de bloque */
-  }
-  
