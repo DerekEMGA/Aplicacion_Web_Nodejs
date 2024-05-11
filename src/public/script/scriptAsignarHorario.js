@@ -13,8 +13,8 @@ document.addEventListener("DOMContentLoaded", function() {
         maxItems: 7,
         group: {
             name: "materias",
-            pull: true,
-            put: true
+            pull: false,
+            put: false
         },
         animation: 400,
         chosenClass: "active",
