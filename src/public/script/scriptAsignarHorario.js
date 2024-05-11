@@ -1,0 +1,184 @@
+document.addEventListener("DOMContentLoaded", function() {
+    // Variable para almacenar el ID del horario seleccionado
+    let idHorarioSeleccionado = "";
+
+    // Variable para controlar si se ha guardado el nombre del horario
+    let nombreHorarioGuardado = false;
+
+    // Crear el contenedor del horario
+    const horarioContainer = document.getElementById("horario");
+
+    // Configurar el Sortable para el contenedor del horario
+    Sortable.create(horarioContainer, {
+        maxItems: 7,
+        group: {
+            name: "materias",
+            pull: true,
+            put: true
+        },
+        animation: 400,
+        chosenClass: "active",
+        removeOnSpill: true,
+        onAdd: function(evt) {
+            const newItemIdElement = evt.item.querySelector('.id');
+            idHorarioSeleccionado = newItemIdElement ? newItemIdElement.textContent.trim() : '';
+        },
+        onRemove: function(evt) {
+            idHorarioSeleccionado = "";
+        }
+    });
+
+    // Función para agregar el ID del horario al formulario antes de enviarlo
+    function agregarIdHorarioAlFormulario() {
+        const formulario = document.getElementById("formularioHorario");
+        const inputIdHorario = document.createElement('input');
+        inputIdHorario.type = 'hidden';
+        inputIdHorario.name = 'idHorario';
+        inputIdHorario.value = idHorarioSeleccionado;
+        formulario.appendChild(inputIdHorario);
+    }
+
+    // Evento para enviar el formulario
+    const botonAsignarHorario = document.getElementById("asignarHorario");
+    botonAsignarHorario.addEventListener("click", function() {
+        agregarIdHorarioAlFormulario();
+
+        // Validar el formulario y enviarlo
+        validateForm("/personal/asignarHorario");
+    });
+
+    // Evento para eliminar la asignación de horario
+    const botonEliminarAsignacion = document.getElementById("eliminarAsignacion");
+    botonEliminarAsignacion.addEventListener("click", function() {
+        agregarIdHorarioAlFormulario();
+
+        // Validar el formulario y enviarlo
+        validateForm("/personal/eliminarAsignacion");
+    });
+
+    // Obtener datos al hacer clic en el botón "aplicarFiltrosBtn"
+    const filtroNombreInput = document.getElementById("nombreHorario");
+    const aplicarFiltrosBtnHorario = document.getElementById("buscarHorario");
+
+    aplicarFiltrosBtnHorario.addEventListener("click", function() {
+        const filtroNombre = filtroNombreInput.value.trim();
+    
+        if (!filtroNombre) {
+            alert("Ingrese un nombre de horario antes de buscar");
+            return;
+        }
+    
+        // Verificar si el nombre del horario ya ha sido guardado
+        if (!nombreHorarioGuardado) {
+            // Crear el campo oculto para el nombre del horario solo si no ha sido guardado antes
+            const nombreHorarioInput = document.createElement('input');
+            nombreHorarioInput.type = 'hidden';
+            nombreHorarioInput.name = 'nombreHorario';
+            nombreHorarioInput.value = filtroNombre;
+            document.getElementById("formularioHorario").appendChild(nombreHorarioInput);
+            // Marcar que el nombre del horario ha sido guardado
+            nombreHorarioGuardado = true;
+        }
+    
+        fetch(`/personal/crearHorario/tablaHorario?filtroNombre=${filtroNombre}`)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Error al obtener los datos");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                // Limpiar el contenedor antes de agregar nuevos elementos
+                horarioContainer.innerHTML = '';
+    
+                // Crear elementos de lista para cada elemento en los datos
+                data.forEach((item) => {
+                    const listItem = document.createElement('div');
+                    listItem.classList.add('list-group-item');
+                    listItem.innerHTML = `
+                        <p class="mb-0 hora" style="color:blue;">${item.HORA}</p>
+                        <p class="mb-0">Materia: ${item.NOMBRE_MATERIA}</p>
+                        <p class="mb-0">Docente: ${item.NOMBRE_PROFESOR}</p>
+                        <p class="mb-0">Semestre: ${item.SEMESTRE}</p>
+                        <p class="mb-0">Periodo: ${item.PERIODO}</p>
+                        <p class="mb-0">Dias: ${item.DIA_SEMANA}</p>
+                        <p class="mb-0">Salon: ${item.SALON}</p>
+                        <p class="mb-0 id">${item.ID_MATERIA}</p>
+                    `;
+                    // Agregar el elemento al contenedor de "horario"
+                    horarioContainer.appendChild(listItem);
+                });
+            })
+            .catch((error) => {
+                console.error("Error al obtener los datos:", error);
+                alert("Ocurrió un error al obtener los datos del horario.");
+            });
+    });
+
+    // Función para validar la matrícula del alumno
+    function validateMatricula(event) {
+        const maxDigits = 7;
+        let inputValue = event.target.value;
+
+        // Eliminar caracteres que no sean números
+        inputValue = inputValue.replace(/\D/g, '');
+
+        // Limitar la longitud a 7
+        inputValue = inputValue.slice(0, maxDigits);
+
+        // Actualizar el valor del campo
+        event.target.value = inputValue;
+    }
+
+    // Vincular la función de validación al campo de matrícula del alumno
+    const matriculaInput = document.getElementById("matricula");
+    matriculaInput.addEventListener("input", validateMatricula);
+
+    function validateForm(action) {
+        switch (action) {
+            case "/personal/asignarHorario":
+                // Establecer la acción del formulario para asignar horario
+                document.getElementById("formularioHorario").action = action;
+                break;
+            case "/personal/eliminarAsignacion":
+                // Establecer la acción del formulario para eliminar asignación
+                document.getElementById("formularioHorario").action = action;
+                break;
+            default:
+                // En caso de que no se reconozca la acción, mostrar un mensaje de error
+                console.error("Acción no reconocida:", action);
+                return false;
+        }
+        // Enviar el formulario
+        document.getElementById("formularioHorario").submit();
+        return true;
+    }
+});
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("Script ejecutado en la carga de la página."); // Registro para verificar la ejecución
+        const serverMessage = obtenerParametroConsulta("mensaje");
+    
+        if (serverMessage && !sessionStorage.getItem("messageShown")) {
+        console.log("Mensaje recibido:", serverMessage); // Registro para verificar el mensaje recibido
+        alert(serverMessage);
+        sessionStorage.setItem("messageShown", "true");
+        }
+    
+        fetch("/personal/agregarAlumnos/tabla2")
+        .then((response) => {
+            if (!response.ok) {
+            throw new Error("Error al obtener la tabla");
+            }
+            return response.text();
+        })
+        .then((html) => {
+            // Inserta la tabla HTML en el contenedor
+            document.getElementById("tabla").innerHTML = html;
+        })
+        .catch((error) => {
+            console.error("Error al obtener la tabla:", error);
+            // Puedes mostrar un mensaje al usuario indicando el error
+        });
+    });

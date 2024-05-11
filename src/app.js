@@ -58,13 +58,9 @@ app.listen(app.get("port"), () => {
   console.log("server on port 3000");
 });
 
-
-
-
-
-// Aquí se insertan los registros en la tabla personal y usuario
-app.post("/insertar", function (req, res) {
-  const datosPersonal = req.body;
+//aquí se insertan los registros en la tabla personal y usuario
+app.post("/insertar", function(req, res){
+    const datosPersonal = req.body;
 
   let nombre = datosPersonal.nombre;
   let apellidoPaterno = datosPersonal.apellidoPaterno;
@@ -1575,24 +1571,7 @@ app.get("/personal/crearHorario/tabla", function (req, res) {
   const filtroPeriodo = req.query.filtroPeriodo || ""; // Obtener el filtro de período
 
   // Consulta SQL base
-  let sqlQuery = `SELECT materias.ID AS ID_MATERIA, 
-                        materias.NOMBRE AS NOMBRE_MATERIA, 
-                        CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, 
-                        materias.SEMESTRE, 
-                        CASE 
-                          WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" 
-                          WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" 
-                          WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" 
-                          WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" 
-                          WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" 
-                          WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" 
-                          WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" 
-                        END AS HORA, 
-                        materias.DIA_SEMANA, 
-                        materias.PERIODO, 
-                        materias.SALON 
-                  FROM materias 
-                  INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id`;
+  let sqlQuery = 'SELECT materias.ID AS ID_MATERIA, materias.NOMBRE AS NOMBRE_MATERIA, CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, materias.SEMESTRE, CASE WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" END AS HORA, materias.DIA_SEMANA, materias.PERIODO, materias.SALON FROM materias INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id';
 
   // Lista de condiciones de filtro
   const condicionesFiltro = [];
@@ -1612,11 +1591,6 @@ app.get("/personal/crearHorario/tabla", function (req, res) {
     sqlQuery += " WHERE " + condicionesFiltro.join(" AND ");
   }
   
-  // Agregar la condición para evitar seleccionar las materias que ya están en el horario
-  for (let i = 1; i <= 7; i++) {
-    sqlQuery += ` AND materias.ID NOT IN (SELECT id_materia_${i} FROM horarios WHERE id_materia_${i} IS NOT NULL)`;
-  }
-
   // Ordenar los resultados por hora ascendente
   sqlQuery += ' ORDER BY HOUR(materias.HORA) ASC';
 
@@ -1636,8 +1610,6 @@ app.get("/personal/crearHorario/tabla", function (req, res) {
     res.status(200).json(results);
   });
 });
-
-
 
 
 // Sección de insertarHorario
@@ -1734,13 +1706,7 @@ app.post("/insertarHorario", function (req, res) {
 
 
 app.get("/personal/crearHorario/tablaHorario", function (req, res) {
-  const filtroNombre = req.query.filtroNombre; // Obtener el filtro de nombre de materia
-
-  if (!filtroNombre) {
-    return res.redirect(
-      "/personal/crearHorario?mensaje=Ingrese%20nombre%20de%20plantilla%20de%20horario%20antes%20de%20buscar"
-    );
-  } 
+  const filtroNombre = req.query.filtroNombre; // Obtener el filtro de nombre de horario
 
   // Consulta SQL base para obtener los datos de la tabla de horarios con las materias y nombres de profesores
   let sqlQuery = `SELECT horarios.id AS ID_HORARIO, horarios.nombre AS NOMBRE_HORARIO, 
@@ -1764,7 +1730,7 @@ app.get("/personal/crearHorario/tablaHorario", function (req, res) {
                                    OR horarios.id_materia_7 = materias.ID 
                 INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id`;
 
-  // Si hay filtro de nombre de materia, agregar la condición correspondiente
+  // Si hay filtro de nombre de horario, agregar la condición correspondiente
   if (filtroNombre) {
     sqlQuery += ` WHERE horarios.nombre LIKE '%${filtroNombre}%'`;
   }
@@ -1780,16 +1746,11 @@ app.get("/personal/crearHorario/tablaHorario", function (req, res) {
     }
 
     // Si no se encontraron resultados, enviar un mensaje indicando que no se encontraron horarios
-    if (results.length === 1) {
+    if (results.length === 0) {
       return res.redirect(
         "/personal/crearHorario?mensaje=Horario%20no%20encontrado"
       ); 
-        }
-
-    // Agregar el idHorario a cada resultado
-    results.forEach(result => {
-      result.idHorario = result.ID_HORARIO;
-    });
+    }
 
     // Enviar los resultados como JSON al cliente
     res.status(200).json(results);
@@ -1803,13 +1764,11 @@ app.post("/modificarHorario", function (req, res) {
   const { nombreHorario, elementosHorarioN } = req.body;
   const [idHorario] = req.body.idHorario;
   
-  console.log(req.bo)
-
-
+  console.log(req.body)
   // Verificar que el nombre, el ID y los elementos no estén vacíos
   if (!idHorario || !nombreHorario || !elementosHorarioN || JSON.parse(elementosHorarioN).length === 0) {
     return res.redirect(
-      "/personal/crearHorario?mensaje=Nombre%20del%20horario%20vacío%20o%20sin%20elementos"
+      "/personal/crearHorario?mensaje=ID%20o%20nombre%20del%20horario%20vacío%20o%20sin%20elementos"
     );
   }
 
@@ -1893,9 +1852,11 @@ app.post("/modificarHorario", function (req, res) {
   });
 });
 
+
+// Sección de eliminarHorario
 app.post("/eliminarHorario", function (req, res) {
   const [idHorario] = req.body.idHorario;
-  console.log(req.body);
+  console.log(req.body)
 
   // Verificar que el ID no esté vacío
   if (!idHorario) {
@@ -1904,44 +1865,32 @@ app.post("/eliminarHorario", function (req, res) {
     );
   }
 
-  // Iniciar el query para eliminar los registros relacionados en asignacion_horario
-  let sqlDeleteAsignacion = "DELETE FROM asignacion_horario WHERE id_horario = ?";
+  // Iniciar el query para la eliminación del horario
+  let sql = "DELETE FROM horarios WHERE id = ?";
 
-  // Iniciar el query para la eliminación del horario en la tabla horarios
-  let sqlDeleteHorario = "DELETE FROM horarios WHERE id = ?";
-
-  // Ejecutar la eliminación de los registros relacionados en asignacion_horario y luego el horario en horarios
+  // Ejecutar el query
   connection.beginTransaction(function (err) {
     if (err) {
       throw err;
     }
 
-    connection.query(sqlDeleteAsignacion, [idHorario], function (error, results, fields) {
+    connection.query(sql, [idHorario], function (error, results, fields) {
       if (error) {
         return connection.rollback(function () {
           throw error;
         });
       }
 
-      // Eliminar el horario de la tabla horarios
-      connection.query(sqlDeleteHorario, [idHorario], function (error, results, fields) {
-        if (error) {
+      // Commit si todo está bien
+      connection.commit(function (err) {
+        if (err) {
           return connection.rollback(function () {
-            throw error;
+            throw err;
           });
         }
-
-        // Commit si todo está bien
-        connection.commit(function (err) {
-          if (err) {
-            return connection.rollback(function () {
-              throw err;
-            });
-          }
-          return res.redirect(
-            "/personal/crearHorario?mensaje=Horario%20eliminado%20correctamente"
-          );
-        });
+        return res.redirect(
+          "/personal/crearHorario?mensaje=Horario%20eliminado%20correctamente"
+        );
       });
     });
   });
@@ -1949,54 +1898,120 @@ app.post("/eliminarHorario", function (req, res) {
 
 
 
+// Ruta para asignar un horario a un alumno
+app.post('/personal/asignarHorario', function (req, res) {
+  const { nombreHorario, matricula } = req.body;
 
-app.get("/alumno/horario/tabla", function (req, res) {
-  const matricula = req.query.matricula; // Obtener la matrícula del alumno desde la URL
-
-  console.log(matricula);
-  if (!matricula) {
-    return res.redirect("/alumno/horario?mensaje=Ingrese%20la%20matrícula%20del%20alumno");
+  // Verificar que se recibieron datos válidos
+  if (!nombreHorario || !matricula) {
+    return res.redirect("/personal/asignarHorario?mensaje=Matricula%20del%20alumno%20vacío%20o%20nombre%20del%20horario%20vacio");
   }
 
-  // Consulta SQL para obtener el horario asociado a la matrícula del alumno
-  let sqlQuery = `SELECT horarios.id AS ID_HORARIO, horarios.nombre AS NOMBRE_HORARIO, 
-                  materias.ID AS ID_MATERIA, materias.NOMBRE AS NOMBRE_MATERIA, 
-                  CONCAT(profesor.nombre, " ", profesor.apellido_paterno, " ", profesor.apellido_materno) AS NOMBRE_PROFESOR, 
-                  materias.SEMESTRE, 
-                  CASE 
-                    WHEN HOUR(materias.HORA) = 7 THEN "07:00 - 08:00" 
-                    WHEN HOUR(materias.HORA) = 8 THEN "08:00 - 09:00" 
-                    WHEN HOUR(materias.HORA) = 9 THEN "09:00 - 10:00" 
-                    WHEN HOUR(materias.HORA) = 10 THEN "10:00 - 11:00" 
-                    WHEN HOUR(materias.HORA) = 11 THEN "11:00 - 12:00" 
-                    WHEN HOUR(materias.HORA) = 12 THEN "12:00 - 13:00" 
-                    WHEN HOUR(materias.HORA) = 13 THEN "13:00 - 14:00" 
-                  END AS HORA, 
-                  materias.DIA_SEMANA, materias.PERIODO, materias.SALON 
-                FROM  horarios
-                INNER JOIN materias ON horarios.id_materia_1 = materias.ID OR horarios.id_materia_2 = materias.ID 
-                                   OR horarios.id_materia_3 = materias.ID OR horarios.id_materia_4 = materias.ID 
-                                   OR horarios.id_materia_5 = materias.ID OR horarios.id_materia_6 = materias.ID 
-                                   OR horarios.id_materia_7 = materias.ID 
-                INNER JOIN profesor ON materias.ID_MAESTRO = profesor.id 
-                INNER JOIN asignacion_horario ON asignacion_horario.id_horario = horarios.id
-                WHERE asignacion_horario.matricula_alumno = ${matricula}
-                ORDER BY HOUR(materias.HORA) ASC`;
-
-  // Realizar la consulta para obtener los detalles del horario asociado a la matrícula
-  connection.query(sqlQuery, function (error, results, fields) {
+  // Verificar si el alumno ya tiene un horario asignado
+  connection.query('SELECT * FROM asignacion_horario WHERE matricula_alumno = ?', [matricula], function (error, results) {
     if (error) {
-      console.error("Error en la consulta a la base de datos:", error);
-      return res.status(500).send("Error en la consulta a la base de datos");
+      console.error("Error al verificar la asignación de horario:", error);
+      return res.redirect("/personal/asignarHorario?mensaje=Error%20interno%20del%20servidor");
     }
 
-    // Si se encontraron detalles del horario, enviar los resultados como JSON al cliente
+    // Si el alumno ya tiene un horario asignado, redirigir con un mensaje de error
     if (results.length > 0) {
-      res.status(200).json(results);
-    } else {
-      // Si no se encontraron detalles del horario, enviar un mensaje de error
-      res.status(200).json(results);
+      console.error("El alumno ya tiene un horario asignado");
+      return res.redirect("/personal/asignarHorario?mensaje=El%20alumno%20ya%20tiene%20un%20horario%20asignado");
     }
+
+    // Si el alumno no tiene un horario asignado, proceder con la asignación del horario
+    // Buscar el ID del horario en la base de datos
+    connection.query('SELECT id FROM horarios WHERE nombre = ?', [nombreHorario], function (error, results) {
+      if (error) {
+        console.error("Error al buscar el ID del horario:", error);
+        return res.redirect("/personal/asignarHorario?mensaje=Error%20interno%20del%20servidor");
+      }
+
+      if (results.length === 0) {
+        console.error("No se encontró ningún horario con ese nombre");
+        return res.redirect("/personal/asignarHorario?mensaje=No%20se%20encontró%20ningún%20horario%20con%20ese%20nombre");
+      }
+
+      const idHorario = results[0].id;
+
+      // Guardar la asignación en la base de datos
+      connection.query('INSERT INTO asignacion_horario (id_horario, matricula_alumno) VALUES (?, ?)', [idHorario, matricula], function (error, results) {
+        if (error) {
+          console.error("Error al guardar la asignación del horario:", error);
+          return res.redirect("/personal/asignarHorario?mensaje=Error%20interno%20del%20servidor");
+        }
+
+        // Redirigir con un mensaje de éxito
+        return res.redirect("/personal/asignarHorario?mensaje=Asignación%20del%20horario%20guardada%20correctamente");
+      });
+    });
   });
 });
+
+
+// Ruta para eliminar la asignación de horario de un alumno
+app.post('/personal/eliminarAsignacion', function (req, res) {
+  const { matricula } = req.body;
+
+  // Verificar que se recibió la matrícula del alumno
+  if (!matricula) {
+    return res.redirect("/personal/asignarHorario?mensaje=Matricula%20del%20alumno%20vacía");
+  }
+
+  // Verificar si existe una asignación de horario para el alumno
+  connection.query('SELECT * FROM asignacion_horario WHERE matricula_alumno = ?', [matricula], function (error, results) {
+    if (error) {
+      console.error("Error al verificar la asignación de horario:", error);
+      return res.redirect("/personal/asignarHorario?mensaje=Error%20interno%20del%20servidor");
+    }
+
+    // Si no se encuentra ninguna asignación de horario para el alumno, redirigir con un mensaje de error
+    if (results.length === 0) {
+      console.error("No se encontró ninguna asignación de horario para el alumno con la matrícula proporcionada");
+      return res.redirect("/personal/asignarHorario?mensaje=No%20se%20encontró%20ninguna%20asignación%20de%20horario%20para%20el%20alumno%20con%20la%20matrícula%20proporcionada");
+    }
+
+    // Si se encuentra una asignación de horario para el alumno, proceder a eliminarla
+    connection.query('DELETE FROM asignacion_horario WHERE matricula_alumno = ?', [matricula], function (error, results) {
+      if (error) {
+        console.error("Error al eliminar la asignación de horario:", error);
+        return res.redirect("/personal/asignarHorario?mensaje=Error%20interno%20del%20servidor");
+      }
+
+      // Redirigir con un mensaje de éxito
+      return res.redirect("/personal/asignarHorario?mensaje=Asignación%20de%20horario%20eliminada%20correctamente");
+    });
+  });
+});
+
+
+app.get("/personal/agregarAlumnos/tabla2", function (req, res) {
+  // Realiza la consulta para obtener los últimos 5 registros
+  connection.query(`
+    SELECT alumnos.nombre, alumnos.apellido_paterno, alumnos.apellido_materno, alumnos.matricula, horarios.nombre AS nombre_horario
+    FROM asignacion_horario
+    JOIN alumnos ON asignacion_horario.matricula_alumno = alumnos.matricula
+    JOIN horarios ON asignacion_horario.id_horario = horarios.id;
+    `,
+    function (error, results, fields) {
+      if (error) {
+        console.error("Error en la consulta a la base de datos:", error);
+        return res.status(500).send("Error en la consulta a la base de datos");
+      }
+
+      // Construye la tabla HTML
+      const tableHtml = buildTableHtml(results);
+
+      // Envía la tabla HTML como respuesta al cliente
+      res.status(200).send(tableHtml);
+    }
+  );
+});
+
+
+
+
+
+
 

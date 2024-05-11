@@ -281,3 +281,7 @@ table[name="tabla"] th {
 table[name="tabla"] tr:nth-child(even) {
   background-color: #f2f2f2;
 }
+
+input[type="text"] {
+  height: 50px; /* Ajusta el ancho según tus necesidades */
+}
