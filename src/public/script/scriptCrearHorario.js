@@ -400,10 +400,9 @@ aplicarFiltrosBtnHorario.addEventListener("click", function() {
   }
 
   function obtenerParametroConsulta(nombre) {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(nombre);
-  }
-
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(nombre);
+}
 
 
   window.addEventListener("load", function () {

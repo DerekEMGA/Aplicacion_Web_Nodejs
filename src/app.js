@@ -1780,7 +1780,7 @@ app.get("/personal/crearHorario/tablaHorario", function (req, res) {
     }
 
     // Si no se encontraron resultados, enviar un mensaje indicando que no se encontraron horarios
-    if (results.length === 0) {
+    if (results.length === 1) {
       return res.redirect(
         "/personal/crearHorario?mensaje=Horario%20no%20encontrado"
       ); 
