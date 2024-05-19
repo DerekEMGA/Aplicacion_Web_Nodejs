@@ -1590,7 +1590,12 @@ app.get("/personal/crearHorario/tabla", function (req, res) {
   if (condicionesFiltro.length > 0) {
     sqlQuery += " WHERE " + condicionesFiltro.join(" AND ");
   }
-  
+    
+  // Agregar la condición para evitar seleccionar las materias que ya están en el horario
+  for (let i = 1; i <= 7; i++) {
+    sqlQuery += ` AND materias.ID NOT IN (SELECT id_materia_${i} FROM horarios WHERE id_materia_${i} IS NOT NULL)`;
+  }
+
   // Ordenar los resultados por hora ascendente
   sqlQuery += ' ORDER BY HOUR(materias.HORA) ASC';
 
@@ -1746,7 +1751,7 @@ app.get("/personal/crearHorario/tablaHorario", function (req, res) {
     }
 
     // Si no se encontraron resultados, enviar un mensaje indicando que no se encontraron horarios
-    if (results.length === 0) {
+    if (results.length === 1) {
       return res.redirect(
         "/personal/crearHorario?mensaje=Horario%20no%20encontrado"
       ); 
@@ -1768,7 +1773,7 @@ app.post("/modificarHorario", function (req, res) {
   // Verificar que el nombre, el ID y los elementos no estén vacíos
   if (!idHorario || !nombreHorario || !elementosHorarioN || JSON.parse(elementosHorarioN).length === 0) {
     return res.redirect(
-      "/personal/crearHorario?mensaje=ID%20o%20nombre%20del%20horario%20vacío%20o%20sin%20elementos"
+      "/personal/crearHorario?mensaje=Nombre%20del%20horario%20vacío%20o%20sin%20elementos"
     );
   }
 
@@ -1904,50 +1909,64 @@ app.post('/personal/asignarHorario', function (req, res) {
 
   // Verificar que se recibieron datos válidos
   if (!nombreHorario || !matricula) {
-    return res.redirect("/personal/asignarHorario?mensaje=Matricula%20del%20alumno%20vacío%20o%20nombre%20del%20horario%20vacio");
+    return res.redirect("/personal/asignarHorario?mensaje=Matricula%20del%20alumno%20vacío%20o%20nombre%20del%20horario%20vacío");
   }
 
-  // Verificar si el alumno ya tiene un horario asignado
-  connection.query('SELECT * FROM asignacion_horario WHERE matricula_alumno = ?', [matricula], function (error, results) {
+  // Verificar si la matrícula existe en la tabla alumnos
+  connection.query('SELECT * FROM alumnos WHERE matricula = ?', [matricula], function (error, results) {
     if (error) {
-      console.error("Error al verificar la asignación de horario:", error);
-      return res.redirect("/personal/asignarHorario?mensaje=Error%20interno%20del%20servidor");
+      console.error("Error al verificar la matrícula del alumno:", error);
+      return res.redirect("/personal/asignarHorario?mensaje=Error%20al%20verificar%20la%20matr%C3%ADcula%20del%20alumno");
     }
 
-    // Si el alumno ya tiene un horario asignado, redirigir con un mensaje de error
-    if (results.length > 0) {
-      console.error("El alumno ya tiene un horario asignado");
-      return res.redirect("/personal/asignarHorario?mensaje=El%20alumno%20ya%20tiene%20un%20horario%20asignado");
+    if (results.length === 0) {
+      // Si la matrícula no existe en la tabla alumnos, redirigir con mensaje
+      return res.redirect("/personal/asignarHorario?mensaje=Matricula%20no%20existente");
     }
 
-    // Si el alumno no tiene un horario asignado, proceder con la asignación del horario
-    // Buscar el ID del horario en la base de datos
-    connection.query('SELECT id FROM horarios WHERE nombre = ?', [nombreHorario], function (error, results) {
+    // Verificar si el alumno ya tiene un horario asignado
+    connection.query('SELECT * FROM asignacion_horario WHERE matricula_alumno = ?', [matricula], function (error, results) {
       if (error) {
-        console.error("Error al buscar el ID del horario:", error);
-        return res.redirect("/personal/asignarHorario?mensaje=Error%20interno%20del%20servidor");
+        console.error("Error al verificar la asignación de horario:", error);
+        return res.redirect("/personal/asignarHorario?mensaje=Error%20al%20verificar%20la%20asignaci%C3%B3n%20de%20horario");
       }
 
-      if (results.length === 0) {
-        console.error("No se encontró ningún horario con ese nombre");
-        return res.redirect("/personal/asignarHorario?mensaje=No%20se%20encontró%20ningún%20horario%20con%20ese%20nombre");
+      // Si el alumno ya tiene un horario asignado, redirigir con un mensaje de error
+      if (results.length > 0) {
+        console.error("El alumno ya tiene un horario asignado");
+        return res.redirect("/personal/asignarHorario?mensaje=El%20alumno%20ya%20tiene%20un%20horario%20asignado");
       }
 
-      const idHorario = results[0].id;
-
-      // Guardar la asignación en la base de datos
-      connection.query('INSERT INTO asignacion_horario (id_horario, matricula_alumno) VALUES (?, ?)', [idHorario, matricula], function (error, results) {
+      // Si el alumno no tiene un horario asignado, proceder con la asignación del horario
+      // Buscar el ID del horario en la base de datos
+      connection.query('SELECT id FROM horarios WHERE nombre = ?', [nombreHorario], function (error, results) {
         if (error) {
-          console.error("Error al guardar la asignación del horario:", error);
+          console.error("Error al buscar el ID del horario:", error);
           return res.redirect("/personal/asignarHorario?mensaje=Error%20interno%20del%20servidor");
         }
 
-        // Redirigir con un mensaje de éxito
-        return res.redirect("/personal/asignarHorario?mensaje=Asignación%20del%20horario%20guardada%20correctamente");
+        if (results.length === 0) {
+          console.error("No se encontró ningún horario con ese nombre");
+          return res.redirect("/personal/asignarHorario?mensaje=No%20se%20encontr%C3%B3%20ning%C3%BAn%20horario%20con%20ese%20nombre");
+        }
+
+        const idHorario = results[0].id;
+
+        // Guardar la asignación en la base de datos
+        connection.query('INSERT INTO asignacion_horario (id_horario, matricula_alumno) VALUES (?, ?)', [idHorario, matricula], function (error) {
+          if (error) {
+            console.error("Error al guardar la asignación del horario:", error);
+            return res.redirect("/personal/asignarHorario?mensaje=Error%20interno%20del%20servidor");
+          }
+
+          // Redirigir con un mensaje de éxito
+          return res.redirect("/personal/asignarHorario?mensaje=Asignaci%C3%B3n%20del%20horario%20guardada%20correctamente");
+        });
       });
     });
   });
 });
+
 
 
 // Ruta para eliminar la asignación de horario de un alumno
@@ -1987,13 +2006,21 @@ app.post('/personal/eliminarAsignacion', function (req, res) {
 
 
 app.get("/personal/agregarAlumnos/tabla2", function (req, res) {
-  // Realiza la consulta para obtener los últimos 5 registros
+  const { nombreHorario } = req.query; // Obtener el nombre del horario de los parámetros de la consulta
+
+  // Verificar que el nombre del horario fue proporcionado
+  if (!nombreHorario) {
+    return res.status(400).send("El nombre del horario es requerido");
+  }
+
+  // Realiza la consulta para obtener los alumnos que tienen asignado el horario especificado
   connection.query(`
     SELECT alumnos.nombre, alumnos.apellido_paterno, alumnos.apellido_materno, alumnos.matricula, horarios.nombre AS nombre_horario
     FROM asignacion_horario
     JOIN alumnos ON asignacion_horario.matricula_alumno = alumnos.matricula
-    JOIN horarios ON asignacion_horario.id_horario = horarios.id;
-    `,
+    JOIN horarios ON asignacion_horario.id_horario = horarios.id
+    WHERE horarios.nombre = ?;
+    `, [nombreHorario],
     function (error, results, fields) {
       if (error) {
         console.error("Error en la consulta a la base de datos:", error);
@@ -2008,8 +2035,6 @@ app.get("/personal/agregarAlumnos/tabla2", function (req, res) {
     }
   );
 });
-
-
 
 
 

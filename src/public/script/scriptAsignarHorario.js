@@ -88,6 +88,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 return response.json();
             })
             .then((data) => {
+
+                if (data.length === 0) {
+                    alert("No se encontró ningún horario con ese nombre");
+                  } 
                 // Limpiar el contenedor antes de agregar nuevos elementos
                 horarioContainer.innerHTML = '';
     
@@ -113,6 +117,24 @@ document.addEventListener("DOMContentLoaded", function() {
                 console.error("Error al obtener los datos:", error);
                 alert("Ocurrió un error al obtener los datos del horario.");
             });
+
+
+            fetch(`/personal/agregarAlumnos/tabla2?nombreHorario=${filtroNombre}`)
+            .then((response) => {
+                if (!response.ok) {
+                throw new Error("Error al obtener la tabla");
+                }
+                return response.text();
+            })
+            .then((html) => {
+                // Inserta la tabla HTML en el contenedor
+                document.getElementById("tabla").innerHTML = html;
+            })
+            .catch((error) => {
+                console.error("Error al obtener la tabla:", error);
+                // Puedes mostrar un mensaje al usuario indicando el error
+            });
+            
     });
 
     // Función para validar la matrícula del alumno
@@ -166,19 +188,38 @@ document.addEventListener("DOMContentLoaded", function() {
         sessionStorage.setItem("messageShown", "true");
         }
     
-        fetch("/personal/agregarAlumnos/tabla2")
-        .then((response) => {
-            if (!response.ok) {
-            throw new Error("Error al obtener la tabla");
-            }
-            return response.text();
-        })
-        .then((html) => {
-            // Inserta la tabla HTML en el contenedor
-            document.getElementById("tabla").innerHTML = html;
-        })
-        .catch((error) => {
-            console.error("Error al obtener la tabla:", error);
-            // Puedes mostrar un mensaje al usuario indicando el error
-        });
+       
     });
+
+
+    function validateInput(event) {
+        const fieldName = event.target.name;
+      
+       if (fieldName === "nombreHorario") {
+      
+        const regex = /^(?!.*\s{3,})(?![A-Za-z]*\d)[A-Za-z0-9\s]*$/;
+        const inputValue = event.target.value;
+        
+        // Permitir borrar si la tecla presionada es backspace o delete
+        if (event.key === 'Backspace' || event.key === 'Delete') {
+            return;
+        }
+        
+        // Si el primer carácter es un espacio, un número o el símbolo '#', prevenir la acción
+          if (inputValue.length === 0 && (event.key === ' ' || /\d/.test(event.key) || event.key === '#')) {
+            event.preventDefault();
+            return;
+          }
+      
+        // Si se ingresa un número o un símbolo en cualquier parte de la cadena, prevenir la acción
+        if (/[^A-Za-z0-9\s]/.test(event.key)) {
+            event.preventDefault();
+            return;
+        }
+        
+        if (!regex.test(inputValue)) {
+            event.preventDefault();
+        }
+      }
+      }
+      

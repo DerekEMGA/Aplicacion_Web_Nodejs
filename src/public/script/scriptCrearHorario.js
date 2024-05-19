@@ -3,9 +3,14 @@ const elementosHorario = [];
 const elementosHorarioN = [];
 const elementosDeBusqueda=[]
 
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('crearHorario').removeAttribute('disabled');
+});
+
 document.addEventListener("DOMContentLoaded", function() {
 
-  
+
   const horarioContainer = document.getElementById("horario");
   const materiasContainer = document.getElementById("materias");
 // Crear el Sortable y definir las funciones onAdd y onRemove
@@ -240,7 +245,7 @@ if (elementosHorarioN !== undefined && elementosHorarioN.length !== 0) {
 // Obtener datos al hacer clic en el botón "aplicarFiltrosBtn"
 const filtroNombreInput = document.getElementById("nombreHorario");
 const aplicarFiltrosBtnHorario = document.getElementById("buscarHorario");
-
+const crearHorario = document.getElementById("crearHorario");
 
 aplicarFiltrosBtnHorario.addEventListener("click", function() {
   const filtroNombre = filtroNombreInput.value.trim();
@@ -265,7 +270,9 @@ aplicarFiltrosBtnHorario.addEventListener("click", function() {
       
       if (data.length === 0) {
         alert("Horario no encontrado");
+        crearHorario.removeAttribute('disabled'); // Reactivar si no se encuentra horario
       } 
+
       horarioContainer.innerHTML = '';
 
       // Crear elementos de lista para cada elemento en los datos
@@ -284,7 +291,7 @@ aplicarFiltrosBtnHorario.addEventListener("click", function() {
         // Agregar el elemento al contenedor de "materias"
         horarioContainer.appendChild(listItem);
         const id_horario = item.ID_HORARIO;
-       
+
 
        // addToHorarioArray();
 
@@ -296,22 +303,30 @@ aplicarFiltrosBtnHorario.addEventListener("click", function() {
 
         // Agregar el campo oculto al formulario
         document.getElementById("formularioHorario").appendChild(idHorarioInput);
-
+        
         llenar_arreglo_eliminar.removeAttribute("disabled");
         llenar_arreglo_guardar.removeAttribute("disabled");
 
+
+        crearHorario.setAttribute('disabled', true); // Desactivar si se encuentra horario
+
       });
+      botonCrear()
 
     })
-    
+
     .catch((error) => {
       console.error("Error al obtener los datos:", error);
       // Mostrar un mensaje de error al usuario
     });
   
-  
+
 });
 
+
+function botonCrear (){
+
+}
 
 
   // Manejar el evento 'sort' para ordenar los elementos si se detecta un cambio en el orden
