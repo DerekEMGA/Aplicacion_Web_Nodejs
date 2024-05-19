@@ -264,3 +264,19 @@ document.addEventListener("DOMContentLoaded", function() {
           location.reload();
       });
       
+
+      const mensaje = obtenerParametroConsulta("mensaje");
+      if (mensaje) {
+          alert(mensaje);
+      }
+    
+      function obtenerParametroConsulta(nombre) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(nombre);
+    }
+
+    window.addEventListener("load", function () {
+        const cleanUrl = window.location.href.split('?')[0];
+        window.history.replaceState({}, document.title, cleanUrl);
+      });
+      
