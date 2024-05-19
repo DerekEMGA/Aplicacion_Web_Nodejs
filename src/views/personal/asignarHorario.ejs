@@ -27,8 +27,8 @@
 
         <form id="formularioHorario" method="post" onsubmit="return validateForm()" style="margin-top: 20px; display: flex; justify-content: center;">
             <input type="text" id="matricula" name="matricula" placeholder="Matrícula del alumno" style="margin-left: 225px; margin-right: 10px; width: 200px;" maxlength="7" required>
-            <button id="asignarHorario" class="ov-btn-slide-right" style="color: white; padding: 10px 25px; cursor: pointer; min-width: 300px; margin-right: 10px;" type="submit" name="asignarHorario" value="asignarHorario" onclick="validateAsignarHorario()">Asignar Horario</button>
-            <button id="eliminarAsignacion" class="ov-btn-slide-right" style="color: white; padding: 10px 25px; cursor: pointer; min-width: 300px; margin-right: 10px;" type="submit" name="eliminarAsignacion" value="eliminarAsignacion" onclick="validateEliminarAsignacion()">Eliminar Asignación</button>
+            <button id="asignarHorario" class="ov-btn-slide-right" style="color: white; padding: 10px 25px; cursor: pointer; min-width: 300px; margin-right: 10px;" type="submit" name="asignarHorario" value="asignarHorario" onclick="validateAsignarHorario()" disabled>Asignar Horario</button>
+            <button id="eliminarAsignacion" class="ov-btn-slide-right" style="color: white; padding: 10px 25px; cursor: pointer; min-width: 300px; margin-right: 10px;" type="submit" name="eliminarAsignacion" value="eliminarAsignacion" onclick="validateEliminarAsignacion()" disabled>Eliminar Asignación</button>
             <button id="cancelar" class="ov-btn-slide-right" style=" 
             color: white; 
             padding: 10px 25px; 

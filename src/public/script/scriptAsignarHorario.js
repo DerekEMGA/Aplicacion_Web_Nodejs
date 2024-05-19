@@ -60,6 +60,11 @@ document.addEventListener("DOMContentLoaded", function() {
     const filtroNombreInput = document.getElementById("nombreHorario");
     const aplicarFiltrosBtnHorario = document.getElementById("buscarHorario");
 
+    const buttonEliminar = document.getElementById("eliminarAsignacion");
+    const buttonAsignar = document.getElementById("asignarHorario");
+
+
+
     aplicarFiltrosBtnHorario.addEventListener("click", function() {
         const filtroNombre = filtroNombreInput.value.trim();
     
@@ -90,8 +95,11 @@ document.addEventListener("DOMContentLoaded", function() {
             .then((data) => {
 
                 if (data.length === 0) {
-                    alert("No se encontró ningún horario con ese nombre");
+                    alert("No se encontró ningún horario con ese nombre");    
+                    buttonAsignar.setAttribute('disabled',true)
+                    buttonEliminar.setAttribute('disabled',true)
                   } 
+
                 // Limpiar el contenedor antes de agregar nuevos elementos
                 horarioContainer.innerHTML = '';
     
@@ -127,19 +135,38 @@ document.addEventListener("DOMContentLoaded", function() {
                 return response.json();
             })
             .then((data) => {
-                // Inserta la tabla HTML en el contenedor con id "tabla"
-                document.getElementById("tabla").innerHTML = data.tableHtml;
-                
-                // Mostrar el contador
-                const contador = data.count;
-                console.log("Contador:", contador);
-                document.getElementById("contadorDisplay").innerText = `Total de alumnos con el horario "${filtroNombre}": ${contador}`;
+               // alert(JSON.stringify(data)); // Alerta para mostrar el contenido de data
+                  
+
+                    // Verificar si la tabla está vacía
+                    if (data.tableHtml === '<table name="tabla"  cellpadding="8"><tr></tr></table>') {     
+                        // Si la tabla está vacía, mostrar un mensaje y deshabilitar los botones
+                        buttonAsignar.setAttribute('disabled', true);
+                        buttonEliminar.setAttribute('disabled', true);
+                    } else {
+                        // Si la tabla no está vacía, insertar la tabla HTML en el contenedor
+                        document.getElementById("tabla").innerHTML = data.tableHtml;
+                        
+                        // Mostrar el contador
+                        const contador = data.count;
+                        console.log("Contador:", contador);
+                        if (contador >= 1) {
+                            document.getElementById("contadorDisplay").innerText = `Total de alumnos con el horario "${filtroNombre}": ${contador}`;
+                        }
+
+                        // Habilitar los botones
+                        buttonAsignar.removeAttribute('disabled');
+                        buttonEliminar.removeAttribute('disabled');
+                    }
+        
             })
             .catch((error) => {
                 console.error("Error al obtener la tabla:", error);
                 // Puedes mostrar un mensaje al usuario indicando el error
                 document.getElementById("tabla").innerHTML = `<p>Error al obtener la tabla: ${error.message}</p>`;
             });
+
+
             
     });
 

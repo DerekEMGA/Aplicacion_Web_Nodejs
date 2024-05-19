@@ -297,3 +297,56 @@ pointer-events: none;
   text-align: center;
   margin-top: 20px;
 }
+
+
+#eliminarAsignacion[disabled] {
+  background-color: #322c2c; /* Color de fondo cuando el botón está deshabilitado */
+  color: #666; /* Color de texto cuando el botón está deshabilitado */
+  cursor: not-allowed; /* Cambiar el cursor cuando el botón está deshabilitado */
+}
+
+#eliminarAsignacion[disabled]:hover::after {
+  content: "";
+  background: #b41919; /* color de fondo hover */
+  position: absolute;
+  z-index: -1;
+  padding: 16px 20px;
+  display: block;
+  top: 0;
+  bottom: 0;
+  left: 100%;
+  right: -100%;
+  transition: all 0.35s;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  -webkit-transition: all 0.35s;
+  transition: all 0.35s;
+}
+
+#asignarHorario[disabled] {
+  background-color: #322c2c; /* Color de fondo cuando el botón está deshabilitado */
+  color: #666; /* Color de texto cuando el botón está deshabilitado */
+  cursor: not-allowed; /* Cambiar el cursor cuando el botón está deshabilitado */
+}
+
+#asignarHorario[disabled]:hover::after {
+  content: "";
+  background: #b41919; /* color de fondo hover */
+  position: absolute;
+  z-index: -1;
+  padding: 16px 20px;
+  display: block;
+  top: 0;
+  bottom: 0;
+  left: 100%;
+  right: -100%;
+  transition: all 0.35s;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  -webkit-transition: all 0.35s;
+  transition: all 0.35s;
+}
