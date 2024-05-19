@@ -1912,60 +1912,78 @@ app.post('/personal/asignarHorario', function (req, res) {
     return res.redirect("/personal/asignarHorario?mensaje=Matricula%20del%20alumno%20vacío%20o%20nombre%20del%20horario%20vacío");
   }
 
-  // Verificar si la matrícula existe en la tabla alumnos
-  connection.query('SELECT * FROM alumnos WHERE matricula = ?', [matricula], function (error, results) {
+  // Realizar una consulta para contar cuántos alumnos tienen asignado el horario deseado
+  connection.query('SELECT COUNT(*) AS total FROM asignacion_horario WHERE id_horario = (SELECT id FROM horarios WHERE nombre = ?)', [nombreHorario], function (error, results) {
     if (error) {
-      console.error("Error al verificar la matrícula del alumno:", error);
-      return res.redirect("/personal/asignarHorario?mensaje=Error%20al%20verificar%20la%20matr%C3%ADcula%20del%20alumno");
+      console.error("Error al verificar la asignación de horario:", error);
+      return res.redirect("/personal/asignarHorario?mensaje=Error%20al%20verificar%20la%20asignaci%C3%B3n%20de%20horario");
     }
 
-    if (results.length === 0) {
-      // Si la matrícula no existe en la tabla alumnos, redirigir con mensaje
-      return res.redirect("/personal/asignarHorario?mensaje=Matricula%20no%20existente");
+    const totalAsignaciones = results[0].total;
+
+    // Verificar si el número de asignaciones supera el límite de 30
+    if (totalAsignaciones >= 30) {
+      console.error("Se alcanzó el límite de asignaciones por plantilla");
+      return res.redirect("/personal/asignarHorario?mensaje=No%20se%20permiten%20m%C3%A1s%20de%2030%20asignaciones%20por%20plantilla");
     }
 
-    // Verificar si el alumno ya tiene un horario asignado
-    connection.query('SELECT * FROM asignacion_horario WHERE matricula_alumno = ?', [matricula], function (error, results) {
+    // Si no se supera el límite de 30 asignaciones, proceder con la asignación del horario
+    // Verificar si la matrícula existe en la tabla alumnos
+    connection.query('SELECT * FROM alumnos WHERE matricula = ?', [matricula], function (error, results) {
       if (error) {
-        console.error("Error al verificar la asignación de horario:", error);
-        return res.redirect("/personal/asignarHorario?mensaje=Error%20al%20verificar%20la%20asignaci%C3%B3n%20de%20horario");
+        console.error("Error al verificar la matrícula del alumno:", error);
+        return res.redirect("/personal/asignarHorario?mensaje=Error%20al%20verificar%20la%20matr%C3%ADcula%20del%20alumno");
       }
 
-      // Si el alumno ya tiene un horario asignado, redirigir con un mensaje de error
-      if (results.length > 0) {
-        console.error("El alumno ya tiene un horario asignado");
-        return res.redirect("/personal/asignarHorario?mensaje=El%20alumno%20ya%20tiene%20un%20horario%20asignado");
+      if (results.length === 0) {
+        // Si la matrícula no existe en la tabla alumnos, redirigir con mensaje
+        return res.redirect("/personal/asignarHorario?mensaje=Matricula%20no%20existente");
       }
 
-      // Si el alumno no tiene un horario asignado, proceder con la asignación del horario
-      // Buscar el ID del horario en la base de datos
-      connection.query('SELECT id FROM horarios WHERE nombre = ?', [nombreHorario], function (error, results) {
+      // Verificar si el alumno ya tiene un horario asignado
+      connection.query('SELECT * FROM asignacion_horario WHERE matricula_alumno = ?', [matricula], function (error, results) {
         if (error) {
-          console.error("Error al buscar el ID del horario:", error);
-          return res.redirect("/personal/asignarHorario?mensaje=Error%20interno%20del%20servidor");
+          console.error("Error al verificar la asignación de horario:", error);
+          return res.redirect("/personal/asignarHorario?mensaje=Error%20al%20verificar%20la%20asignaci%C3%B3n%20de%20horario");
         }
 
-        if (results.length === 0) {
-          console.error("No se encontró ningún horario con ese nombre");
-          return res.redirect("/personal/asignarHorario?mensaje=No%20se%20encontr%C3%B3%20ning%C3%BAn%20horario%20con%20ese%20nombre");
+        // Si el alumno ya tiene un horario asignado, redirigir con un mensaje de error
+        if (results.length > 0) {
+          console.error("El alumno ya tiene un horario asignado");
+          return res.redirect("/personal/asignarHorario?mensaje=El%20alumno%20ya%20tiene%20un%20horario%20asignado");
         }
 
-        const idHorario = results[0].id;
-
-        // Guardar la asignación en la base de datos
-        connection.query('INSERT INTO asignacion_horario (id_horario, matricula_alumno) VALUES (?, ?)', [idHorario, matricula], function (error) {
+        // Si el alumno no tiene un horario asignado y no se supera el límite de 30 asignaciones, proceder con la asignación del horario
+        // Buscar el ID del horario en la base de datos
+        connection.query('SELECT id FROM horarios WHERE nombre = ?', [nombreHorario], function (error, results) {
           if (error) {
-            console.error("Error al guardar la asignación del horario:", error);
+            console.error("Error al buscar el ID del horario:", error);
             return res.redirect("/personal/asignarHorario?mensaje=Error%20interno%20del%20servidor");
           }
 
-          // Redirigir con un mensaje de éxito
-          return res.redirect("/personal/asignarHorario?mensaje=Asignaci%C3%B3n%20del%20horario%20guardada%20correctamente");
+          if (results.length === 0) {
+            console.error("No se encontró ningún horario con ese nombre");
+            return res.redirect("/personal/asignarHorario?mensaje=No%20se%20encontr%C3%B3%20ning%C3%BAn%20horario%20con%20ese%20nombre");
+          }
+
+          const idHorario = results[0].id;
+
+          // Guardar la asignación en la base de datos
+          connection.query('INSERT INTO asignacion_horario (id_horario, matricula_alumno) VALUES (?, ?)', [idHorario, matricula], function (error) {
+            if (error) {
+              console.error("Error al guardar la asignación del horario:", error);
+              return res.redirect("/personal/asignarHorario?mensaje=Error%20interno%20del%20servidor");
+            }
+
+            // Redirigir con un mensaje de éxito
+            return res.redirect("/personal/asignarHorario?mensaje=Asignaci%C3%B3n%20del%20horario%20guardada%20correctamente");
+          });
         });
       });
     });
   });
 });
+
 
 
 
