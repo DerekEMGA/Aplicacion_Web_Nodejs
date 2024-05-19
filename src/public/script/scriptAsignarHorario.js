@@ -122,17 +122,23 @@ document.addEventListener("DOMContentLoaded", function() {
             fetch(`/personal/agregarAlumnos/tabla2?nombreHorario=${filtroNombre}`)
             .then((response) => {
                 if (!response.ok) {
-                throw new Error("Error al obtener la tabla");
+                    throw new Error("Error al obtener la tabla");
                 }
-                return response.text();
+                return response.json();
             })
-            .then((html) => {
-                // Inserta la tabla HTML en el contenedor
-                document.getElementById("tabla").innerHTML = html;
+            .then((data) => {
+                // Inserta la tabla HTML en el contenedor con id "tabla"
+                document.getElementById("tabla").innerHTML = data.tableHtml;
+                
+                // Mostrar el contador
+                const contador = data.count;
+                console.log("Contador:", contador);
+                document.getElementById("contadorDisplay").innerText = `Total de alumnos con el horario "${filtroNombre}": ${contador}`;
             })
             .catch((error) => {
                 console.error("Error al obtener la tabla:", error);
                 // Puedes mostrar un mensaje al usuario indicando el error
+                document.getElementById("tabla").innerHTML = `<p>Error al obtener la tabla: ${error.message}</p>`;
             });
             
     });
@@ -222,4 +228,12 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       }
       }
+
+
+      const btnCancelar = document.getElementById("cancelar");
+
+      btnCancelar.addEventListener("click", function() {
+          // Recarga la página para limpiarla
+          location.reload();
+      });
       

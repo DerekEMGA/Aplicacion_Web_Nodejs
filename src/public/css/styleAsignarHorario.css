@@ -289,3 +289,11 @@ input[type="text"] {
 .horario-container{
 pointer-events: none;
 }
+
+
+#contadorDisplay {
+  font-weight: bold; /* Hace que el texto del contador sea más visible */
+  position: relative;
+  text-align: center;
+  margin-top: 20px;
+}

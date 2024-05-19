@@ -29,6 +29,14 @@
             <input type="text" id="matricula" name="matricula" placeholder="Matrícula del alumno" style="margin-left: 225px; margin-right: 10px; width: 200px;" maxlength="7" required>
             <button id="asignarHorario" class="ov-btn-slide-right" style="color: white; padding: 10px 25px; cursor: pointer; min-width: 300px; margin-right: 10px;" type="submit" name="asignarHorario" value="asignarHorario" onclick="validateAsignarHorario()">Asignar Horario</button>
             <button id="eliminarAsignacion" class="ov-btn-slide-right" style="color: white; padding: 10px 25px; cursor: pointer; min-width: 300px; margin-right: 10px;" type="submit" name="eliminarAsignacion" value="eliminarAsignacion" onclick="validateEliminarAsignacion()">Eliminar Asignación</button>
+            <button id="cancelar" class="ov-btn-slide-right" style=" 
+            color: white; 
+            padding: 10px 25px; 
+            cursor: pointer; 
+            min-width: 150px;
+            margin-right: 40px;"
+             >Cancelar</button>
+    
         </form>
 
 
@@ -40,10 +48,13 @@
                     <div class="list-group" id="horario" name="horario">
                         
                     </div>
+                    <div  id="contadorDisplay"></div>
+
                 </ul>
             </div>
         </div>
     </div>
+
 
     <div style="margin-top: -145px;"> <!-- Reducción del espacio entre la sección de asignación de horario y la tabla -->
         <div id="tabla"></div>

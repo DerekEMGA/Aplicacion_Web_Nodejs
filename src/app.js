@@ -2027,11 +2027,12 @@ app.get("/personal/agregarAlumnos/tabla2", function (req, res) {
         return res.status(500).send("Error en la consulta a la base de datos");
       }
 
+      count = results.length
       // Construye la tabla HTML
       const tableHtml = buildTableHtml(results);
 
       // Envía la tabla HTML como respuesta al cliente
-      res.status(200).send(tableHtml);
+      res.status(200).json({ tableHtml, count });
     }
   );
 });
