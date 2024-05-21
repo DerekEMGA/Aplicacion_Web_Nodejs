@@ -1,0 +1,8 @@
+const express=require('express');
+const router=express.Router();
+const alumnoControllers=require('../controllers/alumnoControllers.js')
+
+router.get('/',alumnoControllers.mostrarAlumno)
+router.get('/horario',alumnoControllers.mostrarHorario)
+
+module.exports=router
