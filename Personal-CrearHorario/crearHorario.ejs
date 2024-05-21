@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal</title>
+    <link rel="stylesheet" href="/css/styleCrearHorario.css">
+    <link  href="/css/styleBootstrap5.0.2.css" rel="stylesheet" >
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+</head>
+<body>
+
+    <div id="franjaSuperior"></div>
+
+    <%- include('../partials/menuPersonal') %>
+
+    <section class="skills">
+        <div class="skill">
+          <div class="knowledge">
+            <div >
+                <img src="/image/information.png" alt="" class="information-icon">
+                <h3>Arrastra los recuadros a la plantilla</h3>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+    <div class="container">
+        <div class="row">
+            <div class="col-12 my-5">
+                
+                <h2 class="mb-3" style="text-align: center;">   <p id="typer"> </p></h2>        
+
+                <ul class="materias-container">               
+                    <div class="list-group" id="materias"></div>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+ 
+
+<div style=" margin-top: -100;  margin-right: 50px; display: flex; justify-content: flex-end;" >
+
+    <select id="periodo" name="periodo" style="margin-right: 20px;" class="year">
+
+        <option value="Enero-Junio-">Enero-Junio-</option>
+        <option value="Agosto-Diciembre-">Agosto-Diciembre-</option>
+
+    </select>
+
+    <select id="filtroSemestre" name="filtroSemestre" style="margin-right: 10px;" >
+        <option value="1">1°</option>
+        <option value="2">2°</option>
+        <option value="3">3°</option>
+        <option value="4">4°</option>
+        <option value="5">5°</option>
+        <option value="6">6°</option>
+        <option value="7">7°</option>
+    </select>
+
+    <button id="aplicarFiltrosBtn" class="ov-btn-slide-right" style=" 
+    color: white; 
+    padding: 10px 25px; 
+    cursor: pointer; 
+    min-width: 150px; ">Buscar</button>
+     
+
+</div>
+
+
+<form id="formularioHorario" method="post" onsubmit="return validateForm(action)" > 
+
+<div class="container" >
+    <div class="row">
+        <div class="col-12 my-5">
+            <h2 class="mb-3" style="text-align: center;">   Plantilla de Horario </h2>        
+            <ul class="horario-container">
+                <div class="list-group" id="horario" name="horario">
+                    
+                </div>
+            </ul>
+        </div>
+
+    </div>
+</div>
+
+<div style="margin-top: -40px; margin-right: 200px; display: flex; justify-content: flex-end;">
+       
+    <input type="text" id="nombreHorario" name="nombreHorario" placeholder="Nombre del horario" style="margin-right: 550px;"
+    maxlength="30" onkeydown="validateInput(event)" required>
+
+    <button id="crearHorario" class="ov-btn-slide-right" style=" 
+    color: white; 
+    padding: 10px 25px; 
+    cursor: pointer; 
+    min-width: 150px;
+    margin-right: 0px; " type="submit" name="accion" value="insertar" onclick="validateForm('/insertarHorario')" disabled  >Crear Horario</button>
+
+
+</form>
+</div>
+
+<div style="margin-top: -46px;  display: flex; justify-content: flex-end;">
+
+    <button id="buscarHorario" class="ov-btn-slide-right" style=" 
+color: white; 
+padding: 10px 25px; 
+cursor: pointer; 
+min-width: 150px;
+margin-right: 10px; "  >Buscar Horario</button>
+
+    <button id="modificarHorario" class="ov-btn-slide-right" style=" 
+    color: white; 
+    padding: 10px 25px; 
+    cursor: pointer; 
+    min-width: 150px;
+    margin-right: 10px; " type="submit" name="modificarHorario" value="modificar" disabled>Guardar Horario</button>
+    
+   
+
+    <button id="eliminarHorario" class="ov-btn-slide-right" style=" 
+    color: white; 
+    padding: 10px 25px; 
+    cursor: pointer; 
+    min-width: 150px; 
+    margin-right: 170px;" type="submit" name="eliminarHorario" value="eliminar"  disabled >Eliminar Horario</button>
+   
+        <button id="cancelar" class="ov-btn-slide-right" style=" 
+        color: white; 
+        padding: 10px 25px; 
+        cursor: pointer; 
+        min-width: 150px;
+        margin-right: 40px; 
+        margin-top: auto;" 
+         >Cancelar</button>
+
+</div>
+
+<script src="/script/sortable.min.js"></script>
+<script src="/script/scriptCrearHorario.js"></script>
+</body>
+</html>
