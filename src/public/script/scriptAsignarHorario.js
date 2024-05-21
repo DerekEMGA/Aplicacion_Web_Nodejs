@@ -30,19 +30,26 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Función para agregar el ID del horario al formulario antes de enviarlo
     function agregarIdHorarioAlFormulario() {
-        const formulario = document.getElementById("formularioHorario");
-        const inputIdHorario = document.createElement('input');
-        inputIdHorario.type = 'hidden';
-        inputIdHorario.name = 'idHorario';
-        inputIdHorario.value = idHorarioSeleccionado;
-        formulario.appendChild(inputIdHorario);
+            // Verificar si el nombre del horario ya ha sido guardado
+       
+                const filtroNombre = filtroNombreInput.value.trim();
+                const nombreHorarioInput = document.createElement('input');
+                nombreHorarioInput.type = 'hidden';
+                nombreHorarioInput.name = 'nombreHorario';
+                nombreHorarioInput.value = filtroNombre;
+                document.getElementById("formularioHorario").appendChild(nombreHorarioInput);
+                // Marcar que el nombre del horario ha sido guardado
+                console.log(filtroNombre)
+
+
     }
 
     // Evento para enviar el formulario
     const botonAsignarHorario = document.getElementById("asignarHorario");
     botonAsignarHorario.addEventListener("click", function() {
-        agregarIdHorarioAlFormulario();
 
+        agregarIdHorarioAlFormulario();
+        
         // Validar el formulario y enviarlo
         validateForm("/personal/asignarHorario");
     });
@@ -57,22 +64,23 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // Obtener datos al hacer clic en el botón "aplicarFiltrosBtn"
-    const filtroNombreInput = document.getElementById("nombreHorario");
     const aplicarFiltrosBtnHorario = document.getElementById("buscarHorario");
 
     const buttonEliminar = document.getElementById("eliminarAsignacion");
     const buttonAsignar = document.getElementById("asignarHorario");
+    const filtroNombreInput = document.getElementById("nombreHorario");
 
+    
 
 
     aplicarFiltrosBtnHorario.addEventListener("click", function() {
         const filtroNombre = filtroNombreInput.value.trim();
-    
+
         if (!filtroNombre) {
             alert("Ingrese un nombre de horario antes de buscar");
             return;
         }
-    
+
         // Verificar si el nombre del horario ya ha sido guardado
         if (!nombreHorarioGuardado) {
             // Crear el campo oculto para el nombre del horario solo si no ha sido guardado antes
@@ -84,7 +92,8 @@ document.addEventListener("DOMContentLoaded", function() {
             // Marcar que el nombre del horario ha sido guardado
             nombreHorarioGuardado = true;
         }
-    
+        
+       // alert(filtroNombre)
         fetch(`/personal/crearHorario/tablaHorario?filtroNombre=${filtroNombre}`)
             .then((response) => {
                 if (!response.ok) {
@@ -139,11 +148,7 @@ document.addEventListener("DOMContentLoaded", function() {
                   
 
                     // Verificar si la tabla está vacía
-                    if (data.tableHtml === '<table name="tabla"  cellpadding="8"><tr></tr></table>') {     
-                        // Si la tabla está vacía, mostrar un mensaje y deshabilitar los botones
-                        buttonAsignar.setAttribute('disabled', true);
-                        buttonEliminar.setAttribute('disabled', true);
-                    } else {
+                  
                         // Si la tabla no está vacía, insertar la tabla HTML en el contenedor
                         document.getElementById("tabla").innerHTML = data.tableHtml;
                         
@@ -157,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         // Habilitar los botones
                         buttonAsignar.removeAttribute('disabled');
                         buttonEliminar.removeAttribute('disabled');
-                    }
+                    
         
             })
             .catch((error) => {
@@ -220,8 +225,6 @@ document.addEventListener("DOMContentLoaded", function() {
         alert(serverMessage);
         sessionStorage.setItem("messageShown", "true");
         }
-    
-       
     });
 
 

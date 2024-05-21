@@ -1737,7 +1737,7 @@ app.get("/personal/crearHorario/tablaHorario", function (req, res) {
 
   // Si hay filtro de nombre de horario, agregar la condición correspondiente
   if (filtroNombre) {
-    sqlQuery += ` WHERE horarios.nombre LIKE '%${filtroNombre}%'`;
+    sqlQuery += ` WHERE horarios.nombre = '${filtroNombre}'`;
   }
 
   // Ordenar los resultados por hora ascendente
@@ -1905,7 +1905,10 @@ app.post("/eliminarHorario", function (req, res) {
 
 // Ruta para asignar un horario a un alumno
 app.post('/personal/asignarHorario', function (req, res) {
-  const { nombreHorario, matricula } = req.body;
+  const ultimoElemento = req.body.nombreHorario;
+  const nombreHorario = ultimoElemento[ultimoElemento.length - 1]; 
+   const matricula  = req.body.matricula;
+  console.log(req.body)
 
   // Verificar que se recibieron datos válidos
   if (!nombreHorario || !matricula) {
@@ -1985,12 +1988,13 @@ app.post('/personal/asignarHorario', function (req, res) {
 });
 
 
-
-
 // Ruta para eliminar la asignación de horario de un alumno
 app.post('/personal/eliminarAsignacion', function (req, res) {
-  const { matricula } = req.body;
-
+  const ultimoElemento = req.body.nombreHorario;
+  const nombreHorario = ultimoElemento[ultimoElemento.length - 1]; 
+  const matricula  = req.body.matricula;
+  console.log(req.body);
+   
   // Verificar que se recibió la matrícula del alumno
   if (!matricula) {
     return res.redirect("/personal/asignarHorario?mensaje=Matricula%20del%20alumno%20vacía");
@@ -2008,21 +2012,21 @@ app.post('/personal/eliminarAsignacion', function (req, res) {
       return res.redirect("/personal/asignarHorario?mensaje=La%20Matricula%20ingresada%20no%20existe");
     }
 
-    // Verificar si existe una asignación de horario para el alumno
-    connection.query('SELECT * FROM asignacion_horario WHERE matricula_alumno = ?', [matricula], function (error, results) {
+    // Verificar si existe una asignación de horario para el alumno y si el horario corresponde a la matrícula
+    connection.query('SELECT * FROM asignacion_horario WHERE matricula_alumno = ? AND id_horario = (SELECT id FROM horarios WHERE nombre = ?)', [matricula, nombreHorario], function (error, results) {
       if (error) {
         console.error("Error al verificar la asignación de horario:", error);
         return res.redirect("/personal/asignarHorario?mensaje=Error%20interno%20del%20servidor");
       }
 
-      // Si no se encuentra ninguna asignación de horario para el alumno, redirigir con un mensaje de error
+      // Si no se encuentra ninguna asignación de horario para el alumno o no coincide, redirigir con un mensaje de error
       if (results.length === 0) {
-        console.error("No se encontró ninguna asignación de horario para el alumno con la matrícula proporcionada");
-        return res.redirect("/personal/asignarHorario?mensaje=No%20se%20encontró%20ninguna%20asignación%20de%20horario%20para%20el%20alumno%20con%20la%20matrícula%20proporcionada");
+        console.error("No se encontró ninguna asignación de horario para el alumno con la matrícula proporcionada o el horario no corresponde a la matrícula");
+        return res.redirect("/personal/asignarHorario?mensaje=Plantilla%20de%20horario%20no%20corresponde%20a%20la%20matrícula");
       }
 
-      // Si se encuentra una asignación de horario para el alumno, proceder a eliminarla
-      connection.query('DELETE FROM asignacion_horario WHERE matricula_alumno = ?', [matricula], function (error, results) {
+      // Si se encuentra una asignación de horario para el alumno y coincide, proceder a eliminarla
+      connection.query('DELETE FROM asignacion_horario WHERE matricula_alumno = ? AND id_horario = (SELECT id FROM horarios WHERE nombre = ?)', [matricula, nombreHorario], function (error, results) {
         if (error) {
           console.error("Error al eliminar la asignación de horario:", error);
           return res.redirect("/personal/asignarHorario?mensaje=Error%20interno%20del%20servidor");
@@ -2034,7 +2038,6 @@ app.post('/personal/eliminarAsignacion', function (req, res) {
     });
   });
 });
-
 
 
 app.get("/personal/agregarAlumnos/tabla2", function (req, res) {
